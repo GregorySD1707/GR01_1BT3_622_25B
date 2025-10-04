@@ -1,0 +1,57 @@
+package com.sistema_financiero_personal.servicios;
+
+import com.sistema_financiero_personal.daos.CarteraDAO;
+import com.sistema_financiero_personal.daos.MovimientoDAO;
+import com.sistema_financiero_personal.modelos.Cartera;
+import com.sistema_financiero_personal.modelos.Movimiento;
+
+import java.time.LocalDateTime;
+import java.util.Objects;
+
+public class ServicioMovimientos {
+
+    private final MovimientoDAO movimientoDAO;
+    private final CarteraDAO carteraDAO;
+
+    public ServicioMovimientos() {
+        this.movimientoDAO = new MovimientoDAO();
+        this.carteraDAO = new CarteraDAO();
+    }
+
+    public ServicioMovimientos(MovimientoDAO movimientoDAO, CarteraDAO carteraDAO) {
+        this.movimientoDAO = movimientoDAO;
+        this.carteraDAO = carteraDAO;
+    }
+
+    public Movimiento registrarIngreso(double monto, String descripcion, String categoria, String nombreCartera) {
+        validarMonto(monto);
+        Objects.requireNonNull(nombreCartera, "nombreCartera no puede ser null");
+        com.sistema_financiero_personal.modelos.Ingreso ingreso =
+                new com.sistema_financiero_personal.modelos.Ingreso(monto, LocalDateTime.now(), descripcion, categoria);
+        movimientoDAO.crear(ingreso);
+        actualizarCartera(monto, nombreCartera, null);
+        return ingreso;
+    }
+
+    public Movimiento registrarGasto(double monto, String descripcion, String categoria, String nombreCartera) {
+        validarMonto(monto);
+        Objects.requireNonNull(nombreCartera, "nombreCartera no puede ser null");
+        com.sistema_financiero_personal.modelos.Gasto gasto =
+                new com.sistema_financiero_personal.modelos.Gasto(monto, LocalDateTime.now(), descripcion, categoria);
+        movimientoDAO.crear(gasto);
+        actualizarCartera(-monto, nombreCartera, null);
+        return gasto;
+    }
+
+    public Cartera actualizarCartera(double delta, String nombreCartera, String tipoSiNoExiste) {
+        String tipo = tipoSiNoExiste == null ? "EFECTIVO" : tipoSiNoExiste;
+        Cartera cartera = carteraDAO.obtenerOCrear(nombreCartera, tipo);
+        cartera.actualizarCartera(delta);
+        carteraDAO.actualizar(cartera);
+        return cartera;
+    }
+
+    private void validarMonto(double monto) {
+        if (monto <= 0) throw new IllegalArgumentException("El monto debe ser positivo");
+    }
+}
