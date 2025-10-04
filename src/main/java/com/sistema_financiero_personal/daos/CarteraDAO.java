@@ -5,7 +5,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
-public class CarteraDAO extends BaseDAO<Cartera> {
+public class CarteraDAO extends DAOBase<Cartera> {
     public CarteraDAO() { super(Cartera.class); }
 
     public Cartera buscarPorNombre(String nombre) {
