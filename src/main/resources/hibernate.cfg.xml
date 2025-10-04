@@ -20,7 +20,6 @@
         <property name="hibernate.hbm2ddl.auto">update</property>
 
         <!-- Entidades -->
-        <mapping class="org.modelo.Usuario"/>
-        <mapping class="org.modelo.Vehiculo"/>
+        <mapping class="com.sistema_financiero_personal.modelos.ResumenFinanciero"/>
     </session-factory>
 </hibernate-configuration>
