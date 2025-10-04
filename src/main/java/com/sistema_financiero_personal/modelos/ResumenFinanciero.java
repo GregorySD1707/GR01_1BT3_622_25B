@@ -1,18 +1,32 @@
 package com.sistema_financiero_personal.modelos;
 
-public class ResumenDiario {
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "ResumenFinanciero")
+public class ResumenFinanciero {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "resumen_financiero_id")
+    private Long id;
+
+    @Column(name="ingresos_totales", nullable = false)
     private double ingresosTotales;
+
+    @Column(name="gastos_totales",nullable = false)
     private double gastosTotales;
+
+    @Column(name="ahorro_neto",nullable = false)
     private double ahorroNeto;
 
-    public ResumenDiario() {
-        this.ingresosTotales = 0.0;
-        this.gastosTotales = 0.0;
-        this.ahorroNeto = 0.0;
+    public ResumenFinanciero() {
+        this.ingresosTotales = -1.0;
+        this.gastosTotales = -1.0;
+        this.ahorroNeto = -1.0;
     }
 
-    public ResumenDiario(double ingresosTotales, double gastosTotales, double ahorroNeto) {
+    public ResumenFinanciero(double ingresosTotales, double gastosTotales, double ahorroNeto) {
         this.ingresosTotales = ingresosTotales;
         this.gastosTotales = gastosTotales;
         this.ahorroNeto = ahorroNeto;
