@@ -1,21 +1,19 @@
 package com.sistema_financiero_personal.daos;
 
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
+import jakarta.persistence.Query;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.Query;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
-public class BaseDAO<T> {
-
+public abstract class BaseDAO<T> {
     private static final SessionFactory factory = new Configuration().configure().buildSessionFactory();
     private final Class<T> entityClass;
 
@@ -43,7 +41,7 @@ public class BaseDAO<T> {
     }
 
     // Métodos CRUD
-    public void guardar(T entity) {
+    public void crear(T entity) {
         executeInTransaction(session -> session.persist(entity));
     }
 
@@ -112,5 +110,5 @@ public class BaseDAO<T> {
             return (List<T>) query.getResultList();
         });
     };
-
 }
+
