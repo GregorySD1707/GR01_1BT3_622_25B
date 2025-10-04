@@ -33,4 +33,8 @@
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
 
+  <welcome-file-list>
+    <welcome-file>resumen_financiero.jsp</welcome-file>
+  </welcome-file-list>
+
 </web-app>
