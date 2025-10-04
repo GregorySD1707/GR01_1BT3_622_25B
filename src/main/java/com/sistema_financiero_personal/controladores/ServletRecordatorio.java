@@ -1,27 +1,28 @@
 package com.sistema_financiero_personal.controladores;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.List;
+
+import com.sistema_financiero_personal.daos.DAORecordatorio;
 import com.sistema_financiero_personal.modelos.Recordatorio;
 import com.sistema_financiero_personal.modelos.Recurrencia;
-import com.sistema_financiero_personal.servicios.ServicioRecordatorio;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
-import java.util.List;
-
 @WebServlet("/recordatorios/*")
 public class ServletRecordatorio extends HttpServlet {
 
-    private ServicioRecordatorio servicioRecordatorio;
+    private DAORecordatorio recordatorioDAO;
 
     @Override
     public void init() {
-        this.servicioRecordatorio = new ServicioRecordatorio();
+        this.recordatorioDAO = new DAORecordatorio();
     }
 
     @Override
@@ -65,7 +66,7 @@ public class ServletRecordatorio extends HttpServlet {
     // --- MÉTODOS DE ACCIÓN ---
 
     private void listarRecordatorios(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<Recordatorio> listaRecordatorios = servicioRecordatorio.listarRecordatorios();
+        List<Recordatorio> listaRecordatorios = recordatorioDAO.listar();
         request.setAttribute("recordatorios", listaRecordatorios);
         request.getRequestDispatcher("/VistaRecordatorios.jsp").forward(request, response);
     }
@@ -80,7 +81,7 @@ public class ServletRecordatorio extends HttpServlet {
     private void mostrarFormularioEditar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             Long id = Long.parseLong(request.getParameter("id"));
-            Recordatorio recordatorioExistente = servicioRecordatorio.buscarRecordatorio(id);
+            Recordatorio recordatorioExistente = recordatorioDAO.buscarPorId(id);
             if (recordatorioExistente != null) {
                 mostrarFormulario(request, response, recordatorioExistente);
             } else {
@@ -106,15 +107,7 @@ public class ServletRecordatorio extends HttpServlet {
     private void crearRecordatorio(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         try {
             Recordatorio nuevoRecordatorio = construirRecordatorioDesdeRequest(request);
-
-            servicioRecordatorio.crearRecordatorio(
-                    nuevoRecordatorio.getFechaInicio(),
-                    nuevoRecordatorio.getFechaFin(),
-                    nuevoRecordatorio.getDescripcion(),
-                    nuevoRecordatorio.getRecurrencia(),
-                    nuevoRecordatorio.getMonto(),
-                    nuevoRecordatorio.getDiasDeAnticipacion()
-            );
+            recordatorioDAO.crear(nuevoRecordatorio);
 
             response.sendRedirect(request.getContextPath() + "/recordatorios?exito=creado");
 
@@ -132,7 +125,7 @@ public class ServletRecordatorio extends HttpServlet {
             Recordatorio recordatorio = construirRecordatorioDesdeRequest(request);
             recordatorio.setId(id);
 
-            servicioRecordatorio.actualizarRecordatorio(recordatorio);
+            recordatorioDAO.actualizar(recordatorio);
             response.sendRedirect(request.getContextPath() + "/recordatorios?exito=actualizado");
         } catch (DateTimeParseException | IllegalArgumentException e) {
             request.setAttribute("error", "Datos inválidos. Por favor, revisa los campos.");
@@ -144,7 +137,7 @@ public class ServletRecordatorio extends HttpServlet {
     private void borrarRecordatorio(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             Long id = Long.parseLong(request.getParameter("id"));
-            servicioRecordatorio.borrarRecordatorio(id);
+            recordatorioDAO.borrar(id);
             response.sendRedirect(request.getContextPath() + "/recordatorios?exito=eliminado");
         } catch (NumberFormatException e) {
             response.sendRedirect(request.getContextPath() + "/recordatorios?error=idInvalido");

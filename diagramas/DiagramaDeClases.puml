@@ -9,10 +9,6 @@ skinparam package {
 ' --- Capa de Acceso a Datos (Base) ---
 package "Capa de Datos (DAO)" <<Database>> {
   abstract class DAOBase <<abstract>> {
-    - factory: SessionFactory {static}
-    - entityClass: Class<T>
-    # executeInTransaction(operation: Consumer<Session>): void
-    # executeQuery(query: Function<Session, R>): R
     + crear(entity: T): void
     + borrar(id: Long): void
     + actualizar(entity: T): void
@@ -20,7 +16,6 @@ package "Capa de Datos (DAO)" <<Database>> {
     + listar(): List<T>
     + listar(maxResults: int, firstResult: int): List<T>
     - listar(all: boolean, maxResults: int, firstResult: int): List<T>
-    + cerrarFactory(): void {static}
   }
 }
 
@@ -79,35 +74,19 @@ package "Gestión de Deudas" #LightGreen {
 ' --- Módulo de Recordatorios ---
 package "Recordatorios" #LightYellow {
   class ServletRecordatorio  {
-    - servicioRecordatorio: ServicioRecordatorio
-    + init(): void
-    + doGet(request: HttpServletRequest, response: HttpServletResponse): void
-    + doPost(request: HttpServletRequest, response: HttpServletResponse): void
-    - listarRecordatorios(request: HttpServletRequest, response: HttpServletResponse): void
-    - mostrarFormulario(request: HttpServletRequest, response: HttpServletResponse, recordatorio: Recordatorio): void
-    - mostrarFormularioEditar(request: HttpServletRequest, response: HttpServletResponse): void
-    - construirRecordatorioDesdeRequest(request: HttpServletRequest): Recordatorio
-    - crearRecordatorio(request: HttpServletRequest, response: HttpServletResponse): void
-    - actualizarRecordatorio(request: HttpServletRequest, response: HttpServletResponse): void
-    - borrarRecordatorio(request: HttpServletRequest, response: HttpServletResponse): void
+    - recordatorioDAO: RecordatorioDAO
+    - listarRecordatorios(): void
+    - mostrarFormulario(recordatorio: Recordatorio): void
+    - mostrarFormularioEditar(): void
+    - construirRecordatorioDesdeRequest(): Recordatorio
+    - crearRecordatorio(): void
+    - actualizarRecordatorio(): void
+    - borrarRecordatorio(): void
   }
 
   class ServletNotificacion  {
-    - servicioRecordatorio: ServicioRecordatorio
-    - gson: Gson
-    + init(): void
-    + doGet(request: HttpServletRequest, response: HttpServletResponse): void
-  }
-
-  class ServicioRecordatorio {
     - recordatorioDAO: RecordatorioDAO
-    + crearRecordatorio(fechaInicio: LocalDate, fechaFin: LocalDate, descripcion: String, recurrencia: Recurrencia, monto: double, diasDeAnticipacion: int): void
-    + borrarRecordatorio(idRecordatorio: Long): void
-    + listarRecordatorios(): List<Recordatorio>
-    + listarRecordatoriosActivos(): List<Recordatorio>
-    + notificarRecordatorio(): void
-    + actualizarRecordatorio(recordatorio: Recordatorio): void
-    + buscarRecordatorio(id: Long): Recordatorio
+    - gson: Gson
   }
 
   class Recordatorio {
@@ -182,14 +161,11 @@ ControladorDeudas *-- DeudaPrestamoDAO
 
 
 ' --- Relaciones dentro del paquete de Recordatorios ---
-ServletRecordatorio "1" ..> "1" ServicioRecordatorio : usa
+ServletRecordatorio "1" *-- "1" RecordatorioDAO : contiene
 ServletRecordatorio "1" ..> "*" Recordatorio : maneja
 ServletRecordatorio "1" ..> "*" Recurrencia : utiliza
-ServletNotificacion "1" ..> "1" ServicioRecordatorio : usa
+ServletNotificacion "1" *-- "1" RecordatorioDAO : contiene
 ServletNotificacion "1" ..> "*" Recordatorio : consulta
-ServicioRecordatorio "1" *-- "1" RecordatorioDAO : contiene
-ServicioRecordatorio "1" ..> "*" Recordatorio : gestiona
-ServicioRecordatorio "1" ..> "*" Recurrencia : utiliza
 Recordatorio "1" *-- "1" Recurrencia : tiene
 RecordatorioDAO "1" ..> "*" Recordatorio : persiste
 ControladorResumenFinanciero ..> ResumenFinanciero
