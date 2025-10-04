@@ -26,6 +26,9 @@ public class ServicioRecordatorio {
         return recordatorioDAO.listar();
     }
 
+    public List<Recordatorio> listarRecordatoriosActivos(){
+        return recordatorioDAO.listarActivos();
+    }
     public void notificarRecordatorio(){
         LocalDate hoy = LocalDate.now();
         List<Recordatorio> recordatorios = recordatorioDAO.listarActivos();
