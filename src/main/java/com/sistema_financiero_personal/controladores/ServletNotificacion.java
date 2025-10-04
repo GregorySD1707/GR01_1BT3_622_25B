@@ -1,14 +1,5 @@
 package com.sistema_financiero_personal.controladores;
 
-import com.google.gson.Gson;
-import com.sistema_financiero_personal.modelos.Recordatorio;
-import com.sistema_financiero_personal.servicios.ServicioRecordatorio; // Assuming you have this service
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,22 +7,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.Gson;
+import com.sistema_financiero_personal.daos.DAORecordatorio;
+import com.sistema_financiero_personal.modelos.Recordatorio;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 @WebServlet("/notificaciones")
 public class ServletNotificacion extends HttpServlet {
 
-    private ServicioRecordatorio servicioRecordatorio;
+    private DAORecordatorio recordatorioDAO;
     private Gson gson = new Gson();
 
     @Override
     public void init() {
-        this.servicioRecordatorio = new ServicioRecordatorio();
+        this.recordatorioDAO = new DAORecordatorio();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             LocalDate hoy = LocalDate.now();
-            List<Recordatorio> recordatorios = servicioRecordatorio.listarRecordatoriosActivos();
+            List<Recordatorio> recordatorios = recordatorioDAO.listarActivos();
 
             List<Map<String, String>> notificaciones = new ArrayList<>();
 
