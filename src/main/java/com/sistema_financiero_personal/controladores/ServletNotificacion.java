@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@WebServlet("/api/notificaciones") // An API endpoint URL
+@WebServlet("/notificaciones")
 public class ServletNotificacion extends HttpServlet {
 
     private ServicioRecordatorio servicioRecordatorio;

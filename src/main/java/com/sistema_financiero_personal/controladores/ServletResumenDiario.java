@@ -89,7 +89,7 @@ public class ServletResumenDiario extends HttpServlet {
 
         ResumenFinanciero resumenFinanciero = new ResumenFinanciero(ingresos, gastos, ahorroNeto);
         DAOResumenFinanciero daoResumenFinanciero = new DAOResumenFinanciero();
-        daoResumenFinanciero.guardar(resumenFinanciero);
+        daoResumenFinanciero.crear(resumenFinanciero);
         return resumenFinanciero;
     }
 }

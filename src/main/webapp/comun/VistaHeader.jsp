@@ -25,7 +25,7 @@
     <button id="close-sidebar-btn" class="icon-btn">&times;</button>
   </div>
   <nav class="sidebar-nav">
-    <a href="${pageContext.request.contextPath}/VistaRecordatorios.jsp">Recordatorios</a>
+    <a href="${pageContext.request.contextPath}/recordatorios">Recordatorios</a>
     <a href="${pageContext.request.contextPath}/resumen_financiero.jsp">Reportes</a>
 
   </nav>

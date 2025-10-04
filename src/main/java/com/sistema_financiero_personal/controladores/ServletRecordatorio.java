@@ -53,12 +53,12 @@ public class ServletRecordatorio extends HttpServlet {
 
         String method = request.getParameter("_method");
 
-        if ("/eliminar".equals(action)) {
-            eliminarRecordatorio(request, response);
+        if ("/borrar".equals(action)) {
+            borrarRecordatorio(request, response);
         } else if ("PUT".equalsIgnoreCase(method)) {
             actualizarRecordatorio(request, response);
         } else {
-            insertarRecordatorio(request, response);
+            crearRecordatorio(request, response);
         }
     }
 
@@ -103,11 +103,11 @@ public class ServletRecordatorio extends HttpServlet {
         return new Recordatorio(fechaInicio, fechaFin, descripcion, recurrencia, monto, diasAnticipacion);
     }
 
-    private void insertarRecordatorio(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    private void crearRecordatorio(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         try {
             Recordatorio nuevoRecordatorio = construirRecordatorioDesdeRequest(request);
 
-            servicioRecordatorio.registrarRecordatorio(
+            servicioRecordatorio.crearRecordatorio(
                     nuevoRecordatorio.getFechaInicio(),
                     nuevoRecordatorio.getFechaFin(),
                     nuevoRecordatorio.getDescripcion(),
@@ -141,7 +141,7 @@ public class ServletRecordatorio extends HttpServlet {
         }
     }
 
-    private void eliminarRecordatorio(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void borrarRecordatorio(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             Long id = Long.parseLong(request.getParameter("id"));
             servicioRecordatorio.borrarRecordatorio(id);

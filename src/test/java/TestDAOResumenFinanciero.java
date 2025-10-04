@@ -26,7 +26,7 @@ public class TestDAOResumenFinanciero {
         resumenFinanciero.setGastosTotales(gastos);
         resumenFinanciero.setAhorroNeto(ingresos-gastos);
 
-        daoResumenFinanciero.guardar(resumenFinanciero);
+        daoResumenFinanciero.crear(resumenFinanciero);
 
         List<ResumenFinanciero> resumenes = daoResumenFinanciero.listar();
 

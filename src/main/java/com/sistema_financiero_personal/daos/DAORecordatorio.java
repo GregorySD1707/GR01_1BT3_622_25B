@@ -9,8 +9,8 @@ import java.util.List;
 
 import com.sistema_financiero_personal.modelos.Recordatorio;
 
-public class RecordatorioDAO extends BaseDAO<Recordatorio>{
-    public RecordatorioDAO(){
+public class DAORecordatorio extends DAOBase<Recordatorio> {
+    public DAORecordatorio(){
         super(Recordatorio.class);
     }
 
