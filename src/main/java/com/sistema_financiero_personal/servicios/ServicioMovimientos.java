@@ -51,6 +51,19 @@ public class ServicioMovimientos {
         return cartera;
     }
 
+    // Nuevos métodos de totales
+    public double obtenerIngresosTotales() {
+        return movimientoDAO.sumIngresos();
+    }
+
+    public double obtenerGastosTotales() {
+        return movimientoDAO.sumGastos();
+    }
+
+    public double obtenerSaldoActualTotal() {
+        return carteraDAO.sumSaldoActual();
+    }
+
     private void validarMonto(double monto) {
         if (monto <= 0) throw new IllegalArgumentException("El monto debe ser positivo");
     }

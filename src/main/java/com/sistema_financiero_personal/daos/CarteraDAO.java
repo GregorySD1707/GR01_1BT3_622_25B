@@ -25,5 +25,11 @@ public class CarteraDAO extends DAOBase<Cartera> {
         crear(nueva);
         return buscarPorNombre(nombre);
     }
-}
 
+    public double sumSaldoActual() {
+        return executeQuery(session -> session.createQuery(
+                "select coalesce(sum(c.saldoActual), 0) from Cartera c",
+                Double.class
+        ).getSingleResult());
+    }
+}
