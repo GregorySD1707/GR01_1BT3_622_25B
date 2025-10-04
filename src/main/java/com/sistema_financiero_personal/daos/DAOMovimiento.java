@@ -2,8 +2,8 @@ package com.sistema_financiero_personal.daos;
 
 import com.sistema_financiero_personal.modelos.Movimiento;
 
-public class MovimientoDAO extends DAOBase<Movimiento> {
-    public MovimientoDAO() { super(Movimiento.class); }
+public class DAOMovimiento extends DAOBase<Movimiento> {
+    public DAOMovimiento() { super(Movimiento.class); }
 
     public double sumIngresos() {
         return executeQuery(session -> session.createQuery(
