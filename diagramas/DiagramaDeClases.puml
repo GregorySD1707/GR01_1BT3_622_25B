@@ -1,0 +1,159 @@
+@startuml
+
+' Título del Diagrama
+title Arquitectura de Aplicación de Finanzas Personales
+
+' --- Configuración Visual ---
+skinparam classAttributeIconSize 0
+skinparam package {
+  BackgroundColor LightGray
+  BorderColor Gray
+}
+
+' --- Capa de Acceso a Datos (Base) ---
+package "Capa de Datos (DAO)" <<Database>> {
+  abstract class BaseDAO <<abstract>> {
+    + crear(obj: Obj)
+    + listar(): List
+    + actualizar(obj: Obj)
+    + eliminar(id: String)
+    + buscarPorID(id: String): Obj
+  }
+}
+
+' --- Módulo Principal de la Aplicación ---
+class Inicio
+
+' --- Módulo de Movimientos ---
+package "Gestión de Movimientos" #LightBlue {
+  class ControladorMovimientos {
+    + registrarIngreso(monto: double, desc: String): void
+    + registrarGasto(monto: double, desc: String): void
+    + actualizarCartera(monto: double): void
+  }
+
+  abstract class Movimiento <<abstract>> {
+    - id: String
+    - monto: double
+    - fecha: Date
+    - descripcion: String
+    - categoria: String
+  }
+
+  class Ingreso
+  class Gasto
+
+  class Cartera {
+    - nombre: String
+    - saldoActual: double
+    - tipo: String
+    + actualizarCartera(monto: double): void
+  }
+
+  ' DAOs del módulo
+  class MovimientoDAO
+  class CarteraDAO
+}
+
+' --- Módulo de Deudas ---
+package "Gestión de Deudas" #LightGreen {
+  class ControladorDeudas {
+    + registrarDeuda(monto: double, acreedor: String, ...): void
+    + abonarADeuda(idDeuda: String, monto: double): void
+  }
+
+  class DeudaPrestamo {
+    - id: String
+    - montoTotal: double
+    - montoPagado: double
+    + registrarAbono(monto: double)
+  }
+
+  ' DAO del módulo
+  class DeudaPrestamoDAO
+}
+
+' --- Módulo de Recordatorios ---
+package "Recordatorios" #LightYellow {
+  class ControladorRecordatorios {
+    + registrarRecordatorio(): Recordatorio
+    + listarRecordatorios(): List
+    + eliminarRecordatorio(int, String)
+  }
+
+  class Recordatorio {
+    - fecha: Date
+    - esRecurrente: boolean
+    - descripcion: String
+  }
+
+  ' DAO del módulo
+  class RecordatorioDAO
+}
+
+' --- Módulo de Resumen ---
+package "Resumen Financiero" #LightSalmon {
+  class ControladorResumenFinanciero {
+    + registrarResumenFinanciero(): ResumenFinanciero
+    + consultarResumenFinanciero(id: String): ResumenFinanciero
+    + subirArchivo()
+    + procesarInformacion()
+  }
+
+  class ResumenFinanciero {
+    - ingresosTotales: double
+    - gastosTotales: double
+    - ahorroNeto: double
+  }
+
+  ' DAO del módulo
+  class ResumenFinancieroDAO
+}
+
+
+' ===================================
+'      DEFINICIÓN DE RELACIONES
+' ===================================
+
+' --- Relaciones del Nivel Superior (Inicio -> Controladores) ---
+Inicio o-- ControladorMovimientos
+Inicio o-- ControladorDeudas
+Inicio o-- ControladorRecordatorios
+Inicio o-- ControladorResumenFinanciero
+
+
+' --- Relaciones dentro del paquete de Movimientos ---
+ControladorMovimientos ..> Movimiento
+ControladorMovimientos ..> Cartera
+ControladorMovimientos *-- MovimientoDAO
+ControladorMovimientos *-- CarteraDAO
+Movimiento <|-- Ingreso
+Movimiento <|-- Gasto
+
+
+' --- Relaciones dentro del paquete de Deudas ---
+ControladorDeudas ..> DeudaPrestamo
+ControladorDeudas *-- DeudaPrestamoDAO
+
+
+' --- Relaciones dentro de otros paquetes ---
+ControladorRecordatorios ..> Recordatorio
+ControladorRecordatorios *-- RecordatorioDAO
+ControladorResumenFinanciero ..> ResumenFinanciero
+ControladorResumenFinanciero *-- ResumenFinancieroDAO
+
+
+' --- Relaciones ENTRE paquetes (Colaboraciones) ---
+' Pagar una deuda USA el controlador de movimientos para registrar el gasto
+ControladorDeudas ..> ControladorMovimientos
+
+
+' --- Herencia de la Capa de Datos (DAO) ---
+MovimientoDAO --|> BaseDAO
+CarteraDAO --|> BaseDAO
+DeudaPrestamoDAO --|> BaseDAO
+RecordatorioDAO --|> BaseDAO
+ResumenFinancieroDAO --|> BaseDAO
+
+
+@enduml

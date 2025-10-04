@@ -38,7 +38,6 @@ public class ServletRecordatorio extends HttpServlet {
             case "/editar":
                 mostrarFormularioEditar(request, response);
                 break;
-            // CAMBIO 1: Se eliminó el caso "/eliminar" de doGet. Es una operación insegura aquí.
             default:
                 listarRecordatorios(request, response);
                 break;
@@ -49,10 +48,9 @@ public class ServletRecordatorio extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String action = request.getPathInfo();
         if (action == null) {
-            action = "/"; // Por si se envía a /recordatorios
+            action = "/";
         }
 
-        // CAMBIO 2: Se mejora la lógica de enrutamiento para incluir la eliminación.
         String method = request.getParameter("_method");
 
         if ("/eliminar".equals(action)) {
@@ -107,10 +105,8 @@ public class ServletRecordatorio extends HttpServlet {
 
     private void insertarRecordatorio(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         try {
-            // 1. Usamos el método auxiliar para crear el objeto. Esto sigue siendo una buena práctica.
             Recordatorio nuevoRecordatorio = construirRecordatorioDesdeRequest(request);
 
-            // 2. AHORA, pasamos cada valor individualmente al servicio, tal como lo espera.
             servicioRecordatorio.registrarRecordatorio(
                     nuevoRecordatorio.getFechaInicio(),
                     nuevoRecordatorio.getFechaFin(),
@@ -123,7 +119,6 @@ public class ServletRecordatorio extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/recordatorios?exito=creado");
 
         } catch ( DateTimeParseException | IllegalArgumentException e) {
-            // El manejo de errores que ya teníamos sigue siendo válido y funciona bien.
             request.setAttribute("error", "Datos inválidos. Por favor, revisa los campos.");
             Recordatorio datosIngresados = new Recordatorio();
             datosIngresados.setDescripcion(request.getParameter("descripcion"));
@@ -135,7 +130,7 @@ public class ServletRecordatorio extends HttpServlet {
         try {
             Long id = Long.parseLong(request.getParameter("id"));
             Recordatorio recordatorio = construirRecordatorioDesdeRequest(request);
-            recordatorio.setId(id); // Asignamos el ID para la actualización
+            recordatorio.setId(id);
 
             servicioRecordatorio.actualizarRecordatorio(recordatorio);
             response.sendRedirect(request.getContextPath() + "/recordatorios?exito=actualizado");

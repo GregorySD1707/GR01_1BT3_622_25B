@@ -1,13 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- 1. GESTIÓN DEL MENÚ DESPLEGABLE DEL USUARIO (código que ya tenías) ---
     const userMenuButton = document.querySelector('.user-menu .user-avatar');
     const userDropdownMenu = document.querySelector('.user-menu .dropdown-menu');
 
     if (userMenuButton && userDropdownMenu) {
         userMenuButton.addEventListener('click', (event) => {
             event.stopPropagation();
-            // Cierra el otro menú si está abierto
             if (notificationList && notificationList.classList.contains('active')) {
                 notificationList.classList.remove('active');
             }
@@ -15,10 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 2. FILTRO DE BÚSQUEDA EN TIEMPO REAL ---
-    // (Tu código de búsqueda de recordatorios va aquí si lo tienes)
-
-    // --- 3. CÓDIGO PARA LA SIDEBAR (código que ya tenías) ---
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('overlay');
     const openBtn = document.getElementById('sidebar-toggle-btn');
@@ -40,16 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
         overlay.addEventListener('click', closeSidebar);
     }
 
-    // =================================================================
-    // --- 4. NUEVO CÓDIGO PARA NOTIFICACIONES ---
-    // =================================================================
     const notificationBtn = document.querySelector('.notification-btn');
     const notificationList = document.getElementById('notification-list');
     const notificationCountBadge = document.getElementById('notification-count');
 
     if (notificationBtn && notificationList && notificationCountBadge) {
 
-        // (La función fetchNotifications y updateNotificationUI no cambian, siguen igual)
         async function fetchNotifications() {
             try {
                 const response = await fetch(`${CONTEXT_PATH}/api/notificaciones`);
@@ -82,19 +72,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         notificationBtn.addEventListener('click', (event) => {
-            console.log("¡Clic en la campana detectado!");
             event.stopPropagation();
-            // Cierra el otro menú si está abierto
             if (userDropdownMenu && userDropdownMenu.classList.contains('active')) {
                 userDropdownMenu.classList.remove('active');
             }
-            // ===================
-            //  CAMBIO PRINCIPAL
-            // ===================
-            // En lugar de cambiar el estilo 'display', usamos la clase '.active'
             notificationList.classList.toggle('active');
 
-            // Ocultamos el contador solo cuando el menú se activa
             if (notificationList.classList.contains('active')) {
                 notificationCountBadge.style.display = 'none';
             }
@@ -103,15 +86,11 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchNotifications();
     }
 
-    // --- 5. GESTOR GLOBAL DE CLICS PARA CERRAR MENÚS ---
     document.addEventListener('click', () => {
         if (userDropdownMenu && userDropdownMenu.classList.contains('active')) {
             userDropdownMenu.classList.remove('active');
         }
-        // ==============================================
-        //  CAMBIO PRINCIPAL EN EL GESTOR GLOBAL
-        // ==============================================
-        // Ahora también busca la clase '.active' en el menú de notificaciones
+
         if (notificationList && notificationList.classList.contains('active')) {
             notificationList.classList.remove('active');
         }

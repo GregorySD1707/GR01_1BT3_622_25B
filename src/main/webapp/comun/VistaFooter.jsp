@@ -14,7 +14,6 @@
     </div>
 </footer>
 
-<%-- Scripts al final para una carga más eficiente --%>
 <script>
     const CONTEXT_PATH = "${pageContext.request.contextPath}";
 </script>

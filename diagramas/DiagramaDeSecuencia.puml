@@ -1,0 +1,68 @@
+@startuml finanzas_corregido
+
+actor ":Usuario" as usuario
+participant ":Inicio" as inicio
+participant ":ControladorMovimientos" as controladorMovimientos
+participant ":Gasto" as gasto
+participant ":Ingreso" as ingreso
+participant ":MovimientoDAO" as movimientoDAO
+participant ":Cartera" as cartera
+participant ":CarteraDAO" as carteraDAO
+participant ":ControladorDeudas" as controladorDeudas
+participant ":DeudaPrestamo" as deudaPrestamo
+participant ":DeudaPrestamoDAO" as deudaPrestamoDAO
+participant ":ControladorResumenFinanciero" as controladorResumen
+participant ":ResumenFinanciero" as resumen
+participant ":ResumenFinancieroDAO" as resumenDAO
+participant ":ControladorRecordatorios" as controladorRecordatorios
+participant ":Recordatorio" as recordatorio
+participant ":RecordatorioDAO" as recordatorioDAO
+
+== Registrar Ingreso y Gasto ==
+usuario -> inicio: seleccionarRegistrarIngreso()
+inicio -> controladorMovimientos: registrarIngreso(monto, descripcion)
+controladorMovimientos -> movimientoDAO: crear(ingreso)
+controladorMovimientos -> carteraDAO: buscarPorID(idCartera)
+controladorMovimientos -> cartera: actualizarCartera(monto)
+controladorMovimientos -> carteraDAO: actualizar(cartera)
+
+usuario -> inicio: seleccionarRegistrarGasto()
+inicio -> controladorMovimientos: registrarGasto(monto, descripcion)
+controladorMovimientos -> movimientoDAO: crear(gasto)
+controladorMovimientos -> carteraDAO: buscarPorID(idCartera)
+controladorMovimientos -> cartera: actualizarCartera(-monto)
+controladorMovimientos -> carteraDAO: actualizar(cartera)
+
+== Registrar Deuda y abonar a Deuda==
+usuario -> inicio: seleccionarRegistrarDeuda()
+inicio -> controladorDeudas: registrarDeuda(monto, acreedor)
+controladorDeudas -> deudaPrestamoDAO: crear(deudaPrestamo)
+
+usuario -> inicio: seleccionarAbonarDeuda()
+inicio -> controladorDeudas: abonarADeuda(idDeuda, monto)
+controladorDeudas -> deudaPrestamoDAO: buscarPorID(idDeuda)
+controladorDeudas -> deudaPrestamo: registrarAbono(monto)
+controladorDeudas -> deudaPrestamoDAO: actualizar(deudaPrestamo)
+
+controladorDeudas -> controladorMovimientos: registrarGasto(monto, "Abono deuda", "Deudas")
+controladorMovimientos -> movimientoDAO: crear(gasto)
+
+== Generar Resumen Financiero ==
+usuario -> inicio: solicitarResumenMensual()
+inicio -> controladorResumen: subirArchivo()
+controladorResumen -> controladorResumen: procesarInformacion()
+controladorResumen -> resumenDAO: crear(resumen)
+inicio -> controladorResumen: consultarResumenFinanciero()
+
+
+== Gestionar Recordatorios ==
+usuario -> inicio: seleccionarRegistrarRecordatorio()
+inicio -> controladorRecordatorios: RegistrarRecordatorio()
+controladorRecordatorios -> recordatorioDAO: crear(recordatorio)
+
+usuario -> inicio: solicitarListaRecordatorios()
+inicio -> controladorRecordatorios: listaRecordatorios()
+controladorRecordatorios -> recordatorioDAO: listar()
+
+
+@enduml
