@@ -15,7 +15,7 @@
             <h1 class="hero-title">Controla tus finanzas con <span class="text-gradient">EconoMe</span></h1>
             <p class="hero-subtitle">La plataforma inteligente que te ayuda a gestionar tu dinero, planificar tu futuro y alcanzar tus metas financieras de manera sencilla y efectiva.</p>
             <div class="hero-actions">
-                <a href="${pageContext.request.contextPath}/resumen_financiero.jsp" class="btn btn-primary btn-large">
+                <a href="${pageContext.request.contextPath}/VistaResumenFinanciero.jsp" class="btn btn-primary btn-large">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M3 3v18h18"/>
                         <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>

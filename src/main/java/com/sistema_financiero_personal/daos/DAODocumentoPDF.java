@@ -8,7 +8,7 @@ public class DAODocumentoPDF extends DAOBase<DocumentoPDF> {
         super(DocumentoPDF.class);
     }
 
-    public Long guardarPDF(String nombre, byte[] archivoPdf) {
+    public DocumentoPDF guardarPDF(String nombre, byte[] archivoPdf) {
         System.out.println("=== DEBUG ANTES DE GUARDAR ===");
         System.out.println("Nombre: " + nombre);
         System.out.println("Tamaño byte[]: " + archivoPdf.length);
@@ -27,6 +27,6 @@ public class DAODocumentoPDF extends DAOBase<DocumentoPDF> {
         });
 
         System.out.println("ID después de persist: " + documento.getId());
-        return documento.getId();
+        return documento;
     }
 }

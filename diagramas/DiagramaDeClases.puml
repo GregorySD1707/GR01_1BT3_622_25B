@@ -173,11 +173,23 @@ package "Recordatorios" #LightYellow {
 
 ' --- Módulo de Resumen ---
 package "Resumen Financiero" #LightSalmon {
-  class ControladorResumenFinanciero {
-    + registrarResumenFinanciero(): ResumenFinanciero
-    + consultarResumenFinanciero(id: String): ResumenFinanciero
-    + subirArchivo()
-    + procesarInformacion()
+  class ServletResumenFinanciero {
+    - daoResumenFinanciero: DAOResumenFinanciero
+    - daoDocumentoPDF: DAODocumentoPDF
+    + subirArchivo(): void
+    + procesarInformacion(): List<String>
+    + registrarResumenFinanciero(informacionProcesada: List<String>): void
+    + obtenerResumenesFinancieros(): void
+  }
+
+  class ServletDocumentoPDF {
+    - daoDocumentoPDF: DAODocumentoPDF
+    + descargarDocumentoPDF(): void
+  }
+
+  class ServicioResumenFinanciero {
+    + extraerMonto(textoPDF: String): void
+    + extraerFecha(textoPDF: String): void
   }
 
   class ResumenFinanciero {
@@ -200,7 +212,7 @@ Inicio o-- ServletDeudas
 Inicio o-- ServletMovimientos
 Inicio "1" o-- "1" ServletRecordatorio
 Inicio "1" o-- "1" ServletNotificacion
-Inicio o-- ControladorResumenFinanciero
+Inicio "1"o--"1" ServletResumenFinanciero
 
 
 ' --- Relaciones dentro del paquete de Movimientos ---
@@ -220,9 +232,22 @@ ServletRecordatorio "1" ..> "*" Recurrencia : utiliza
 ServletNotificacion "1" *-- "1" RecordatorioDAO : contiene
 ServletNotificacion "1" ..> "*" Recordatorio : consulta
 Recordatorio "1" *-- "1" Recurrencia : tiene
-RecordatorioDAO "1" ..> "*" Recordatorio : persiste
-ControladorResumenFinanciero ..> ResumenFinanciero
-ControladorResumenFinanciero *-- ResumenFinancieroDAO
+DAORecordatorio "1" ..> "*" Recordatorio : persiste
+
+' --- Relaciones dentro del paquete de Resumen Financiero ---
+Inicio "1"o--"1" ServletDocumentoPDF
+
+ServletResumenFinanciero "1"..> "*" ResumenFinanciero : maneja
+ServletResumenFinanciero "1"*-- "1" DAOResumenFinanciero: contiene
+ServletResumenFinanciero "*"..> "1" ServicioResumenFinanciero: usa
+ServletResumenFinanciero "1"o--"1" DAODocumentoPDF: agrega
+ServletDocumentoPDF "1"--> "1" DAODocumentoPDF: tiene
+
+DAOResumenFinanciero "1"..> "*" ResumenFinanciero: maneja
+DAODocumentoPDF "1"..> "*" DocumentoPDF: maneja
+DAODocumentoPDF --|> DAOBase
+
+ResumenFinanciero "*"-->"1" DocumentoPDF: tiene
 
 
 ' --- Relaciones ENTRE paquetes (Colaboraciones) ---
