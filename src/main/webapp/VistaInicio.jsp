@@ -31,6 +31,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     </svg>
                     Mis recordatorios
                 </a>
+                <a href="${pageContext.request.contextPath}/deudas?accion=listar" class="btn btn-secondary btn-large">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="8" rx="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    Deudas y Préstamos
+                </a>
             </div>
         </div>
         <div class="hero-visual">

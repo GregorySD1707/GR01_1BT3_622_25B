@@ -1,7 +1,6 @@
 <%@ page isELIgnored="false" %>
 
 <%-- RUTA: /comun/VistaHeader.jsp --%>
-<%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="es">
 <head>
