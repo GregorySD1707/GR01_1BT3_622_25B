@@ -2,22 +2,22 @@
 
 actor ":Usuario" as usuario
 participant ":Inicio" as inicio
+participant ":ServletRecordatorio" as servletRecordatorio
+participant ":ServletNotificacion" as servletNotificacion
+participant ":ControladorResumenFinanciero" as controladorResumen
+participant ":ControladorDeudas" as controladorDeudas
 participant ":ServicioMovimientos" as servicioMovimientos
 participant ":Gasto" as gasto
 participant ":Ingreso" as ingreso
-participant ":DAOMovimiento" as daoMovimiento
 participant ":Cartera" as cartera
-participant ":CarteraDAO" as carteraDAO
-participant ":ControladorDeudas" as controladorDeudas
 participant ":DeudaPrestamo" as deudaPrestamo
-participant ":DeudaPrestamoDAO" as deudaPrestamoDAO
-participant ":ControladorResumenFinanciero" as controladorResumen
 participant ":ResumenFinanciero" as resumen
-participant ":ResumenFinancieroDAO" as resumenDAO
-participant ":ServletRecordatorio" as servletRecordatorio
-participant ":ServletNotificacion" as servletNotificacion
 participant ":Recordatorio" as recordatorio
-participant ":DAORecordatorio" as DAOrecordatorioO
+participant ":DAOMovimiento" as daoMovimiento
+participant ":DAOCartera" as carteraDAO
+participant ":DeudaPrestamoDAO" as deudaPrestamoDAO
+participant ":ResumenFinancieroDAO" as resumenDAO
+participant ":DAORecordatorio" as DAOrecordatorio
 
 == Registrar Ingreso y Gasto ==
 usuario -> inicio: seleccionarRegistrarIngreso()

@@ -59,7 +59,7 @@ package "Gestion de Movimientos" #LightBlue {
     + sumGastos(): double
   }
 
-  class CarteraDAO {
+  class DAOCartera {
     + buscarPorNombre(nombre: String): Cartera
     + obtenerOCrear(nombre: String, tipo: String): Cartera
     + sumSaldoActual(): double
@@ -97,7 +97,7 @@ package "Recordatorios" #LightYellow {
   }
 
   class ServletNotificacion  {
-    - recordatorioDAO: RecordatorioDAO
+    - recordatorioDAO: DAORecordatorio
     - gson: Gson
     + procesarNotificaciones()
   }
@@ -163,7 +163,7 @@ Inicio o-- ControladorResumenFinanciero
 ServicioMovimientos ..> Movimiento
 ServicioMovimientos ..> Cartera
 ServicioMovimientos *-- DAOMovimiento
-ServicioMovimientos *-- CarteraDAO
+ServicioMovimientos *-- DAOCartera
 Movimiento <|-- Ingreso
 Movimiento <|-- Gasto
 
@@ -193,7 +193,7 @@ ControladorDeudas ..> ServicioMovimientos
 ' --- Herencia de la Capa de Datos (DAO) ---
 DAOBase <|-- DAORecordatorio
 DAOBase <|-- DAOMovimiento
-DAOBase <|-- CarteraDAO
+DAOBase <|-- DAOCartera
 DAOBase <|-- DeudaPrestamoDAO
 DAOBase <|-- ResumenFinancieroDAO
 
