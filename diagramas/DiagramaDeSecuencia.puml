@@ -2,10 +2,10 @@
 
 actor ":Usuario" as usuario
 participant ":Inicio" as inicio
-participant ":ControladorMovimientos" as controladorMovimientos
+participant ":ServicioMovimientos" as servicioMovimientos
 participant ":Gasto" as gasto
 participant ":Ingreso" as ingreso
-participant ":MovimientoDAO" as movimientoDAO
+participant ":DAOMovimiento" as daoMovimiento
 participant ":Cartera" as cartera
 participant ":CarteraDAO" as carteraDAO
 participant ":ControladorDeudas" as controladorDeudas
@@ -21,18 +21,42 @@ participant ":DAORecordatorio" as DAOrecordatorioO
 
 == Registrar Ingreso y Gasto ==
 usuario -> inicio: seleccionarRegistrarIngreso()
-inicio -> controladorMovimientos: registrarIngreso(monto, descripcion)
-controladorMovimientos -> movimientoDAO: crear(ingreso)
-controladorMovimientos -> carteraDAO: buscarPorID(idCartera)
-controladorMovimientos -> cartera: actualizarCartera(monto)
-controladorMovimientos -> carteraDAO: actualizar(cartera)
+inicio -> servicioMovimientos: registrarIngreso(monto, descripcion, categoria, nombreCartera)
+servicioMovimientos -> daoMovimiento: crear(ingreso)
+daoMovimiento --> servicioMovimientos: ingresoPersistido
+servicioMovimientos -> carteraDAO: obtenerOCrear(nombreCartera, tipoPreferido)
+carteraDAO --> servicioMovimientos: cartera
+servicioMovimientos -> cartera: actualizarCartera(monto)
+servicioMovimientos -> carteraDAO: actualizar(cartera)
+servicioMovimientos --> inicio: ingresoRegistrado
+inicio --> usuario: mostrarConfirmacionIngreso
 
 usuario -> inicio: seleccionarRegistrarGasto()
-inicio -> controladorMovimientos: registrarGasto(monto, descripcion)
-controladorMovimientos -> movimientoDAO: crear(gasto)
-controladorMovimientos -> carteraDAO: buscarPorID(idCartera)
-controladorMovimientos -> cartera: actualizarCartera(-monto)
-controladorMovimientos -> carteraDAO: actualizar(cartera)
+inicio -> servicioMovimientos: registrarGasto(monto, descripcion, categoria, nombreCartera)
+servicioMovimientos -> daoMovimiento: crear(gasto)
+daoMovimiento --> servicioMovimientos: gastoPersistido
+servicioMovimientos -> carteraDAO: obtenerOCrear(nombreCartera, tipoPreferido)
+carteraDAO --> servicioMovimientos: cartera
+servicioMovimientos -> cartera: actualizarCartera(-monto)
+servicioMovimientos -> carteraDAO: actualizar(cartera)
+servicioMovimientos --> inicio: gastoRegistrado
+inicio --> usuario: mostrarConfirmacionGasto
+
+== Consultar Totales de Movimientos ==
+usuario -> inicio: solicitarTotales()
+inicio -> servicioMovimientos: obtenerIngresosTotales()
+servicioMovimientos -> daoMovimiento: sumIngresos()
+daoMovimiento --> servicioMovimientos: totalIngresos
+servicioMovimientos --> inicio: totalIngresos
+inicio -> servicioMovimientos: obtenerGastosTotales()
+servicioMovimientos -> daoMovimiento: sumGastos()
+daoMovimiento --> servicioMovimientos: totalGastos
+servicioMovimientos --> inicio: totalGastos
+inicio -> servicioMovimientos: obtenerSaldoActualTotal()
+servicioMovimientos -> carteraDAO: sumSaldoActual()
+carteraDAO --> servicioMovimientos: saldoTotal
+servicioMovimientos --> inicio: saldoTotal
+inicio --> usuario: mostrarTotales(inIngresos, inGastos, saldo)
 
 == Registrar Deuda y abonar a Deuda==
 usuario -> inicio: seleccionarRegistrarDeuda()
@@ -45,8 +69,8 @@ controladorDeudas -> deudaPrestamoDAO: buscarPorID(idDeuda)
 controladorDeudas -> deudaPrestamo: registrarAbono(monto)
 controladorDeudas -> deudaPrestamoDAO: actualizar(deudaPrestamo)
 
-controladorDeudas -> controladorMovimientos: registrarGasto(monto, "Abono deuda", "Deudas")
-controladorMovimientos -> movimientoDAO: crear(gasto)
+controladorDeudas -> servicioMovimientos: registrarGasto(monto, "Abono deuda", "Deudas")
+servicioMovimientos -> daoMovimiento: crear(gasto)
 
 == Generar Resumen Financiero ==
 usuario -> inicio: solicitarResumenMensual()

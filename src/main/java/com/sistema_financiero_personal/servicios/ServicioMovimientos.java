@@ -1,7 +1,7 @@
 package com.sistema_financiero_personal.servicios;
 
 import com.sistema_financiero_personal.daos.CarteraDAO;
-import com.sistema_financiero_personal.daos.MovimientoDAO;
+import com.sistema_financiero_personal.daos.DAOMovimiento;
 import com.sistema_financiero_personal.modelos.Cartera;
 import com.sistema_financiero_personal.modelos.Movimiento;
 
@@ -10,15 +10,15 @@ import java.util.Objects;
 
 public class ServicioMovimientos {
 
-    private final MovimientoDAO movimientoDAO;
+    private final DAOMovimiento movimientoDAO;
     private final CarteraDAO carteraDAO;
 
     public ServicioMovimientos() {
-        this.movimientoDAO = new MovimientoDAO();
+        this.movimientoDAO = new DAOMovimiento();
         this.carteraDAO = new CarteraDAO();
     }
 
-    public ServicioMovimientos(MovimientoDAO movimientoDAO, CarteraDAO carteraDAO) {
+    public ServicioMovimientos(DAOMovimiento movimientoDAO, CarteraDAO carteraDAO) {
         this.movimientoDAO = movimientoDAO;
         this.carteraDAO = carteraDAO;
     }
@@ -49,6 +49,19 @@ public class ServicioMovimientos {
         cartera.actualizarCartera(delta);
         carteraDAO.actualizar(cartera);
         return cartera;
+    }
+
+    // Nuevos métodos de totales
+    public double obtenerIngresosTotales() {
+        return movimientoDAO.sumIngresos();
+    }
+
+    public double obtenerGastosTotales() {
+        return movimientoDAO.sumGastos();
+    }
+
+    public double obtenerSaldoActualTotal() {
+        return carteraDAO.sumSaldoActual();
     }
 
     private void validarMonto(double monto) {

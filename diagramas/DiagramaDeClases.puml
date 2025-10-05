@@ -22,18 +22,23 @@ package "Capa de Datos (DAO)" <<Database>> {
 ' --- Módulo Principal de la Aplicación ---
 class Inicio
 
-' --- Módulo de Movimientos ---
-package "Gestión de Movimientos" #LightBlue {
-  class ControladorMovimientos {
-    + registrarIngreso(monto: double, desc: String): void
-    + registrarGasto(monto: double, desc: String): void
-    + actualizarCartera(monto: double): void
+' --- Modulo de Movimientos ---
+package "Gestion de Movimientos" #LightBlue {
+  class ServicioMovimientos {
+    - movimientoDAO: DAOMovimiento
+    - carteraDAO: CarteraDAO
+    + registrarIngreso(monto: double, descripcion: String, categoria: String, nombreCartera: String): Movimiento
+    + registrarGasto(monto: double, descripcion: String, categoria: String, nombreCartera: String): Movimiento
+    + actualizarCartera(delta: double, nombreCartera: String, tipoSiNoExiste: String): Cartera
+    + obtenerIngresosTotales(): double
+    + obtenerGastosTotales(): double
+    + obtenerSaldoActualTotal(): double
   }
 
   abstract class Movimiento <<abstract>> {
-    - id: String
+    - id: Long
     - monto: double
-    - fecha: Date
+    - fecha: LocalDateTime
     - descripcion: String
     - categoria: String
   }
@@ -42,17 +47,24 @@ package "Gestión de Movimientos" #LightBlue {
   class Gasto
 
   class Cartera {
+    - id: Long
     - nombre: String
     - saldoActual: double
     - tipo: String
-    + actualizarCartera(monto: double): void
+    + actualizarCartera(delta: double): void
   }
 
-  ' DAOs del módulo
-  class MovimientoDAO
-  class CarteraDAO
-}
+  class DAOMovimiento {
+    + sumIngresos(): double
+    + sumGastos(): double
+  }
 
+  class CarteraDAO {
+    + buscarPorNombre(nombre: String): Cartera
+    + obtenerOCrear(nombre: String, tipo: String): Cartera
+    + sumSaldoActual(): double
+  }
+}
 ' --- Módulo de Deudas ---
 package "Gestión de Deudas" #LightGreen {
   class ControladorDeudas {
@@ -140,7 +152,7 @@ package "Resumen Financiero" #LightSalmon {
 ' ===================================
 
 ' --- Relaciones del Nivel Superior (Inicio -> Controladores) ---
-Inicio o-- ControladorMovimientos
+Inicio o-- ServicioMovimientos
 Inicio o-- ControladorDeudas
 Inicio "1" o-- "1" ServletRecordatorio
 Inicio "1" o-- "1" ServletNotificacion
@@ -148,10 +160,10 @@ Inicio o-- ControladorResumenFinanciero
 
 
 ' --- Relaciones dentro del paquete de Movimientos ---
-ControladorMovimientos ..> Movimiento
-ControladorMovimientos ..> Cartera
-ControladorMovimientos *-- MovimientoDAO
-ControladorMovimientos *-- CarteraDAO
+ServicioMovimientos ..> Movimiento
+ServicioMovimientos ..> Cartera
+ServicioMovimientos *-- DAOMovimiento
+ServicioMovimientos *-- CarteraDAO
 Movimiento <|-- Ingreso
 Movimiento <|-- Gasto
 
@@ -174,13 +186,13 @@ ControladorResumenFinanciero *-- ResumenFinancieroDAO
 
 
 ' --- Relaciones ENTRE paquetes (Colaboraciones) ---
-' Pagar una deuda USA el controlador de movimientos para registrar el gasto
-ControladorDeudas ..> ControladorMovimientos
+' Pagar una deuda usa el servicio de movimientos para registrar el gasto
+ControladorDeudas ..> ServicioMovimientos
 
 
 ' --- Herencia de la Capa de Datos (DAO) ---
 DAOBase <|-- DAORecordatorio
-DAOBase <|-- MovimientoDAO
+DAOBase <|-- DAOMovimiento
 DAOBase <|-- CarteraDAO
 DAOBase <|-- DeudaPrestamoDAO
 DAOBase <|-- ResumenFinancieroDAO
