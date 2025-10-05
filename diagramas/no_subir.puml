@@ -1,8 +1,19 @@
 @startuml
 == Generar Resumen Financiero ==
 actor ":Usuario" as usuario
+participant ":Inicio" as inicio
+participant ":ServletResumenFinanciero" as servletResumen
+participant ":DocumentoPDF" as documentoPDF
+participant ":DAODocumentoPDF" as daoDocumentoPDF
+participant ":ServicioResumenFinanciero" as servicioResumen
+participant ":ServletDocumentoPDF" as servletDocumentoPDF
+participant ":ResumenFinanciero" as resumen
+participant ":ResumenFinancieroDAO" as resumenDAO
 
-usuario -> inicio: solicitarResumenMensual()
+
+
+
+usuario -> inicio: generarResumenFinanciero()
 inicio -> servletResumen: subirArchivo()
 servletResumen -> documentoPDF: new DocumentoPDF(): DocumentoPDF
 servletResumen -> daoDocumentoPDF: crear(documento: DocumentoPDF)
@@ -12,9 +23,10 @@ servicioResumen --> servletResumen: fecha
 servletResumen -> servicioResumen: extraerMonto(textoPDF: String)
 servicioResumen --> servletResumen: monto
 servletResumen -> servletResumen: registrarResumenFinanciero(informacionProcesada: List<String>)
-servletResumen -> ResumenFinanciero: new ResumenFinanciero(): ResumenFinanciero
+servletResumen -> resumen: new ResumenFinanciero(): ResumenFinanciero
 servletResumen -> resumenDAO: crear(resumen: ResumenFinanciero)
-usuario -> inicio: solicitarResumenes()
+== Visualizar Historial de Resúmenes Financieros ==
+usuario -> inicio: mostrarHistorialDeResumenesFinancieros()
 inicio -> servletResumen: obtenerResumenesFinancieros()
 servletResumen -> resumenDAO: listar()
 resumenDAO --> servletResumen: List<ResumenFinanciero>

@@ -140,7 +140,10 @@ public class ServletResumenFinanciero extends HttpServlet {
 
         // Guardar PDF en la base de datos
         String nombre = filePart.getSubmittedFileName();
-        DocumentoPDF documentoPDF = DAODocumentoPDF.guardarPDF(nombre, archivoBytes);
+        Long tamanio = (long) archivoBytes.length;
+        DocumentoPDF documentoPDF = new DocumentoPDF(nombre, archivoBytes, tamanio);
+        DAODocumentoPDF.guardarPDF(documentoPDF);
+
 
         // 2. Crear directorio temporal si no existe
         String uploadPath = getServletContext().getRealPath("") + File.separator + "temp";

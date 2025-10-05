@@ -8,25 +8,12 @@ public class DAODocumentoPDF extends DAOBase<DocumentoPDF> {
         super(DocumentoPDF.class);
     }
 
-    public DocumentoPDF guardarPDF(String nombre, byte[] archivoPdf) {
-        System.out.println("=== DEBUG ANTES DE GUARDAR ===");
-        System.out.println("Nombre: " + nombre);
-        System.out.println("Tamaño byte[]: " + archivoPdf.length);
-        System.out.println("Es null? " + (archivoPdf == null));
-        System.out.println("Tipo de clase: " + archivoPdf.getClass().getName());
-
-        Long tamanio = (long) archivoPdf.length;
-        DocumentoPDF documento = new DocumentoPDF(nombre, archivoPdf, tamanio);
-
-        System.out.println("ID antes de persist: " + documento.getId());
-        System.out.println("archivoPdf en objeto: " + (documento.getArchivoPdf() != null));
-
+    public void guardarPDF(DocumentoPDF documentoPDF) {
+        // Forzar a Hibernate a ejecutar el SQL inmediatamente dentro de la transacción, permitiendo que el ID esté disponible
         executeInTransaction(session -> {
-            session.persist(documento);
+            session.persist(documentoPDF);
             session.flush();
         });
-
-        System.out.println("ID después de persist: " + documento.getId());
-        return documento;
     }
 }
+

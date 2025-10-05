@@ -199,7 +199,12 @@ package "Resumen Financiero" #LightSalmon {
   }
 
   ' DAO del módulo
-  class ResumenFinancieroDAO
+
+  class DocumentoPDF
+
+  class DAODocumentoPDF
+
+  class DAOResumenFinanciero
 }
 
 
