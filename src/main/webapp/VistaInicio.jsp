@@ -12,6 +12,7 @@
 <section class="hero-section">
     <div class="hero-content">
         <div class="hero-text">
+            <h2>Saldo actual: $${saldoActual}</h2>
             <h1 class="hero-title">Controla tus finanzas con <span class="text-gradient">EconoMe</span></h1>
             <p class="hero-subtitle">La plataforma inteligente que te ayuda a gestionar tu dinero, planificar tu futuro y alcanzar tus metas financieras de manera sencilla y efectiva.</p>
             <div class="hero-actions">

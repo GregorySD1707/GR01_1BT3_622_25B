@@ -10,7 +10,6 @@
         <property name="hibernate.connection.username">postgres</property>
         <property name="hibernate.connection.password">nuMTJvXcrxNwkgylGuQqhMRqfUljeMqS</property>
 
-        <!-- Dialecto PostgreSQL -->
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
 
         <!-- Mostrar SQL -->
@@ -20,6 +19,7 @@
         <property name="hibernate.hbm2ddl.auto">update</property>
 
         <!-- Entidades -->
+        <!-- Dialecto PostgreSQL --><mapping class="com.sistema_financiero_personal.modelos.DocumentoPDF"/>
         <mapping class="com.sistema_financiero_personal.modelos.Recordatorio"/>
         <mapping class="com.sistema_financiero_personal.modelos.ResumenFinanciero"/>
         <!-- Nuevas entidades de movimientos y cartera -->

@@ -30,7 +30,7 @@ public class ResumenFinanciero {
     private LocalDate fechaPeriodoActual;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "documento_pdf_id", nullable = false)
+    @JoinColumn(name = "documento_pdf_id", nullable = true)
     private DocumentoPDF documentoPDF;
 
     @Column(name = "fecha_creacion", nullable = false)
