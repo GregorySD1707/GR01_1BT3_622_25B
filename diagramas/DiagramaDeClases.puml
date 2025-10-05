@@ -87,6 +87,7 @@ package "Recordatorios" #LightYellow {
   class ServletNotificacion  {
     - recordatorioDAO: RecordatorioDAO
     - gson: Gson
+    + procesarNotificaciones()
   }
 
   class Recordatorio {
@@ -109,7 +110,7 @@ package "Recordatorios" #LightYellow {
     ANUAL
   }
 
-  class RecordatorioDAO {
+  class DAORecordatorio {
     + listarActivos(): List<Recordatorio>
   }
 }
@@ -161,13 +162,13 @@ ControladorDeudas *-- DeudaPrestamoDAO
 
 
 ' --- Relaciones dentro del paquete de Recordatorios ---
-ServletRecordatorio "1" *-- "1" RecordatorioDAO : contiene
+ServletRecordatorio "1" *-- "1" DAORecordatorio : contiene
 ServletRecordatorio "1" ..> "*" Recordatorio : maneja
 ServletRecordatorio "1" ..> "*" Recurrencia : utiliza
-ServletNotificacion "1" *-- "1" RecordatorioDAO : contiene
+ServletNotificacion "1" *-- "1" DAORecordatorio : contiene
 ServletNotificacion "1" ..> "*" Recordatorio : consulta
 Recordatorio "1" *-- "1" Recurrencia : tiene
-RecordatorioDAO "1" ..> "*" Recordatorio : persiste
+DAORecordatorio "1" ..> "*" Recordatorio : persiste
 ControladorResumenFinanciero ..> ResumenFinanciero
 ControladorResumenFinanciero *-- ResumenFinancieroDAO
 
@@ -178,7 +179,7 @@ ControladorDeudas ..> ControladorMovimientos
 
 
 ' --- Herencia de la Capa de Datos (DAO) ---
-DAOBase <|-- RecordatorioDAO
+DAOBase <|-- DAORecordatorio
 DAOBase <|-- MovimientoDAO
 DAOBase <|-- CarteraDAO
 DAOBase <|-- DeudaPrestamoDAO

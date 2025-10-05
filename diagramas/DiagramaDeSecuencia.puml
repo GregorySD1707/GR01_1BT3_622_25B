@@ -17,7 +17,7 @@ participant ":ResumenFinancieroDAO" as resumenDAO
 participant ":ServletRecordatorio" as servletRecordatorio
 participant ":ServletNotificacion" as servletNotificacion
 participant ":Recordatorio" as recordatorio
-participant ":RecordatorioDAO" as recordatorioDAO
+participant ":DAORecordatorio" as DAOrecordatorioO
 
 == Registrar Ingreso y Gasto ==
 usuario -> inicio: seleccionarRegistrarIngreso()
@@ -61,46 +61,59 @@ inicio -> controladorResumen: consultarResumenFinanciero()
 == Crear Recordatorio ==
 
 usuario -> inicio: seleccionarCrearRecordatorio()
-servletRecordatorio -> servletRecordatorio: mostrarFormulario(request, response, recordatorio)
-servletRecordatorio --> usuario: VistaFormularioRecordatorio.jsp
+inicio -> servletRecordatorio: solicitarFormularioNuevoRecordatorio()
+servletRecordatorio -> servletRecordatorio: mostrarFormulario(recordatorio)
+servletRecordatorio --> inicio: VistaFormularioRecordatorio.jsp
+inicio --> usuario: mostrarFormulario()
 
-usuario --> servletRecordatorio: (datos del formulario)
-servletRecordatorio -> servletRecordatorio: construirRecordatorioDesdeRequest(request)
-servletRecordatorio -> servletRecordatorio: crearRecordatorio(request, response)
-servletRecordatorio -> recordatorio: new Recordatorio(fechaInicio, fechaFin, descripcion, recurrencia, monto, diasDeAnticipacion)
-servletRecordatorio -> recordatorioDAO: crear(recordatorio)
-servletRecordatorio --> usuario: redirect /recordatorios?exito=creado
+usuario -> inicio: completarDatosRecordatorio()
+inicio -> servletRecordatorio: enviarDatosRecordatorio()
+servletRecordatorio -> servletRecordatorio: construirRecordatorioDesdeRequest()
+servletRecordatorio -> servletRecordatorio: crearRecordatorio()
+servletRecordatorio -> recordatorio: new Recordatorio()
+servletRecordatorio -> DAOrecordatorio: crear(recordatorio)
+servletRecordatorio --> inicio: confirmarCreacionExitosa()
+inicio --> usuario: mostrarMensajeExito()
 
 == Listar Recordatorios ==
-usuario -> inicio: solicitarRecordatorios()
-servletRecordatorio -> servletRecordatorio: listarRecordatorios(request, response)
-servletRecordatorio -> recordatorioDAO: listar()
-recordatorioDAO --> servletRecordatorio: List<Recordatorio>
-servletRecordatorio --> usuario: VistaRecordatorios.jsp
+usuario -> inicio: solicitarListaRecordatorios()
+inicio -> servletRecordatorio: obtenerRecordatorios()
+servletRecordatorio -> servletRecordatorio: listarRecordatorios()
+servletRecordatorio -> DAOrecordatorio: listar()
+DAOrecordatorio --> servletRecordatorio: List<Recordatorio>
+servletRecordatorio --> inicio: VistaRecordatorios.jsp
+inicio --> usuario: mostrarListaRecordatorios()
 
 == Editar Recordatorio ==
 usuario -> inicio: seleccionarEditarRecordatorio(id)
-servletRecordatorio -> servletRecordatorio: mostrarFormularioEditar(request, response)
-servletRecordatorio -> recordatorioDAO: buscarPorId(id)
-recordatorioDAO --> servletRecordatorio: Recordatorio
-servletRecordatorio -> servletRecordatorio: mostrarFormulario(request, response, recordatorio)
-servletRecordatorio --> usuario: VistaFormularioRecordatorio.jsp
+inicio -> servletRecordatorio: solicitarFormularioEdicion()
+servletRecordatorio -> servletRecordatorio: mostrarFormularioEditar()
+servletRecordatorio -> DAOrecordatorio: buscarPorId(id)
+DAOrecordatorio --> servletRecordatorio: Recordatorio
+servletRecordatorio -> servletRecordatorio: mostrarFormulario(recordatorio)
+servletRecordatorio --> inicio: VistaFormularioRecordatorio.jsp
+inicio --> usuario: mostrarFormularioConDatos()
 
-usuario --> servletRecordatorio: (datos del formulario)
-servletRecordatorio -> servletRecordatorio: actualizarRecordatorio(request, response)
-servletRecordatorio -> servletRecordatorio: construirRecordatorioDesdeRequest(request)
-servletRecordatorio -> recordatorioDAO: actualizar(recordatorio)
+usuario -> inicio: modificarDatosRecordatorio()
+inicio -> servletRecordatorio: enviarDatosModificados()
+servletRecordatorio -> servletRecordatorio: construirRecordatorioDesdeRequest()
+servletRecordatorio -> servletRecordatorio: actualizarRecordatorio()
+servletRecordatorio -> DAOrecordatorio: actualizar(recordatorio)
+servletRecordatorio --> inicio: confirmarActualizacion()
+inicio --> usuario: mostrarMensajeExito()
 
 == Eliminar Recordatorio ==
-usuario -> inicio: POST /recordatorios/eliminar (id)
-servletRecordatorio -> servletRecordatorio: borrarRecordatorio(request, response)
-servletRecordatorio -> recordatorioDAO: borrar(idRecordatorio)
+usuario -> inicio: solicitarEliminarRecordatorio(id)
+inicio -> servletRecordatorio: eliminarRecordatorio()
+servletRecordatorio -> servletRecordatorio: borrarRecordatorio()
+servletRecordatorio -> DAOrecordatorio: borrar(idRecordatorio)
+servletRecordatorio --> inicio: confirmarEliminacion()
+inicio --> usuario: mostrarMensajeExito()
 
 == Obtener Notificaciones ==
-usuario -> servletNotificacion: GET /notificaciones
-servletNotificacion -> recordatorioDAO: listarActivos()
-recordatorioDAO -> recordatorioDAO: executeQuery(session -> criteriaQuery.getResultList())
-recordatorioDAO --> servletNotificacion: List<Recordatorio>
+usuario -> servletNotificacion: solicitarNotificaciones()
+servletNotificacion -> DAOrecordatorio: listarActivos()
+DAOrecordatorio --> servletNotificacion: List<Recordatorio>
 
 loop para cada recordatorio
     servletNotificacion -> recordatorio: obtenerFechaVencimiento(hoy)
@@ -108,8 +121,8 @@ loop para cada recordatorio
     recordatorio --> servletNotificacion: Optional<LocalDate>
 end
 
-servletNotificacion -> servletNotificacion: gson.toJson(notificaciones)
-servletNotificacion --> usuario: JSON notificaciones
+servletNotificacion -> servletNotificacion: procesarNotificaciones()
+servletNotificacion --> usuario: notificaciones JSON
 
 
 @enduml
