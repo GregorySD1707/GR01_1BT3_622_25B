@@ -20,31 +20,20 @@ package "Capa de Datos (DAO)" <<Database>> {
 }
 
 ' --- Módulo Principal de la Aplicación ---
-class Inicio {
-+ seleccionarRegistrarIngreso(): void
-+ seleccionarRegistrarGasto(): void
-+ solicitarTotales(): void
-+ seleccionarRegistrarDeuda(): void
-+ seleccionarAbonarDeuda(): void
-+ solicitarResumenMensual(): void
-+ solicitarResumenes(): void
-+ seleccionarCrearRecordatorio(): void
-+ solicitarListaRecordatorios(): void
-+ seleccionarEditarRecordatorio(id: Long): void
-+ solicitarEliminarRecordatorio(id: Long): void
-}
+class Inicio
 
 ' --- Modulo de Movimientos ---
 package "Gestion de Movimientos" #LightBlue {
   class ServicioMovimientos {
     - movimientoDAO: DAOMovimiento
-    - carteraDAO: DAOCartera
-    + registrarIngreso(monto: double, descripcion: String, categoria: String, nombreCartera: String): Movimiento
-    + registrarGasto(monto: double, descripcion: String, categoria: String, nombreCartera: String): Movimiento
+    - carteraDAO: CarteraDAO
+    + registrarIngreso(monto: double, descripcion: String, categoria: String, nombreCartera: String): Ingreso
+    + registrarGasto(monto: double, descripcion: String, categoria: String, nombreCartera: String): Gasto
     + actualizarCartera(delta: double, nombreCartera: String, tipoSiNoExiste: String): Cartera
     + obtenerIngresosTotales(): double
     + obtenerGastosTotales(): double
     + obtenerSaldoActualTotal(): double
+    - validarMonto(monto: double)
   }
 
   abstract class Movimiento <<abstract>> {
@@ -71,34 +60,78 @@ package "Gestion de Movimientos" #LightBlue {
     + sumGastos(): double
   }
 
-  class DAOCartera {
+  class CarteraDAO {
     + buscarPorNombre(nombre: String): Cartera
     + obtenerOCrear(nombre: String, tipo: String): Cartera
     + sumSaldoActual(): double
   }
+
+  class ServletMovimientos {
+    + mostrarResumen(): void
+    + registrarIngreso(monto: double, descripcion: String, categoria: String, nombreCartera: String): void
+    + registrarGasto(monto: double, descripcion: String, categoria: String, nombreCartera: String): void
+  }
 }
 ' --- Módulo de Deudas ---
 package "Gestión de Deudas" #LightGreen {
-  class ControladorDeudas {
-    + registrarDeuda(monto: double, acreedor: String, ...): void
-    + abonarADeuda(idDeuda: String, monto: double): void
+  class ServletDeudas {
+    + registrarDeuda(nombrePersona: String, montoTotal: double, fechaPago: LocalDate, tipo: TipoDeudaPrestamo): void
+    + abonarADeuda(idDeuda: Long, monto: double): void
+    + listarDeudas(): void
+  }
+
+  class ServicioDeudas {
+    - daoDeudaPrestamo: DAODeudaPrestamo
+    - servicioMovimientos: ServicioMovimientos
+    + registrarDeuda(nombrePersona: String, montoTotal: double, fechaPago: LocalDate): DeudaPrestamo
+    + registrarPrestamo(nombrePersona: String, montoTotal: double, fechaPago: LocalDate): DeudaPrestamo
+    + abonarADeuda(idDeuda: Long, monto: double): void
+    + obtenerDeudasPendientes(): List<DeudaPrestamo>
+    + obtenerPorPersona(nombrePersona: String): List<DeudaPrestamo>
   }
 
   class DeudaPrestamo {
-    - id: String
+    - id: Long
+    - nombrePersona: String
     - montoTotal: double
     - montoPagado: double
+    - fechaPago: LocalDate
+    - tipo: TipoDeudaPrestamo
+    - estado: EstadoDeudaPrestamo
+    + calcularSaldoPendiente(): double
     + registrarAbono(monto: double)
   }
 
-  ' DAO del módulo
-  class DeudaPrestamoDAO
+  class DAODeudaPrestamo {
+    + listarPorPersona(nombrePersona: String): List<DeudaPrestamo>
+    + listarPendientes(): List<DeudaPrestamo>
+  }
+
+  enum TipoDeudaPrestamo {
+    DEUDA
+    PRESTAMO
+  }
+
+  enum EstadoDeudaPrestamo {
+    PENDIENTE
+    PAGADA
+    VENCIDA
+  }
+
+  ' Relaciones
+  ServletDeudas o-- ServicioDeudas : usa
+  ServicioDeudas *-- DAODeudaPrestamo : contiene
+  ServicioDeudas o-- ServicioMovimientos : usa
+  ServicioDeudas o-- DeudaPrestamo : gestiona
+  DAODeudaPrestamo o-- DeudaPrestamo : persiste
+  DeudaPrestamo o-- TipoDeudaPrestamo : tipo
+  DeudaPrestamo o-- EstadoDeudaPrestamo : estado
 }
 
 ' --- Módulo de Recordatorios ---
 package "Recordatorios" #LightYellow {
   class ServletRecordatorio  {
-    - recordatorioDAO: DAORecordatorio
+    - recordatorioDAO: RecordatorioDAO
     - listarRecordatorios(): void
     - mostrarFormulario(recordatorio: Recordatorio): void
     - mostrarFormularioEditar(): void
@@ -109,9 +142,8 @@ package "Recordatorios" #LightYellow {
   }
 
   class ServletNotificacion  {
-    - recordatorioDAO: DAORecordatorio
+    - recordatorioDAO: RecordatorioDAO
     - gson: Gson
-    + procesarNotificaciones()
   }
 
   class Recordatorio {
@@ -134,50 +166,28 @@ package "Recordatorios" #LightYellow {
     ANUAL
   }
 
-  class DAORecordatorio {
+  class RecordatorioDAO {
     + listarActivos(): List<Recordatorio>
   }
 }
 
 ' --- Módulo de Resumen ---
 package "Resumen Financiero" #LightSalmon {
-  class ServletResumenFinanciero {
-    + subirArchivo(): void
-    + procesarInformacion(): List<String>
-    + registrarResumenFinanciero(informacionProcesada: List<String>): void
-    + obtenerResumenesFinancieros(): void
-  }
-
-  class ServletDocumentoPDF {
-    + descargarDocumentoPDF(): void
-  }
-
-  class ServicioResumenFinanciero {
-    + extraerMonto(textoPDF: String): void
-    + extraerFecha(textoPDF: String): void
+  class ControladorResumenFinanciero {
+    + registrarResumenFinanciero(): ResumenFinanciero
+    + consultarResumenFinanciero(id: String): ResumenFinanciero
+    + subirArchivo()
+    + procesarInformacion()
   }
 
   class ResumenFinanciero {
     - ingresosTotales: double
     - gastosTotales: double
     - ahorroNeto: double
-    - fechaPeriodoAnterior: LocalDate
-    - fechaPeriodoActual: LocalDate
-    - fechaCreacion: LocalDateTime
-    - documentoPDF: DocumentoPDF
-  }
-
-  class DocumentoPDF {
-    - nombre: String
-    - archivo: byte[]
-    - tamaño: Long
-  }
-
-  class DAODocumentoPDF{
   }
 
   ' DAO del módulo
-  class DAOResumenFinanciero
+  class ResumenFinancieroDAO
 }
 
 
@@ -186,58 +196,44 @@ package "Resumen Financiero" #LightSalmon {
 ' ===================================
 
 ' --- Relaciones del Nivel Superior (Inicio -> Controladores) ---
-Inicio o-- ServicioMovimientos
-Inicio o-- ControladorDeudas
+Inicio o-- ServletDeudas
+Inicio o-- ServletMovimientos
 Inicio "1" o-- "1" ServletRecordatorio
 Inicio "1" o-- "1" ServletNotificacion
-Inicio o-- ServletResumenFinanciero
+Inicio o-- ControladorResumenFinanciero
 
 
 ' --- Relaciones dentro del paquete de Movimientos ---
 ServicioMovimientos ..> Movimiento
 ServicioMovimientos ..> Cartera
 ServicioMovimientos *-- DAOMovimiento
-ServicioMovimientos *-- DAOCartera
+ServicioMovimientos *-- CarteraDAO
+ServletMovimientos o-- ServicioMovimientos : usa
+ServletMovimientos ..> Movimiento : muestra
 Movimiento <|-- Ingreso
 Movimiento <|-- Gasto
 
-
-' --- Relaciones dentro del paquete de Deudas ---
-ControladorDeudas ..> DeudaPrestamo
-ControladorDeudas *-- DeudaPrestamoDAO
-
-
 ' --- Relaciones dentro del paquete de Recordatorios ---
-ServletRecordatorio "1" *-- "1" DAORecordatorio : contiene
+ServletRecordatorio "1" *-- "1" RecordatorioDAO : contiene
 ServletRecordatorio "1" ..> "*" Recordatorio : maneja
 ServletRecordatorio "1" ..> "*" Recurrencia : utiliza
-ServletNotificacion "1" *-- "1" DAORecordatorio : contiene
+ServletNotificacion "1" *-- "1" RecordatorioDAO : contiene
 ServletNotificacion "1" ..> "*" Recordatorio : consulta
 Recordatorio "1" *-- "1" Recurrencia : tiene
-DAORecordatorio "1" ..> "*" Recordatorio : persiste
-
-' --- Relaciones dentro del paquete de Resumen Financiero ---
-ServletResumenFinanciero ..> "*" ResumenFinanciero : maneja
-ServletResumenFinanciero *-- "1" DAOResumenFinanciero
-ServletResumenFinanciero ..> "1" ServicioResumenFinanciero
-
-ServletDocumentoPDF --> "1" DAODocumentoPDF
-Inicio o-- "1" ServletDocumentoPDF
-DAOResumenFinanciero ..> "*" ResumenFinanciero
-DAODocumentoPDF ..> "*" DocumentoPDF
-DAODocumentoPDF --|> DAOBase
+RecordatorioDAO "1" ..> "*" Recordatorio : persiste
+ControladorResumenFinanciero ..> ResumenFinanciero
+ControladorResumenFinanciero *-- ResumenFinancieroDAO
 
 
 ' --- Relaciones ENTRE paquetes (Colaboraciones) ---
 ' Pagar una deuda usa el servicio de movimientos para registrar el gasto
-ControladorDeudas ..> ServicioMovimientos
 
 
 ' --- Herencia de la Capa de Datos (DAO) ---
-DAOBase <|-- DAORecordatorio
+DAOBase <|-- RecordatorioDAO
 DAOBase <|-- DAOMovimiento
-DAOBase <|-- DAOCartera
-DAOBase <|-- DeudaPrestamoDAO
-DAOBase <|-- DAOResumenFinanciero
+DAOBase <|-- CarteraDAO
+DAOBase <|-- DAODeudaPrestamo
+DAOBase <|-- ResumenFinancieroDAO
 
 @enduml
