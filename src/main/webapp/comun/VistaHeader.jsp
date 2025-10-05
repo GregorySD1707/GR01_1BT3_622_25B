@@ -26,7 +26,7 @@
   </div>
   <nav class="sidebar-nav">
     <a href="${pageContext.request.contextPath}/VistaRecordatorios.jsp">Recordatorios</a>
-    <a href="${pageContext.request.contextPath}/resumen_financiero.jsp">Reportes</a>
+    <a href="${pageContext.request.contextPath}/VistaResumenFinanciero.jsp">Resúmenes</a>
 
   </nav>
 </aside>

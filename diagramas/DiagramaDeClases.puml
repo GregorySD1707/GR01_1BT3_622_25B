@@ -142,6 +142,8 @@ package "Recordatorios" #LightYellow {
 ' --- Módulo de Resumen ---
 package "Resumen Financiero" #LightSalmon {
   class ServletResumenFinanciero {
+    - daoResumenFinanciero: DAOResumenFinanciero
+    - daoDocumentoPDF: DAODocumentoPDF
     + subirArchivo(): void
     + procesarInformacion(): List<String>
     + registrarResumenFinanciero(informacionProcesada: List<String>): void
@@ -149,6 +151,7 @@ package "Resumen Financiero" #LightSalmon {
   }
 
   class ServletDocumentoPDF {
+    - daoDocumentoPDF: DAODocumentoPDF
     + descargarDocumentoPDF(): void
   }
 
@@ -190,7 +193,7 @@ Inicio o-- ServicioMovimientos
 Inicio o-- ControladorDeudas
 Inicio "1" o-- "1" ServletRecordatorio
 Inicio "1" o-- "1" ServletNotificacion
-Inicio o-- ServletResumenFinanciero
+Inicio "1"o--"1" ServletResumenFinanciero
 
 
 ' --- Relaciones dentro del paquete de Movimientos ---
@@ -217,15 +220,19 @@ Recordatorio "1" *-- "1" Recurrencia : tiene
 DAORecordatorio "1" ..> "*" Recordatorio : persiste
 
 ' --- Relaciones dentro del paquete de Resumen Financiero ---
-ServletResumenFinanciero ..> "*" ResumenFinanciero : maneja
-ServletResumenFinanciero *-- "1" DAOResumenFinanciero
-ServletResumenFinanciero ..> "1" ServicioResumenFinanciero
+Inicio "1"o--"1" ServletDocumentoPDF
 
-ServletDocumentoPDF --> "1" DAODocumentoPDF
-Inicio o-- "1" ServletDocumentoPDF
-DAOResumenFinanciero ..> "*" ResumenFinanciero
-DAODocumentoPDF ..> "*" DocumentoPDF
+ServletResumenFinanciero "1"..> "*" ResumenFinanciero : maneja
+ServletResumenFinanciero "1"*-- "1" DAOResumenFinanciero: contiene
+ServletResumenFinanciero "*"..> "1" ServicioResumenFinanciero: usa
+ServletResumenFinanciero "1"o--"1" DAODocumentoPDF: agrega
+ServletDocumentoPDF "1"--> "1" DAODocumentoPDF: tiene
+
+DAOResumenFinanciero "1"..> "*" ResumenFinanciero: maneja
+DAODocumentoPDF "1"..> "*" DocumentoPDF: maneja
 DAODocumentoPDF --|> DAOBase
+
+ResumenFinanciero "*"-->"1" DocumentoPDF: tiene
 
 
 ' --- Relaciones ENTRE paquetes (Colaboraciones) ---

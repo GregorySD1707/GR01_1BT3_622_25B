@@ -48,7 +48,7 @@ public class ServletResumenFinanciero extends HttpServlet {
             // 2. Para cada resumen, obtener información del PDF
             List<DocumentoPDF> documentos = new ArrayList<>();
             for (ResumenFinanciero resumen : resumenes) {
-                DocumentoPDF doc = DAODocumentoPDF.buscarPorId((long) resumen.getDocumentoPDFId());
+                DocumentoPDF doc = DAODocumentoPDF.buscarPorId((long) resumen.getDocumentoPDF().getId());
                 documentos.add(doc);
                 System.out.println(resumen);
             }
@@ -67,14 +67,14 @@ public class ServletResumenFinanciero extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try{
-            Result result = obtenerArchivo(request, response);
-            if (result == null) return;
+            ArchivoSubido archivoSubido = obtenerArchivo(request, response);
+            if (archivoSubido == null) return;
 
-            InformacionProcesada informacionProcesada = procesarInformacion(request, response, result);
+            InformacionProcesada informacionProcesada = procesarInformacion(request, response, archivoSubido);
             if (informacionProcesada == null) return;
 
             // 7. Crear Resumen Financiero y guardar en Base de Datos sus ingresos, gastos y ahorro neto asociados
-            ResumenFinanciero resumenFinanciero = registrarResumenFinanciero(informacionProcesada.ingresos(), informacionProcesada.gastos(), result.filePath(), informacionProcesada.fechaPeriodoAnterior(), informacionProcesada.fechaPeriodoActual(), result.documentoPDFId().intValue());
+            ResumenFinanciero resumenFinanciero = registrarResumenFinanciero(informacionProcesada.ingresos(), informacionProcesada.gastos(), archivoSubido.filePath(), informacionProcesada.fechaPeriodoAnterior(), informacionProcesada.fechaPeriodoActual(), archivoSubido.documentoPDF());
 
             // 8. Enviar resultado al JSP
             request.setAttribute("Ingresos", resumenFinanciero.getIngresosTotales());
@@ -93,9 +93,9 @@ public class ServletResumenFinanciero extends HttpServlet {
         }
     }
 
-    private static InformacionProcesada procesarInformacion(HttpServletRequest request, HttpServletResponse response, Result result) throws IOException, ServletException {
+    private static InformacionProcesada procesarInformacion(HttpServletRequest request, HttpServletResponse response, ArchivoSubido archivoSubido) throws IOException, ServletException {
         // 4. Extraer texto del PDF
-        String textoPDF = ExtractorTexto.extraerTextoDePDF(result.filePath());
+        String textoPDF = ExtractorTexto.extraerTextoDePDF(archivoSubido.filePath());
         System.out.println(textoPDF);
 
         // 5. Extraer ingresos y gastos
@@ -114,7 +114,7 @@ public class ServletResumenFinanciero extends HttpServlet {
         if(fechaPeriodoActual == null) return null;
 
         // 6. Eliminar archivo temporal
-        new File(result.filePath()).delete();
+        new File(archivoSubido.filePath()).delete();
         InformacionProcesada informacionProcesada = new InformacionProcesada(ingresos, gastos, fechaPeriodoAnterior, fechaPeriodoActual);
         return informacionProcesada;
     }
@@ -122,7 +122,7 @@ public class ServletResumenFinanciero extends HttpServlet {
     private record InformacionProcesada(Double ingresos, Double gastos, LocalDate fechaPeriodoAnterior, LocalDate fechaPeriodoActual) {
     }
 
-    private Result obtenerArchivo(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    private ArchivoSubido obtenerArchivo(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         // 1. Obtener archivo del formulario
         Part filePart = request.getPart("archivoPDF");
 
@@ -140,7 +140,7 @@ public class ServletResumenFinanciero extends HttpServlet {
 
         // Guardar PDF en la base de datos
         String nombre = filePart.getSubmittedFileName();
-        Long documentoPDFId = DAODocumentoPDF.guardarPDF(nombre, archivoBytes);
+        DocumentoPDF documentoPDF = DAODocumentoPDF.guardarPDF(nombre, archivoBytes);
 
         // 2. Crear directorio temporal si no existe
         String uploadPath = getServletContext().getRealPath("") + File.separator + "temp";
@@ -157,18 +157,18 @@ public class ServletResumenFinanciero extends HttpServlet {
             Files.copy(inputStream, new File(filePath).toPath(),
                     StandardCopyOption.REPLACE_EXISTING);
         }
-        Result result = new Result(documentoPDFId, filePath);
-        return result;
+        ArchivoSubido archivoSubido = new ArchivoSubido(documentoPDF, filePath);
+        return archivoSubido;
     }
 
-    private record Result(Long documentoPDFId, String filePath) {
+    private record ArchivoSubido(DocumentoPDF documentoPDF, String filePath) {
     }
 
-    private ResumenFinanciero registrarResumenFinanciero(Double ingresos, Double gastos, String filePath, LocalDate fechaPeriodoAnterior, LocalDate fechaPeriodoActual, int documentoPDFId) {
+    private ResumenFinanciero registrarResumenFinanciero(Double ingresos, Double gastos, String filePath, LocalDate fechaPeriodoAnterior, LocalDate fechaPeriodoActual, DocumentoPDF documentoPDF) {
         double ahorroNeto = ServicioResumenFinanciero.calcularAhorroNeto(ingresos, gastos);
         //System.out.println(ahorroNeto);
 
-        ResumenFinanciero resumenFinanciero = new ResumenFinanciero(ingresos, gastos, ahorroNeto, fechaPeriodoAnterior, fechaPeriodoActual, documentoPDFId);
+        ResumenFinanciero resumenFinanciero = new ResumenFinanciero(ingresos, gastos, ahorroNeto, fechaPeriodoAnterior, fechaPeriodoActual, documentoPDF);
         DAOResumenFinanciero.crear(resumenFinanciero);
         return resumenFinanciero;
     }

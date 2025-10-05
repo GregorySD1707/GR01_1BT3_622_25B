@@ -80,14 +80,16 @@ servicioMovimientos -> daoMovimiento: crear(gasto)
 == Generar Resumen Financiero ==
 usuario -> inicio: solicitarResumenMensual()
 inicio -> servletResumen: subirArchivo()
-servletResumen -> daoDocumentoPDF: crear(documento)
-servletResumen -> servletResumen: procesarInformacion(): List<String>
+servletResumen -> documentoPDF: new DocumentoPDF(): DocumentoPDF
+servletResumen -> daoDocumentoPDF: crear(documento: DocumentoPDF)
+servletResumen -> servletResumen: procesarInformacion(): String
 servletResumen -> servicioResumen: extraerFecha(textoPDF: String)
 servicioResumen --> servletResumen: fecha
 servletResumen -> servicioResumen: extraerMonto(textoPDF: String)
 servicioResumen --> servletResumen: monto
 servletResumen -> servletResumen: registrarResumenFinanciero(informacionProcesada: List<String>)
-servletResumen -> resumenDAO: crear(resumen)
+servletResumen -> ResumenFinanciero: new ResumenFinanciero(): ResumenFinanciero
+servletResumen -> resumenDAO: crear(resumen: ResumenFinanciero)
 usuario -> inicio: solicitarResumenes()
 inicio -> servletResumen: obtenerResumenesFinancieros()
 servletResumen -> resumenDAO: listar()
