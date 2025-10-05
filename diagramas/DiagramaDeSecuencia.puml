@@ -4,48 +4,49 @@ actor ":Usuario" as usuario
 participant ":Inicio" as inicio
 participant ":ServletRecordatorio" as servletRecordatorio
 participant ":ServletNotificacion" as servletNotificacion
-participant ":ServletResumenFinanciero" as servletResumen
-participant ":ServicioResumenFinanciero" as servicioResumen
-participant ":ServletDocumentoPDF" as servletDocumentoPDF
-participant ":DAODocumentoPDF" as daoDocumentoPDF
-participant ":ControladorDeudas" as controladorDeudas
+participant ":ControladorResumenFinanciero" as controladorResumen
+participant ":ServletDeudas" as servletDeudas
+participant ":ServicioDeudas" as servicioDeudas
+participant ":ServletMovimientos" as servletMovimientos
 participant ":ServicioMovimientos" as servicioMovimientos
 participant ":Gasto" as gasto
 participant ":Ingreso" as ingreso
 participant ":Cartera" as cartera
 participant ":DeudaPrestamo" as deudaPrestamo
 participant ":ResumenFinanciero" as resumen
-participant ":DocumentoPDF" as documentoPDF
 participant ":Recordatorio" as recordatorio
 participant ":DAOMovimiento" as daoMovimiento
 participant ":DAOCartera" as carteraDAO
-participant ":DeudaPrestamoDAO" as deudaPrestamoDAO
+participant ":DAODeudaPrestamo" as deudaPrestamoDAO
 participant ":ResumenFinancieroDAO" as resumenDAO
 participant ":DAORecordatorio" as DAOrecordatorio
 
 == Registrar Ingreso y Gasto ==
 usuario -> inicio: seleccionarRegistrarIngreso()
-inicio -> servicioMovimientos: registrarIngreso(monto, descripcion, categoria, nombreCartera)
+inicio -> servletMovimientos: mostrarFormularioIngreso()
+servletMovimientos -> servletMovimientos: construirIngresoDesdeRequest()
+servletMovimientos -> servicioMovimientos: registrarIngreso(monto, descripcion, categoria, nombreCartera)
 servicioMovimientos -> daoMovimiento: crear(ingreso)
 daoMovimiento --> servicioMovimientos: ingresoPersistido
 servicioMovimientos -> carteraDAO: obtenerOCrear(nombreCartera, tipoPreferido)
 carteraDAO --> servicioMovimientos: cartera
 servicioMovimientos -> cartera: actualizarCartera(monto)
 servicioMovimientos -> carteraDAO: actualizar(cartera)
-servicioMovimientos --> inicio: ingresoRegistrado
-inicio --> usuario: mostrarConfirmacionIngreso
-
+servicioMovimientos --> servletMovimientos: ingresoRegistrado
+servletMovimientos --> inicio: mostrarConfirmacionIngreso
 
 usuario -> inicio: seleccionarRegistrarGasto()
-inicio -> servicioMovimientos: registrarGasto(monto, descripcion, categoria, nombreCartera)
+inicio -> servletMovimientos: mostrarFormularioGasto()
+servletMovimientos -> servletMovimientos: construirGastoDesdeRequest()
+servletMovimientos -> servicioMovimientos: registrarGasto(monto, descripcion, categoria, nombreCartera)
 servicioMovimientos -> daoMovimiento: crear(gasto)
 daoMovimiento --> servicioMovimientos: gastoPersistido
 servicioMovimientos -> carteraDAO: obtenerOCrear(nombreCartera, tipoPreferido)
 carteraDAO --> servicioMovimientos: cartera
 servicioMovimientos -> cartera: actualizarCartera(-monto)
 servicioMovimientos -> carteraDAO: actualizar(cartera)
-servicioMovimientos --> inicio: gastoRegistrado
-inicio --> usuario: mostrarConfirmacionGasto
+servicioMovimientos --> servletMovimientos: gastoRegistrado
+servletMovimientos --> inicio: mostrarConfirmacionGasto
 
 == Consultar Totales de Movimientos ==
 usuario -> inicio: solicitarTotales()
@@ -65,17 +66,27 @@ inicio --> usuario: mostrarTotales(inIngresos, inGastos, saldo)
 
 == Registrar Deuda y abonar a Deuda==
 usuario -> inicio: seleccionarRegistrarDeuda()
-inicio -> controladorDeudas: registrarDeuda(monto, acreedor)
-controladorDeudas -> deudaPrestamoDAO: crear(deudaPrestamo)
+inicio -> servletDeudas: mostrarFormularioRegistroDeuda()
+servletDeudas -> servletDeudas: construirDeudaDesdeRequest()
+servletDeudas -> servicioDeudas: registrarDeuda(nombrePersona, montoTotal, fechaPago)
+servicioDeudas -> deudaPrestamoDAO: crear(deudaPrestamo)
+deudaPrestamoDAO --> servicioDeudas: deudaPersistida
 
 usuario -> inicio: seleccionarAbonarDeuda()
-inicio -> controladorDeudas: abonarADeuda(idDeuda, monto)
-controladorDeudas -> deudaPrestamoDAO: buscarPorID(idDeuda)
-controladorDeudas -> deudaPrestamo: registrarAbono(monto)
-controladorDeudas -> deudaPrestamoDAO: actualizar(deudaPrestamo)
+inicio -> servletDeudas: mostrarFormularioAbono()
+servletDeudas -> servletDeudas: construirAbonoDesdeRequest()
+servletDeudas -> servicioDeudas: abonarADeuda(idDeuda, monto)
+servicioDeudas -> deudaPrestamoDAO: buscarPorId(idDeuda)
+deudaPrestamoDAO --> servicioDeudas: deuda
+servicioDeudas -> deudaPrestamo: registrarAbono(monto)
+servicioDeudas -> deudaPrestamoDAO: actualizar(deudaPrestamo)
 
-controladorDeudas -> servicioMovimientos: registrarGasto(monto, "Abono deuda", "Deudas")
-servicioMovimientos -> daoMovimiento: crear(gasto)
+alt deuda es DEUDA
+    servicioDeudas -> servicioMovimientos: registrarGasto(monto, "Abono deuda a " + deuda.nombrePersona, "Deudas", "Cartera principal")
+else deuda es PRESTAMO
+    servicioDeudas -> servicioMovimientos: registrarIngreso(monto, "Abono préstamo de " + deuda.nombrePersona, "Préstamos", "Cartera principal")
+end
+servicioMovimientos -> daoMovimiento: crear(movimiento)
 
 == Generar Resumen Financiero ==
 usuario -> inicio: solicitarResumenMensual()
