@@ -1,6 +1,6 @@
 package com.sistema_financiero_personal.controladores;
 
-import com.sistema_financiero_personal.daos.DocumentoPDFDAO;
+import com.sistema_financiero_personal.daos.DAODocumentoPDF;
 import com.sistema_financiero_personal.modelos.DocumentoPDF;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
@@ -13,7 +13,7 @@ import java.io.IOException;
 
 @WebServlet("/descargarPDF")
 public class ServletDescargaPDF extends HttpServlet {
-    private DocumentoPDFDAO documentoPDFDAO = new DocumentoPDFDAO();
+    private DAODocumentoPDF DAODocumentoPDF = new DAODocumentoPDF();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -26,7 +26,7 @@ public class ServletDescargaPDF extends HttpServlet {
             }
 
             Long id = Long.parseLong(idParam);
-            DocumentoPDF documento = documentoPDFDAO.buscarPorId((long) id.intValue());
+            DocumentoPDF documento = DAODocumentoPDF.buscarPorId((long) id.intValue());
 
             if (documento == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "PDF no encontrado");

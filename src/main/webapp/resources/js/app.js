@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         async function fetchNotifications() {
             try {
-                const response = await fetch(`${CONTEXT_PATH}/api/notificaciones`);
+                const response = await fetch(`${CONTEXT_PATH}/notificaciones`);
                 if (!response.ok) {
                     throw new Error('La respuesta del servidor no fue exitosa.');
                 }

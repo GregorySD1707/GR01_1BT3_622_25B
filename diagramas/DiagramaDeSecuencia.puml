@@ -1,37 +1,62 @@
-@startuml finanzas_corregido
+@startuml
 
 actor ":Usuario" as usuario
 participant ":Inicio" as inicio
-participant ":ControladorMovimientos" as controladorMovimientos
+participant ":ServletRecordatorio" as servletRecordatorio
+participant ":ServletNotificacion" as servletNotificacion
+participant ":ControladorResumenFinanciero" as controladorResumen
+participant ":ControladorDeudas" as controladorDeudas
+participant ":ServicioMovimientos" as servicioMovimientos
 participant ":Gasto" as gasto
 participant ":Ingreso" as ingreso
-participant ":MovimientoDAO" as movimientoDAO
 participant ":Cartera" as cartera
-participant ":CarteraDAO" as carteraDAO
-participant ":ControladorDeudas" as controladorDeudas
 participant ":DeudaPrestamo" as deudaPrestamo
-participant ":DeudaPrestamoDAO" as deudaPrestamoDAO
-participant ":ControladorResumenFinanciero" as controladorResumen
 participant ":ResumenFinanciero" as resumen
-participant ":ResumenFinancieroDAO" as resumenDAO
-participant ":ControladorRecordatorios" as controladorRecordatorios
 participant ":Recordatorio" as recordatorio
-participant ":RecordatorioDAO" as recordatorioDAO
+participant ":DAOMovimiento" as daoMovimiento
+participant ":DAOCartera" as carteraDAO
+participant ":DeudaPrestamoDAO" as deudaPrestamoDAO
+participant ":ResumenFinancieroDAO" as resumenDAO
+participant ":DAORecordatorio" as DAOrecordatorio
 
 == Registrar Ingreso y Gasto ==
 usuario -> inicio: seleccionarRegistrarIngreso()
-inicio -> controladorMovimientos: registrarIngreso(monto, descripcion)
-controladorMovimientos -> movimientoDAO: crear(ingreso)
-controladorMovimientos -> carteraDAO: buscarPorID(idCartera)
-controladorMovimientos -> cartera: actualizarCartera(monto)
-controladorMovimientos -> carteraDAO: actualizar(cartera)
+inicio -> servicioMovimientos: registrarIngreso(monto, descripcion, categoria, nombreCartera)
+servicioMovimientos -> daoMovimiento: crear(ingreso)
+daoMovimiento --> servicioMovimientos: ingresoPersistido
+servicioMovimientos -> carteraDAO: obtenerOCrear(nombreCartera, tipoPreferido)
+carteraDAO --> servicioMovimientos: cartera
+servicioMovimientos -> cartera: actualizarCartera(monto)
+servicioMovimientos -> carteraDAO: actualizar(cartera)
+servicioMovimientos --> inicio: ingresoRegistrado
+inicio --> usuario: mostrarConfirmacionIngreso
 
 usuario -> inicio: seleccionarRegistrarGasto()
-inicio -> controladorMovimientos: registrarGasto(monto, descripcion)
-controladorMovimientos -> movimientoDAO: crear(gasto)
-controladorMovimientos -> carteraDAO: buscarPorID(idCartera)
-controladorMovimientos -> cartera: actualizarCartera(-monto)
-controladorMovimientos -> carteraDAO: actualizar(cartera)
+inicio -> servicioMovimientos: registrarGasto(monto, descripcion, categoria, nombreCartera)
+servicioMovimientos -> daoMovimiento: crear(gasto)
+daoMovimiento --> servicioMovimientos: gastoPersistido
+servicioMovimientos -> carteraDAO: obtenerOCrear(nombreCartera, tipoPreferido)
+carteraDAO --> servicioMovimientos: cartera
+servicioMovimientos -> cartera: actualizarCartera(-monto)
+servicioMovimientos -> carteraDAO: actualizar(cartera)
+servicioMovimientos --> inicio: gastoRegistrado
+inicio --> usuario: mostrarConfirmacionGasto
+
+== Consultar Totales de Movimientos ==
+usuario -> inicio: solicitarTotales()
+inicio -> servicioMovimientos: obtenerIngresosTotales()
+servicioMovimientos -> daoMovimiento: sumIngresos()
+daoMovimiento --> servicioMovimientos: totalIngresos
+servicioMovimientos --> inicio: totalIngresos
+inicio -> servicioMovimientos: obtenerGastosTotales()
+servicioMovimientos -> daoMovimiento: sumGastos()
+daoMovimiento --> servicioMovimientos: totalGastos
+servicioMovimientos --> inicio: totalGastos
+inicio -> servicioMovimientos: obtenerSaldoActualTotal()
+servicioMovimientos -> carteraDAO: sumSaldoActual()
+carteraDAO --> servicioMovimientos: saldoTotal
+servicioMovimientos --> inicio: saldoTotal
+inicio --> usuario: mostrarTotales(inIngresos, inGastos, saldo)
 
 == Registrar Deuda y abonar a Deuda==
 usuario -> inicio: seleccionarRegistrarDeuda()
@@ -44,8 +69,8 @@ controladorDeudas -> deudaPrestamoDAO: buscarPorID(idDeuda)
 controladorDeudas -> deudaPrestamo: registrarAbono(monto)
 controladorDeudas -> deudaPrestamoDAO: actualizar(deudaPrestamo)
 
-controladorDeudas -> controladorMovimientos: registrarGasto(monto, "Abono deuda", "Deudas")
-controladorMovimientos -> movimientoDAO: crear(gasto)
+controladorDeudas -> servicioMovimientos: registrarGasto(monto, "Abono deuda", "Deudas")
+servicioMovimientos -> daoMovimiento: crear(gasto)
 
 == Generar Resumen Financiero ==
 usuario -> inicio: solicitarResumenMensual()
@@ -56,13 +81,72 @@ inicio -> controladorResumen: consultarResumenFinanciero()
 
 
 == Gestionar Recordatorios ==
-usuario -> inicio: seleccionarRegistrarRecordatorio()
-inicio -> controladorRecordatorios: RegistrarRecordatorio()
-controladorRecordatorios -> recordatorioDAO: crear(recordatorio)
 
+== Crear Recordatorio ==
+
+usuario -> inicio: seleccionarCrearRecordatorio()
+inicio -> servletRecordatorio: solicitarFormularioNuevoRecordatorio()
+servletRecordatorio -> servletRecordatorio: mostrarFormulario(recordatorio)
+servletRecordatorio --> inicio: VistaFormularioRecordatorio.jsp
+inicio --> usuario: mostrarFormulario()
+
+usuario -> inicio: completarDatosRecordatorio()
+inicio -> servletRecordatorio: enviarDatosRecordatorio()
+servletRecordatorio -> servletRecordatorio: construirRecordatorioDesdeRequest()
+servletRecordatorio -> servletRecordatorio: crearRecordatorio()
+servletRecordatorio -> recordatorio: new Recordatorio()
+servletRecordatorio -> DAOrecordatorio: crear(recordatorio)
+servletRecordatorio --> inicio: confirmarCreacionExitosa()
+inicio --> usuario: mostrarMensajeExito()
+
+== Listar Recordatorios ==
 usuario -> inicio: solicitarListaRecordatorios()
-inicio -> controladorRecordatorios: listaRecordatorios()
-controladorRecordatorios -> recordatorioDAO: listar()
+inicio -> servletRecordatorio: obtenerRecordatorios()
+servletRecordatorio -> servletRecordatorio: listarRecordatorios()
+servletRecordatorio -> DAOrecordatorio: listar()
+DAOrecordatorio --> servletRecordatorio: List<Recordatorio>
+servletRecordatorio --> inicio: VistaRecordatorios.jsp
+inicio --> usuario: mostrarListaRecordatorios()
+
+== Editar Recordatorio ==
+usuario -> inicio: seleccionarEditarRecordatorio(id)
+inicio -> servletRecordatorio: solicitarFormularioEdicion()
+servletRecordatorio -> servletRecordatorio: mostrarFormularioEditar()
+servletRecordatorio -> DAOrecordatorio: buscarPorId(id)
+DAOrecordatorio --> servletRecordatorio: Recordatorio
+servletRecordatorio -> servletRecordatorio: mostrarFormulario(recordatorio)
+servletRecordatorio --> inicio: VistaFormularioRecordatorio.jsp
+inicio --> usuario: mostrarFormularioConDatos()
+
+usuario -> inicio: modificarDatosRecordatorio()
+inicio -> servletRecordatorio: enviarDatosModificados()
+servletRecordatorio -> servletRecordatorio: construirRecordatorioDesdeRequest()
+servletRecordatorio -> servletRecordatorio: actualizarRecordatorio()
+servletRecordatorio -> DAOrecordatorio: actualizar(recordatorio)
+servletRecordatorio --> inicio: confirmarActualizacion()
+inicio --> usuario: mostrarMensajeExito()
+
+== Eliminar Recordatorio ==
+usuario -> inicio: solicitarEliminarRecordatorio(id)
+inicio -> servletRecordatorio: eliminarRecordatorio()
+servletRecordatorio -> servletRecordatorio: borrarRecordatorio()
+servletRecordatorio -> DAOrecordatorio: borrar(idRecordatorio)
+servletRecordatorio --> inicio: confirmarEliminacion()
+inicio --> usuario: mostrarMensajeExito()
+
+== Obtener Notificaciones ==
+usuario -> servletNotificacion: solicitarNotificaciones()
+servletNotificacion -> DAOrecordatorio: listarActivos()
+DAOrecordatorio --> servletNotificacion: List<Recordatorio>
+
+loop para cada recordatorio
+    servletNotificacion -> recordatorio: obtenerFechaVencimiento(hoy)
+    recordatorio -> recordatorio: calcularProximaFechaVencimiento(desde)
+    recordatorio --> servletNotificacion: Optional<LocalDate>
+end
+
+servletNotificacion -> servletNotificacion: procesarNotificaciones()
+servletNotificacion --> usuario: notificaciones JSON
 
 
 @enduml

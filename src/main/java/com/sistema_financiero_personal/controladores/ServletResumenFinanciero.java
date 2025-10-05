@@ -1,7 +1,7 @@
 package com.sistema_financiero_personal.controladores;
 
-import com.sistema_financiero_personal.daos.ResumenFinancieroDAO;
-import com.sistema_financiero_personal.daos.DocumentoPDFDAO;
+import com.sistema_financiero_personal.daos.DAOResumenFinanciero;
+import com.sistema_financiero_personal.daos.DAODocumentoPDF;
 import com.sistema_financiero_personal.modelos.DocumentoPDF;
 import com.sistema_financiero_personal.modelos.ResumenFinanciero;
 import com.sistema_financiero_personal.servicios.ServicioResumenFinanciero;
@@ -31,24 +31,24 @@ import java.util.List;
 )
 public class ServletResumenFinanciero extends HttpServlet {
 
-    private ResumenFinancieroDAO resumenFinancieroDAO;
-    private DocumentoPDFDAO documentoPDFDAO;
+    private DAOResumenFinanciero DAOResumenFinanciero;
+    private DAODocumentoPDF DAODocumentoPDF;
 
     public ServletResumenFinanciero(){
-        resumenFinancieroDAO = new ResumenFinancieroDAO();
-        documentoPDFDAO = new DocumentoPDFDAO();
+        DAOResumenFinanciero = new DAOResumenFinanciero();
+        DAODocumentoPDF = new DAODocumentoPDF();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         try {
             // 1. Obtener todos los resumenes de la base de datos
-             List<ResumenFinanciero> resumenes = resumenFinancieroDAO.listar();
+             List<ResumenFinanciero> resumenes = DAOResumenFinanciero.listar();
 
             // 2. Para cada resumen, obtener información del PDF
             List<DocumentoPDF> documentos = new ArrayList<>();
             for (ResumenFinanciero resumen : resumenes) {
-                DocumentoPDF doc = documentoPDFDAO.buscarPorId((long) resumen.getDocumentoPDFId());
+                DocumentoPDF doc = DAODocumentoPDF.buscarPorId((long) resumen.getDocumentoPDFId());
                 documentos.add(doc);
                 System.out.println(resumen);
             }
@@ -84,7 +84,7 @@ public class ServletResumenFinanciero extends HttpServlet {
 
             // Guardar PDF en la base de datos
             String nombre = filePart.getSubmittedFileName();
-            Long documentoPDFId = documentoPDFDAO.guardarPDF(nombre, archivoBytes);
+            Long documentoPDFId = DAODocumentoPDF.guardarPDF(nombre, archivoBytes);
 
             // 2. Crear directorio temporal si no existe
             String uploadPath = getServletContext().getRealPath("") + File.separator + "temp";
@@ -149,7 +149,7 @@ public class ServletResumenFinanciero extends HttpServlet {
         //System.out.println(ahorroNeto);
 
         ResumenFinanciero resumenFinanciero = new ResumenFinanciero(ingresos, gastos, ahorroNeto, fechaPeriodoAnterior, fechaPeriodoActual, documentoPDFId);
-        resumenFinancieroDAO.crear(resumenFinanciero);
+        DAOResumenFinanciero.crear(resumenFinanciero);
         return resumenFinanciero;
     }
 }

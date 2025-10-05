@@ -66,3 +66,7 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+.gitignore
+
+temp

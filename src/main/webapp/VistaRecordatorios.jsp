@@ -58,7 +58,7 @@
             </div>
             <div class="card-footer">
                 <a href="${pageContext.request.contextPath}/recordatorios/editar?id=${r.id}" class="btn btn-secondary">Editar</a>
-                <form action="${pageContext.request.contextPath}/recordatorios/eliminar?id=${r.id}" method="POST" style="display: inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este recordatorio?');">
+                <form action="${pageContext.request.contextPath}/recordatorios/borrar?id=${r.id}" method="POST" style="display: inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este recordatorio?');">
                     <button type="submit" class="btn btn-danger">Eliminar</button>
                 </form>
             </div>

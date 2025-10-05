@@ -1,10 +1,6 @@
 @startuml
 
-' Título del Diagrama
-title Arquitectura de Aplicación de Finanzas Personales
-
 ' --- Configuración Visual ---
-skinparam classAttributeIconSize 0
 skinparam package {
   BackgroundColor LightGray
   BorderColor Gray
@@ -12,30 +8,37 @@ skinparam package {
 
 ' --- Capa de Acceso a Datos (Base) ---
 package "Capa de Datos (DAO)" <<Database>> {
-  abstract class BaseDAO <<abstract>> {
-    + crear(obj: Obj)
-    + listar(): List
-    + actualizar(obj: Obj)
-    + eliminar(id: String)
-    + buscarPorID(id: String): Obj
+  abstract class DAOBase <<abstract>> {
+    + crear(entity: T): void
+    + borrar(id: Long): void
+    + actualizar(entity: T): void
+    + buscarPorId(id: Long): T
+    + listar(): List<T>
+    + listar(maxResults: int, firstResult: int): List<T>
+    - listar(all: boolean, maxResults: int, firstResult: int): List<T>
   }
 }
 
 ' --- Módulo Principal de la Aplicación ---
 class Inicio
 
-' --- Módulo de Movimientos ---
-package "Gestión de Movimientos" #LightBlue {
-  class ControladorMovimientos {
-    + registrarIngreso(monto: double, desc: String): void
-    + registrarGasto(monto: double, desc: String): void
-    + actualizarCartera(monto: double): void
+' --- Modulo de Movimientos ---
+package "Gestion de Movimientos" #LightBlue {
+  class ServicioMovimientos {
+    - movimientoDAO: DAOMovimiento
+    - carteraDAO: DAOCartera
+    + registrarIngreso(monto: double, descripcion: String, categoria: String, nombreCartera: String): Movimiento
+    + registrarGasto(monto: double, descripcion: String, categoria: String, nombreCartera: String): Movimiento
+    + actualizarCartera(delta: double, nombreCartera: String, tipoSiNoExiste: String): Cartera
+    + obtenerIngresosTotales(): double
+    + obtenerGastosTotales(): double
+    + obtenerSaldoActualTotal(): double
   }
 
   abstract class Movimiento <<abstract>> {
-    - id: String
+    - id: Long
     - monto: double
-    - fecha: Date
+    - fecha: LocalDateTime
     - descripcion: String
     - categoria: String
   }
@@ -44,17 +47,24 @@ package "Gestión de Movimientos" #LightBlue {
   class Gasto
 
   class Cartera {
+    - id: Long
     - nombre: String
     - saldoActual: double
     - tipo: String
-    + actualizarCartera(monto: double): void
+    + actualizarCartera(delta: double): void
   }
 
-  ' DAOs del módulo
-  class MovimientoDAO
-  class CarteraDAO
-}
+  class DAOMovimiento {
+    + sumIngresos(): double
+    + sumGastos(): double
+  }
 
+  class DAOCartera {
+    + buscarPorNombre(nombre: String): Cartera
+    + obtenerOCrear(nombre: String, tipo: String): Cartera
+    + sumSaldoActual(): double
+  }
+}
 ' --- Módulo de Deudas ---
 package "Gestión de Deudas" #LightGreen {
   class ControladorDeudas {
@@ -75,20 +85,46 @@ package "Gestión de Deudas" #LightGreen {
 
 ' --- Módulo de Recordatorios ---
 package "Recordatorios" #LightYellow {
-  class ControladorRecordatorios {
-    + registrarRecordatorio(): Recordatorio
-    + listarRecordatorios(): List
-    + eliminarRecordatorio(int, String)
+  class ServletRecordatorio  {
+    - recordatorioDAO: DAORecordatorio
+    - listarRecordatorios(): void
+    - mostrarFormulario(recordatorio: Recordatorio): void
+    - mostrarFormularioEditar(): void
+    - construirRecordatorioDesdeRequest(): Recordatorio
+    - crearRecordatorio(): void
+    - actualizarRecordatorio(): void
+    - borrarRecordatorio(): void
+  }
+
+  class ServletNotificacion  {
+    - recordatorioDAO: DAORecordatorio
+    - gson: Gson
+    + procesarNotificaciones()
   }
 
   class Recordatorio {
-    - fecha: Date
-    - esRecurrente: boolean
+    - id: Long
+    - fechaInicio: LocalDate
+    - fechaFin: LocalDate
     - descripcion: String
+    - recurrencia: Recurrencia
+    - diasDeAnticipacion: int
+    - monto: double
+    + obtenerFechaVencimiento(hoy: LocalDate): Optional<LocalDate>
+    - calcularProximaFechaVencimiento(desde: LocalDate): LocalDate
   }
 
-  ' DAO del módulo
-  class RecordatorioDAO
+  enum Recurrencia {
+    NINGUNA
+    DIARIA
+    SEMANAL
+    MENSUAL
+    ANUAL
+  }
+
+  class DAORecordatorio {
+    + listarActivos(): List<Recordatorio>
+  }
 }
 
 ' --- Módulo de Resumen ---
@@ -119,17 +155,18 @@ package "Resumen Financiero" #LightSalmon {
 ' ===================================
 
 ' --- Relaciones del Nivel Superior (Inicio -> Controladores) ---
-Inicio o-- ControladorMovimientos
+Inicio o-- ServicioMovimientos
 Inicio o-- ControladorDeudas
-Inicio o-- ControladorRecordatorios
+Inicio "1" o-- "1" ServletRecordatorio
+Inicio "1" o-- "1" ServletNotificacion
 Inicio o-- ControladorResumenFinanciero
 
 
 ' --- Relaciones dentro del paquete de Movimientos ---
-ControladorMovimientos ..> Movimiento
-ControladorMovimientos ..> Cartera
-ControladorMovimientos *-- MovimientoDAO
-ControladorMovimientos *-- CarteraDAO
+ServicioMovimientos ..> Movimiento
+ServicioMovimientos ..> Cartera
+ServicioMovimientos *-- DAOMovimiento
+ServicioMovimientos *-- DAOCartera
 Movimiento <|-- Ingreso
 Movimiento <|-- Gasto
 
@@ -139,24 +176,28 @@ ControladorDeudas ..> DeudaPrestamo
 ControladorDeudas *-- DeudaPrestamoDAO
 
 
-' --- Relaciones dentro de otros paquetes ---
-ControladorRecordatorios ..> Recordatorio
-ControladorRecordatorios *-- RecordatorioDAO
+' --- Relaciones dentro del paquete de Recordatorios ---
+ServletRecordatorio "1" *-- "1" DAORecordatorio : contiene
+ServletRecordatorio "1" ..> "*" Recordatorio : maneja
+ServletRecordatorio "1" ..> "*" Recurrencia : utiliza
+ServletNotificacion "1" *-- "1" DAORecordatorio : contiene
+ServletNotificacion "1" ..> "*" Recordatorio : consulta
+Recordatorio "1" *-- "1" Recurrencia : tiene
+DAORecordatorio "1" ..> "*" Recordatorio : persiste
 ControladorResumenFinanciero ..> ResumenFinanciero
 ControladorResumenFinanciero *-- ResumenFinancieroDAO
 
 
 ' --- Relaciones ENTRE paquetes (Colaboraciones) ---
-' Pagar una deuda USA el controlador de movimientos para registrar el gasto
-ControladorDeudas ..> ControladorMovimientos
+' Pagar una deuda usa el servicio de movimientos para registrar el gasto
+ControladorDeudas ..> ServicioMovimientos
 
 
 ' --- Herencia de la Capa de Datos (DAO) ---
-MovimientoDAO --|> BaseDAO
-CarteraDAO --|> BaseDAO
-DeudaPrestamoDAO --|> BaseDAO
-RecordatorioDAO --|> BaseDAO
-ResumenFinancieroDAO --|> BaseDAO
-
+DAOBase <|-- DAORecordatorio
+DAOBase <|-- DAOMovimiento
+DAOBase <|-- DAOCartera
+DAOBase <|-- DeudaPrestamoDAO
+DAOBase <|-- ResumenFinancieroDAO
 
 @enduml
