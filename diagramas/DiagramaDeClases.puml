@@ -20,7 +20,19 @@ package "Capa de Datos (DAO)" <<Database>> {
 }
 
 ' --- Módulo Principal de la Aplicación ---
-class Inicio
+class Inicio {
++ seleccionarRegistrarIngreso(): void
++ seleccionarRegistrarGasto(): void
++ solicitarTotales(): void
++ seleccionarRegistrarDeuda(): void
++ seleccionarAbonarDeuda(): void
++ solicitarResumenMensual(): void
++ solicitarResumenes(): void
++ seleccionarCrearRecordatorio(): void
++ solicitarListaRecordatorios(): void
++ seleccionarEditarRecordatorio(id: Long): void
++ solicitarEliminarRecordatorio(id: Long): void
+}
 
 ' --- Modulo de Movimientos ---
 package "Gestion de Movimientos" #LightBlue {
@@ -129,24 +141,43 @@ package "Recordatorios" #LightYellow {
 
 ' --- Módulo de Resumen ---
 package "Resumen Financiero" #LightSalmon {
-  class ControladorResumenFinanciero {
-    + registrarResumenFinanciero(): ResumenFinanciero
-    + consultarResumenFinanciero(id: String): ResumenFinanciero
-    + subirArchivo()
-    + procesarInformacion()
+  class ServletResumenFinanciero {
+    + subirArchivo(): void
+    + procesarInformacion(): List<String>
+    + registrarResumenFinanciero(informacionProcesada: List<String>): void
+    + obtenerResumenesFinancieros(): void
+  }
+
+  class ServletDocumentoPDF {
+    + descargarDocumentoPDF(): void
   }
 
   class ServicioResumenFinanciero {
+    + extraerMonto(textoPDF: String): void
+    + extraerFecha(textoPDF: String): void
   }
 
   class ResumenFinanciero {
     - ingresosTotales: double
     - gastosTotales: double
     - ahorroNeto: double
+    - fechaPeriodoAnterior: LocalDate
+    - fechaPeriodoActual: LocalDate
+    - fechaCreacion: LocalDateTime
+    - documentoPDF: DocumentoPDF
+  }
+
+  class DocumentoPDF {
+    - nombre: String
+    - archivo: byte[]
+    - tamaño: Long
+  }
+
+  class DAODocumentoPDF{
   }
 
   ' DAO del módulo
-  class ResumenFinancieroDAO
+  class DAOResumenFinanciero
 }
 
 
@@ -159,7 +190,7 @@ Inicio o-- ServicioMovimientos
 Inicio o-- ControladorDeudas
 Inicio "1" o-- "1" ServletRecordatorio
 Inicio "1" o-- "1" ServletNotificacion
-Inicio o-- ControladorResumenFinanciero
+Inicio o-- ServletResumenFinanciero
 
 
 ' --- Relaciones dentro del paquete de Movimientos ---
@@ -184,8 +215,17 @@ ServletNotificacion "1" *-- "1" DAORecordatorio : contiene
 ServletNotificacion "1" ..> "*" Recordatorio : consulta
 Recordatorio "1" *-- "1" Recurrencia : tiene
 DAORecordatorio "1" ..> "*" Recordatorio : persiste
-ControladorResumenFinanciero ..> ResumenFinanciero
-ControladorResumenFinanciero *-- ResumenFinancieroDAO
+
+' --- Relaciones dentro del paquete de Resumen Financiero ---
+ServletResumenFinanciero ..> "*" ResumenFinanciero : maneja
+ServletResumenFinanciero *-- "1" DAOResumenFinanciero
+ServletResumenFinanciero ..> "1" ServicioResumenFinanciero
+
+ServletDocumentoPDF --> "1" DAODocumentoPDF
+Inicio o-- "1" ServletDocumentoPDF
+DAOResumenFinanciero ..> "*" ResumenFinanciero
+DAODocumentoPDF ..> "*" DocumentoPDF
+DAODocumentoPDF --|> DAOBase
 
 
 ' --- Relaciones ENTRE paquetes (Colaboraciones) ---
@@ -198,6 +238,6 @@ DAOBase <|-- DAORecordatorio
 DAOBase <|-- DAOMovimiento
 DAOBase <|-- DAOCartera
 DAOBase <|-- DeudaPrestamoDAO
-DAOBase <|-- ResumenFinancieroDAO
+DAOBase <|-- DAOResumenFinanciero
 
 @enduml
