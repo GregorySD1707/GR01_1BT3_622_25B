@@ -26,7 +26,7 @@ class Inicio
 package "Gestion de Movimientos" #LightBlue {
   class ServicioMovimientos {
     - movimientoDAO: DAOMovimiento
-    - carteraDAO: CarteraDAO
+    - carteraDAO: DAOCartera
     + registrarIngreso(monto: double, descripcion: String, categoria: String, nombreCartera: String): Movimiento
     + registrarGasto(monto: double, descripcion: String, categoria: String, nombreCartera: String): Movimiento
     + actualizarCartera(delta: double, nombreCartera: String, tipoSiNoExiste: String): Cartera
@@ -86,7 +86,7 @@ package "Gestión de Deudas" #LightGreen {
 ' --- Módulo de Recordatorios ---
 package "Recordatorios" #LightYellow {
   class ServletRecordatorio  {
-    - recordatorioDAO: RecordatorioDAO
+    - recordatorioDAO: DAORecordatorio
     - listarRecordatorios(): void
     - mostrarFormulario(recordatorio: Recordatorio): void
     - mostrarFormularioEditar(): void

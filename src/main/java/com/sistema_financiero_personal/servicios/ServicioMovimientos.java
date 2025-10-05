@@ -1,6 +1,6 @@
 package com.sistema_financiero_personal.servicios;
 
-import com.sistema_financiero_personal.daos.CarteraDAO;
+import com.sistema_financiero_personal.daos.DAOCartera;
 import com.sistema_financiero_personal.daos.DAOMovimiento;
 import com.sistema_financiero_personal.modelos.Cartera;
 import com.sistema_financiero_personal.modelos.Movimiento;
@@ -11,14 +11,14 @@ import java.util.Objects;
 public class ServicioMovimientos {
 
     private final DAOMovimiento movimientoDAO;
-    private final CarteraDAO carteraDAO;
+    private final DAOCartera carteraDAO;
 
     public ServicioMovimientos() {
         this.movimientoDAO = new DAOMovimiento();
-        this.carteraDAO = new CarteraDAO();
+        this.carteraDAO = new DAOCartera();
     }
 
-    public ServicioMovimientos(DAOMovimiento movimientoDAO, CarteraDAO carteraDAO) {
+    public ServicioMovimientos(DAOMovimiento movimientoDAO, DAOCartera carteraDAO) {
         this.movimientoDAO = movimientoDAO;
         this.carteraDAO = carteraDAO;
     }

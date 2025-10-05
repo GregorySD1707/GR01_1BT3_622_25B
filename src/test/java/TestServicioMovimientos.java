@@ -1,4 +1,4 @@
-import com.sistema_financiero_personal.daos.CarteraDAO;
+import com.sistema_financiero_personal.daos.DAOCartera;
 import com.sistema_financiero_personal.daos.DAOMovimiento;
 import com.sistema_financiero_personal.modelos.Cartera;
 import com.sistema_financiero_personal.modelos.Movimiento;
@@ -14,13 +14,13 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestServicioMovimientos {
 
     private ServicioMovimientos servicio;
-    private CarteraDAO carteraDAO;
+    private DAOCartera carteraDAO;
     private DAOMovimiento movimientoDAO;
 
     @BeforeEach
     void setup() {
         servicio = new ServicioMovimientos();
-        carteraDAO = new CarteraDAO();
+        carteraDAO = new DAOCartera();
         movimientoDAO = new DAOMovimiento();
     }
 
