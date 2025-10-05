@@ -160,7 +160,8 @@ loop para cada recordatorio
 end
 
 servletNotificacion -> servletNotificacion: procesarNotificaciones()
-servletNotificacion --> usuario: notificaciones JSON
+servletNotificacion --> inicio: notificaciones JSON
+inicio -->  usuario: mostrarNotificaciones()
 
 
 @enduml

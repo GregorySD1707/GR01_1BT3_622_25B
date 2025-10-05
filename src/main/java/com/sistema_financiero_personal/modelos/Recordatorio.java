@@ -180,3 +180,4 @@ public class Recordatorio {
             return proximaFecha.isAfter(fechaFin) ? null : proximaFecha;
         }
 }
+

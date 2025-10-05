@@ -18,6 +18,42 @@
     </a>
 </div>
 
+<%-- Mensajes de notificación --%>
+<c:if test="${param.exito == 'creado'}">
+    <div class="alert alert-success">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20,6 9,17 4,12"></polyline>
+        </svg>
+        Recordatorio creado exitosamente
+    </div>
+</c:if>
+<c:if test="${param.exito == 'actualizado'}">
+    <div class="alert alert-success">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20,6 9,17 4,12"></polyline>
+        </svg>
+        Recordatorio actualizado exitosamente
+    </div>
+</c:if>
+<c:if test="${param.exito == 'eliminado'}">
+    <div class="alert alert-success">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20,6 9,17 4,12"></polyline>
+        </svg>
+        Recordatorio eliminado exitosamente
+    </div>
+</c:if>
+<c:if test="${param.error == 'idInvalido'}">
+    <div class="alert alert-danger">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+        </svg>
+        Error: ID de recordatorio inválido
+    </div>
+</c:if>
+
 <section class="controls">
     <div class="search-wrapper">
         <input id="search-input" class="search" type="text" placeholder="Buscar por descripción..." />

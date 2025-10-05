@@ -33,7 +33,6 @@ public class ServletNotificacion extends HttpServlet {
         try {
             LocalDate hoy = LocalDate.now();
             List<Recordatorio> recordatorios = recordatorioDAO.listarActivos();
-
             List<Map<String, String>> notificaciones = new ArrayList<>();
 
             if (recordatorios != null && !recordatorios.isEmpty()) {
@@ -47,15 +46,25 @@ public class ServletNotificacion extends HttpServlet {
                 }
             }
 
-            String jsonResponse = this.gson.toJson(notificaciones);
-
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write(jsonResponse);
+            procesarNotificaciones(response, notificaciones);
 
         } catch (Exception e) {
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing request");
         }
+    }
+
+    /**
+     * Procesa las notificaciones generadas y las envía como respuesta JSON
+     * @param response HttpServletResponse para escribir la respuesta
+     * @param notificaciones Lista de notificaciones a procesar y enviar
+     * @throws IOException Si hay error al escribir la respuesta
+     */
+    private void procesarNotificaciones(HttpServletResponse response, List<Map<String, String>> notificaciones) throws IOException {
+        String jsonResponse = this.gson.toJson(notificaciones);
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");  
+        response.getWriter().write(jsonResponse);
     }
 }

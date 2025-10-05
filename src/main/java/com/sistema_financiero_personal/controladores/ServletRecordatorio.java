@@ -73,7 +73,6 @@ public class ServletRecordatorio extends HttpServlet {
 
     private void mostrarFormulario(HttpServletRequest request, HttpServletResponse response, Recordatorio recordatorio) throws ServletException, IOException {
         request.setAttribute("recordatorio", recordatorio);
-        // También enviamos los valores del enum para poblar el <select> en el JSP
         request.setAttribute("recurrencias", Recurrencia.values());
         request.getRequestDispatcher("/VistaFormularioRecordatorio.jsp").forward(request, response);
     }
