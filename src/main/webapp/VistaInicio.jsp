@@ -43,7 +43,7 @@
                     </svg>
                     Ingresos y gastos
                 </a>
-            </div>g
+            </div>
         </div>
         <div class="hero-visual">
             <div class="dashboard-mockup">

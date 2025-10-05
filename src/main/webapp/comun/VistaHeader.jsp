@@ -28,7 +28,7 @@
     <a href="${pageContext.request.contextPath}/resumen_financiero.jsp">Ingresos y gastos</a>
     <a href="${pageContext.request.contextPath}/resumen_financiero.jsp">Deudas y prestamos</a>
     <a href="${pageContext.request.contextPath}/VistaResumenFinanciero.jsp">Reportes</a>
-    <a href="${pageContext.request.contextPath}/VistaRecordatorios.jsp">Recordatorios</a>
+    <a href="${pageContext.request.contextPath}/recordatorios">Recordatorios</a>
     
   </nav>
 </aside>
