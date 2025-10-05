@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ page isELIgnored="false" %>
 
 <%-- RUTA: /comun/VistaHeader.jsp --%>
@@ -24,9 +25,11 @@
     <button id="close-sidebar-btn" class="icon-btn">&times;</button>
   </div>
   <nav class="sidebar-nav">
+    <a href="${pageContext.request.contextPath}/resumen_financiero.jsp">Ingresos y gastos</a>
+    <a href="${pageContext.request.contextPath}/resumen_financiero.jsp">Deudas y prestamos</a>
+    <a href="${pageContext.request.contextPath}/VistaResumenFinanciero.jsp">Reportes</a>
     <a href="${pageContext.request.contextPath}/VistaRecordatorios.jsp">Recordatorios</a>
-    <a href="${pageContext.request.contextPath}/resumen_financiero.jsp">Reportes</a>
-
+    
   </nav>
 </aside>
 <div id="overlay"></div>
@@ -54,8 +57,8 @@
         </button>
         <div id="notification-list" class="dropdown-menu">
         </div>
-      </div>
-      <div class="user-menu">
+     <!-- </div>
+        <div class="user-menu">
         <button class="user-avatar"><span>EU</span></button>
         <div class="dropdown-menu">
           <div class="dropdown-header">
@@ -66,8 +69,8 @@
           <a href="#" class="dropdown-item">Configuración</a>
           <div class="dropdown-divider"></div>
           <a href="#" class="dropdown-item logout">Cerrar Sesión</a>
-        </div>
-      </div>
+        </div>  
+      </div> -->
     </div>
   </div>
 </header>

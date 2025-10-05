@@ -126,6 +126,14 @@ a:hover {
 }
 
 .user-menu {
+
+.hero-actions .btn-large {
+    min-width: 200px;
+    width: 200px;
+    justify-content: center;
+    text-align: center;
+    flex-shrink: 0;
+}
     position: relative;
 }
 
