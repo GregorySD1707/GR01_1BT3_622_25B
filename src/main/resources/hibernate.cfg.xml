@@ -22,5 +22,6 @@
         <!-- Entidades -->
         <mapping class="com.sistema_financiero_personal.modelos.Recordatorio"/>
         <mapping class="com.sistema_financiero_personal.modelos.ResumenFinanciero"/>
+        <mapping class="com.sistema_financiero_personal.modelos.DocumentoPDF"/>
     </session-factory>
 </hibernate-configuration>

@@ -100,6 +100,9 @@ package "Resumen Financiero" #LightSalmon {
     + procesarInformacion()
   }
 
+  class ServicioResumenFinanciero {
+  }
+
   class ResumenFinanciero {
     - ingresosTotales: double
     - gastosTotales: double
