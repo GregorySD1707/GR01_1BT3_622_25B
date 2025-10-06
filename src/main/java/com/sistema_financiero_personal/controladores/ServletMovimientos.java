@@ -48,19 +48,16 @@ public class ServletMovimientos extends HttpServlet {
 
         try {
             double monto = Double.parseDouble(montoStr);
-            if ("INGRESO".equalsIgnoreCase(tipo)) {
-                registrarIngreso(monto, descripcion, categoria, nombreCartera);
-            } else if ("GASTO".equalsIgnoreCase(tipo)) {
-                registrarGasto(monto, descripcion, categoria, nombreCartera);
+            if ("INGRESO".equals(tipo)) {
+                servicio.registrarIngreso(monto, descripcion, categoria, nombreCartera);
             } else {
-                throw new IllegalArgumentException("Tipo de movimiento inválido");
+                servicio.registrarGasto(monto, descripcion, categoria, nombreCartera);
             }
-            // Después de registrar, redirigir a GET para refrescar totales
-            response.sendRedirect(request.getContextPath() + "/movimientos");
+            request.setAttribute("mensajeExito", "¡Registrado exitosamente!");
         } catch (Exception e) {
-            request.setAttribute("error", e.getMessage());
-            doGet(request, response);
+            request.setAttribute("mensajeError", "Error al registrar el movimiento: " + e.getMessage());
         }
+        doGet(request, response);
     }
 
     // Métodos de fachada hacia el servicio
