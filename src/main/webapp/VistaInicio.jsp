@@ -1,4 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ include file="comun/VistaHeader.jsp" %>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -12,7 +14,6 @@
 <section class="hero-section">
     <div class="hero-content">
         <div class="hero-text">
-            <h2>Saldo actual: $${saldoActual}</h2>
             <h1 class="hero-title">Controla tus finanzas con <span class="text-gradient">EconoMe</span></h1>
             <p class="hero-subtitle">La plataforma inteligente que te ayuda a gestionar tu dinero, planificar tu futuro y alcanzar tus metas financieras de manera sencilla y efectiva.</p>
             <div class="hero-actions">
@@ -48,6 +49,12 @@
         </div>
         <div class="hero-visual">
             <div class="dashboard-mockup">
+                <div style="width:100%;display:flex;justify-content:center;margin-bottom:12px;">
+                    <div style="background:#222e3c;color:#fff;padding:8px 18px;border-radius:10px;font-size:1.2rem;font-weight:bold;box-shadow:0 2px 8px #0002;">
+                        Saldo actual: $
+                        <fmt:formatNumber value="${saldoActual}" type="number" minFractionDigits="2" maxFractionDigits="2"/>
+                    </div>
+                </div>
                 <div class="mockup-header">
                     <div class="mockup-dots">
                         <span></span>
@@ -67,12 +74,16 @@
                     </div>
                     <div class="stats-row">
                         <div class="stat-item">
-                            <div class="stat-value">$---</div>
                             <div class="stat-label">Ingresos</div>
+                            <div class="stat-value">$
+                                <fmt:formatNumber value="${ingresosTotales}" type="number" minFractionDigits="2" maxFractionDigits="2"/>
+                            </div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value">$---</div>
                             <div class="stat-label">Gastos</div>
+                            <div class="stat-value">$
+                                <fmt:formatNumber value="${gastosTotales}" type="number" minFractionDigits="2" maxFractionDigits="2"/>
+                            </div>
                         </div>
                     </div>
                 </div>

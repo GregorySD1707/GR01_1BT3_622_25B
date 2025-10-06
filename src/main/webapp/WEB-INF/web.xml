@@ -28,6 +28,7 @@
   
   <!-- Página de inicio por defecto -->
   <welcome-file-list>
+    <welcome-file>inicio</welcome-file>
     <welcome-file>VistaInicio.jsp</welcome-file>
     <welcome-file>index.jsp</welcome-file>
     <welcome-file>index.html</welcome-file>
