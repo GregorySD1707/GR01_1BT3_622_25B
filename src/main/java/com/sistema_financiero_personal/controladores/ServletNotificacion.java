@@ -37,7 +37,7 @@ public class ServletNotificacion extends HttpServlet {
 
             if (recordatorios != null && !recordatorios.isEmpty()) {
                 for (Recordatorio r : recordatorios) {
-                    r.obtenerFechaVencimiento(hoy).ifPresent(fechaVencimiento -> {
+                    r.obtenerFechaNotificable(hoy).ifPresent(fechaVencimiento -> {
                         Map<String, String> notificacion = new HashMap<>();
                         notificacion.put("descripcion", r.getDescripcion());
                         notificacion.put("fecha", fechaVencimiento.toString());
