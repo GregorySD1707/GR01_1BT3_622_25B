@@ -30,17 +30,9 @@ public class ServletConsultaResumenesFinancieros extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             // Obtener todos los resumenes de la base de datos
-            List<ResumenFinanciero> resumenes = DAOResumenFinanciero.listar();
+            List<ResumenFinanciero> resumenes = DAOResumenFinanciero.listarConDocumentosPDF();
 
-            // Para cada resumen, obtener información del PDF
-            List<DocumentoPDF> documentos = new ArrayList<>();
-            for (ResumenFinanciero resumen : resumenes) {
-                DocumentoPDF doc = DAODocumentoPDF.buscarPorId((long) resumen.getDocumentoPDFId());
-                documentos.add(doc);
-                System.out.println(resumen);
-            }
-
-            mostrarInformacionDeLosResumenesFinancieros(request, response, resumenes, documentos);
+            mostrarInformacionDeLosResumenesFinancieros(request, response, resumenes);
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Error al consultar resúmenes: " + e.getMessage());
@@ -48,10 +40,9 @@ public class ServletConsultaResumenesFinancieros extends HttpServlet {
         }
     }
 
-    private static void mostrarInformacionDeLosResumenesFinancieros(HttpServletRequest request, HttpServletResponse response, List<ResumenFinanciero> resumenes, List<DocumentoPDF> documentos) throws ServletException, IOException {
+    private static void mostrarInformacionDeLosResumenesFinancieros(HttpServletRequest request, HttpServletResponse response, List<ResumenFinanciero> resumenes) throws ServletException, IOException {
         // Enviar al JSP
         request.setAttribute("ResumenesFinancieros", resumenes);
-        request.setAttribute("DocumentosPDF", documentos); // Nueva lista
         request.getRequestDispatcher("/VistaResumenFinanciero.jsp").forward(request, response);
     }
 

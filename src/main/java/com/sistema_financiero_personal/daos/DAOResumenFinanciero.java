@@ -1,7 +1,12 @@
 package com.sistema_financiero_personal.daos;
 
 import com.sistema_financiero_personal.modelos.ResumenFinanciero;
-
+import jakarta.persistence.criteria.JoinType;
+import org.hibernate.Session;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+import java.util.List;
 
 public class DAOResumenFinanciero extends DAOBase<ResumenFinanciero> {
 
@@ -14,4 +19,19 @@ public class DAOResumenFinanciero extends DAOBase<ResumenFinanciero> {
         // delega al método genérico de creación del BaseDAO
         crear(resumenFinanciero);
     }
+
+    public List<ResumenFinanciero> listarConDocumentosPDF(){
+        return executeQuery(session -> {
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<ResumenFinanciero> cq = cb.createQuery(ResumenFinanciero.class);
+            Root<ResumenFinanciero> root = cq.from(ResumenFinanciero.class);
+
+            root.fetch("documentoPDF", JoinType.INNER);
+
+            cq.select(root);
+
+            return  session.createQuery(cq).getResultList();
+        });
+    }
+
 }

@@ -40,6 +40,7 @@
     <c:forEach var="resumen" items="${ResumenesFinancieros}" varStatus="status">
         <div style="margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 2px solid var(--border-color);">
             <h3 style="margin-bottom: 1rem; color: var(--accent-primary);">Resumen #${resumen.id}</h3>
+            <span><p style="color: var(--text-secondary); margin: 0.5rem 0;">Fecha de Creación: ${resumen.fechaCreacionFormateada}</p></span>
             <span>Período: ${resumen.fechaPeriodoAnterior} / ${resumen.fechaPeriodoActual}</span>
             <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
                 <%-- Tarjeta de Ingresos --%>
@@ -106,8 +107,7 @@
                 </article>
 
                 <%-- Nueva card del PDF --%>
-                            <c:if test="${not empty DocumentosPDF[status.index]}">
-                                <c:set var="documento" value="${DocumentosPDF[status.index]}" />
+                <c:if test="${not empty resumen.documentoPDF}">
                 <%-- Tarjeta del PDF con opción de descarga --%>
                 <article class="card">
                     <div class="card-header">
@@ -126,16 +126,16 @@
                         <div style="text-align: center;">
 
                             <p style="font-weight: 600; color: var(--text-primary); margin: 0.25rem 0;">
-                                ${documento.nombre}
+                                ${resumen.documentoPDF.nombre}
                             </p>
                             <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0.25rem 0;">
-                                <fmt:formatNumber value="${documento.tamanio / 1024}" maxFractionDigits="0" /> KB
+                                <fmt:formatNumber value="${resumen.documentoPDF.tamanio / 1024}" maxFractionDigits="0" /> KB
                             </p>
 
                         </div>
 
                         <div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center;">
-                            <a href="${pageContext.request.contextPath}/descargarPDF?id=${documento.id}"
+                            <a href="${pageContext.request.contextPath}/descargarPDF?id=${resumen.documentoPDF.id}"
                                class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -144,8 +144,6 @@
                                 </svg>
                                 Descargar
                             </a>
-
-
                         </div>
                     </div>
                 </article>
@@ -194,9 +192,7 @@
 
     </div>
 
-    <span>    <p style="color: var(--text-secondary); margin: 0.5rem 0;">
-                                                  Fecha de Creación: ${fechaCreacionFormateada}
-                                              </p></span>
+    <span>    <p style="color: var(--text-secondary); margin: 0.5rem 0;">Fecha de Creación: ${fechaCreacionFormateada}</p></span>
     <span><p style="margin: 1.rem;"> Período: ${fechaPeriodoAnterior} / ${fechaPeriodoActual} </p></span>
 
 

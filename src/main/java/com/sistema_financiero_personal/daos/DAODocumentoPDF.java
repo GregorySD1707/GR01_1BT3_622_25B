@@ -8,7 +8,7 @@ public class DAODocumentoPDF extends DAOBase<DocumentoPDF> {
         super(DocumentoPDF.class);
     }
 
-    public Long guardarPDF(String nombre, byte[] archivoPdf) {
+    public DocumentoPDF guardarPDF(String nombre, byte[] archivoPdf) {
         Long tamanio = (long) archivoPdf.length;
         DocumentoPDF documento = new DocumentoPDF(nombre, archivoPdf, tamanio);
 
@@ -17,6 +17,6 @@ public class DAODocumentoPDF extends DAOBase<DocumentoPDF> {
             session.flush();
         });
 
-        return documento.getId();
+        return documento;
     }
 }
