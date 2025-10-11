@@ -1,16 +1,18 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ page isELIgnored="false" %>
-<%@ taglib uri="jakarta.tags.core" prefix="c" %>
-<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %> <%-- Definir que esta página generará HTML con codificación UTF-8 --%>
+<%@ page isELIgnored="false" %> <%--  Habilita Expression Language (EL) para usar sintaxis ${variable} -->
+<%-- Taglibs: Importa bibliotecas JSTL --%>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %> <%-- c para control de flujp --%>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %> <%-- fmt para formateo de numeros y fechas --%>
 
 <%-- 1. Incluimos el header que abre <html>, <body> y <main> --%>
 <jsp:include page="/comun/VistaHeader.jsp">
-    <jsp:param name="paitle" value="Resumen Financiero"/>
+    <jsp:param name="title" value="Resumen Financiero"/>
 </jsp:include>
 
-<%-- 2. Contenido específico de esta página --%>
+<%-- 2. Encabezado Principal: Nombre del modulo y boton para consultar resumenes --%>
 <div class="page-header">
     <h1>Gestión de Resumen Financiero</h1>
+
     <a href="${pageContext.request.contextPath}/consultarResumenes" class="btn btn-secondary">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
@@ -317,14 +319,14 @@
 <script>
 function updateFileName(input) {
     const fileName = input.files[0]?.name || 'Ningún archivo seleccionado';
-    document.ElementById('file-name').textContent = fileName;
+    document.getElementById('file-name').textContent = fileName;
 }
 // Limpiar el input file cuando la página carga (evita problema de caché)
  window.addEventListener('load', function() {
-     const fileInput = document.ElementById('archivoPDF');
+     const fileInput = document.getElementById('archivoPDF');
      if (fileInput) {
          fileInput.value = '';
-         const fileNameElement = document.ElementById('file-name');
+         const fileNameElement = document.getElementById('file-name');
          if (fileNameElement) {
              fileNameElement.textContent = 'Ningún archivo seleccionado';
          }
