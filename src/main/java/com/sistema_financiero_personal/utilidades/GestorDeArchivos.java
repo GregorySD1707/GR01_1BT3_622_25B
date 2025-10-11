@@ -1,5 +1,9 @@
 package com.sistema_financiero_personal.utilidades;
 
+import jakarta.servlet.GenericServlet;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 
 import java.io.File;
@@ -10,34 +14,48 @@ import java.nio.file.StandardCopyOption;
 
 public class GestorDeArchivos {
 
+    public static Part obtenerArchivo(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        Part archivoDeFormulario = request.getPart("archivoPDF"); // Obtener archivo del formulario
+
+        if(archivoDeFormulario == null || archivoDeFormulario.getSize() == 0){ // Validar archivo
+            request.setAttribute("error", "Por favor selecciona un archivo PDF");
+            request.getRequestDispatcher("/VistaResumenFinanciero.jsp").forward(request, response);
+            return null;
+        }
+        return archivoDeFormulario;
+    }
+
     public static void eliminarArchivo(String rutaDeArchivo) {
-        // Eliminar archivo
-        new File(rutaDeArchivo).delete();
+        new File(rutaDeArchivo).delete(); // Eliminar archivo
     }
 
     public static byte[] transformarArchivoABytes(Part filePart) throws IOException {
-        // Leer archivo PDF como bytes[]
         byte[] archivoBytes;
-        try (InputStream inputStream = filePart.getInputStream()){
+        try (InputStream inputStream = filePart.getInputStream()){ // Leer archivo PDF como bytes[]
             archivoBytes = inputStream.readAllBytes();
         }
         return archivoBytes;
     }
 
-    public static String generarNombreDeArchivoTemporal(String uploadPath) {
-        // Generar nombre para el archivo temporal
-        String fileName = "temp_" + System.currentTimeMillis() + ".pdf";
-        String filePath = uploadPath + File.separator + fileName;
-        return filePath;
-    }
-
     public static void guardarArchivoTemporal(Part filePart, String filePath) {
-        // guardar el archivo en una ubicación
         try (InputStream inputStream = filePart.getInputStream()){
-            Files.copy(inputStream, new File(filePath).toPath(),
+            Files.copy(inputStream, new File(filePath).toPath(), // guardar el archivo en una ubicación
                     StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static String obtenerRutaDeArchivoTemporal(GenericServlet genericServlet, HttpServletRequest request,
+                                                      HttpServletResponse response) throws ServletException, IOException {
+        String rutaDeSubida = GestorDeDirectorios.crearDirectorioTemporal(genericServlet);
+        String nombreArchivoTemporal = "temp_" + System.currentTimeMillis() + ".pdf";
+        String rutaDelArchivo = rutaDeSubida + File.separator + nombreArchivoTemporal;
+
+        Part archivoDeFormulario = obtenerArchivo(request, response);
+        if (archivoDeFormulario == null) return null;
+
+        guardarArchivoTemporal(archivoDeFormulario, rutaDelArchivo);
+        return rutaDelArchivo;
     }
 }
