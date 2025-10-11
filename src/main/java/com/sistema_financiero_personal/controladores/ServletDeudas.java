@@ -23,24 +23,26 @@ public class ServletDeudas extends HttpServlet {
         String accion = req.getParameter("accion");
         // Soporte por defecto: listar cuando no se especifica acción o cuando es "listar"
         if (accion == null || "listar".equals(accion)) {
-            List<DeudaPrestamo> deudas = servicioDeudas.obtenerDeudasPendientes();
+            List<DeudaPrestamo> deudasBase = servicioDeudas.obtenerDeudasPendientes();
 
             // Filtros opcionales por query params: nombrePersona, fechaInicio, fechaFin
             String nombreFiltro = req.getParameter("nombrePersona");
             String fechaInicioStr = req.getParameter("fechaInicio");
             String fechaFinStr = req.getParameter("fechaFin");
 
+            List<DeudaPrestamo> deudasFiltradasPorNombre = deudasBase;
             if (nombreFiltro != null && !nombreFiltro.trim().isEmpty()) {
                 String lower = nombreFiltro.trim().toLowerCase();
-                deudas = deudas.stream()
+                deudasFiltradasPorNombre = deudasBase.stream()
                         .filter(d -> d.getNombrePersona() != null && d.getNombrePersona().toLowerCase().contains(lower))
                         .collect(Collectors.toList());
             }
 
+            List<DeudaPrestamo> deudasFiltradasPorFechaInicio = deudasFiltradasPorNombre;
             if (fechaInicioStr != null && !fechaInicioStr.trim().isEmpty()) {
                 try {
                     LocalDate inicio = LocalDate.parse(fechaInicioStr);
-                    deudas = deudas.stream()
+                    deudasFiltradasPorFechaInicio = deudasFiltradasPorNombre.stream()
                             .filter(d -> d.getFechaPago() != null && !d.getFechaPago().isBefore(inicio))
                             .collect(Collectors.toList());
                 } catch (Exception ignored) {
@@ -48,16 +50,19 @@ public class ServletDeudas extends HttpServlet {
                 }
             }
 
+            List<DeudaPrestamo> deudasFiltradasPorFechaFin = deudasFiltradasPorFechaInicio;
             if (fechaFinStr != null && !fechaFinStr.trim().isEmpty()) {
                 try {
                     LocalDate fin = LocalDate.parse(fechaFinStr);
-                    deudas = deudas.stream()
+                    deudasFiltradasPorFechaFin = deudasFiltradasPorFechaInicio.stream()
                             .filter(d -> d.getFechaPago() != null && !d.getFechaPago().isAfter(fin))
                             .collect(Collectors.toList());
                 } catch (Exception ignored) {
                     // Ignorar si no es válido
                 }
             }
+
+            List<DeudaPrestamo> deudas = deudasFiltradasPorFechaFin;
 
             // Lista de personas (para autocompletar/select en la vista)
             List<String> personas = deudas.stream()
