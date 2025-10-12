@@ -41,10 +41,6 @@ public class ServicioResumenFinanciero {
         return fecha;
     }
 
-    public static double calcularAhorroNeto(Double ingresos, Double gastos) {
-        return ingresos - gastos;
-    }
-
     public static ResumenFinanciero procesarInformacion(HttpServletRequest request, HttpServletResponse response, String rutaArchivo, DocumentoPDF documentoPDF) throws IOException, ServletException {
         // Extraer texto del PDF
         String textoPDF = ExtractorTexto.extraerTextoDePDF(rutaArchivo);
@@ -71,8 +67,6 @@ public class ServicioResumenFinanciero {
 
         GestorDeArchivos.eliminarArchivo(rutaArchivo);
 
-        double ahorroNeto = ServicioResumenFinanciero.calcularAhorroNeto(ingresos, gastos);
-
-        return new ResumenFinanciero(ingresos, gastos, ahorroNeto, fechaPeriodoAnterior, fechaPeriodoActual, documentoPDF);
+        return new ResumenFinanciero(ingresos, gastos, fechaPeriodoAnterior, fechaPeriodoActual, documentoPDF);
     }
 }

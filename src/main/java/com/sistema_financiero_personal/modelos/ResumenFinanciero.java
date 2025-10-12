@@ -46,22 +46,24 @@ public class ResumenFinanciero {
         this.fechaCreacion = LocalDateTime.now();
     }
 
-    public ResumenFinanciero(Double ingresosTotales, double gastosTotales, double ahorroNeto, LocalDate fechaPeriodoAnterior, LocalDate fechaPeriodoActual, DocumentoPDF documentoPDF) {
+    public ResumenFinanciero(Double ingresosTotales, double gastosTotales, LocalDate fechaPeriodoAnterior, LocalDate fechaPeriodoActual, DocumentoPDF documentoPDF) {
         this.ingresosTotales = ingresosTotales;
         this.gastosTotales = gastosTotales;
-        this.ahorroNeto = ahorroNeto;
         this.fechaPeriodoAnterior = fechaPeriodoAnterior;
         this.fechaPeriodoActual = fechaPeriodoActual;
         this.documentoPDF = documentoPDF;
         this.fechaCreacion = LocalDateTime.now();
     }
+
+    public double getAhorroNeto() {return calcularAhorroNeto();}
+
+    public double calcularAhorroNeto(){return ingresosTotales - gastosTotales;}
+
     public Long getId(){return id;}
 
     public double getIngresosTotales() {return ingresosTotales;}
 
     public double getGastosTotales() {return gastosTotales;}
-
-    public double getAhorroNeto() {return ahorroNeto;}
 
     public LocalDate getFechaPeriodoAnterior() {return  fechaPeriodoAnterior;}
 
