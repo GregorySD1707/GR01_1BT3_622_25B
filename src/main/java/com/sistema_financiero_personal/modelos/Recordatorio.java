@@ -75,7 +75,9 @@ public class Recordatorio {
 
         LocalDate fechaNotificacion = proximaFechaVencimiento.minusDays(diasDeAnticipacionAUX);
 
-        if (!hoy.isBefore(fechaNotificacion) && !hoy.isAfter(proximaFechaVencimiento)) {
+        boolean esNotificable = !hoy.isBefore(fechaNotificacion) && !hoy.isAfter(proximaFechaVencimiento);
+
+        if (esNotificable) {
             return Optional.of(proximaFechaVencimiento);
         } else {
             return Optional.empty();
