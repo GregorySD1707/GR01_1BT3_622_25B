@@ -1,19 +1,25 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %> <%-- Definir que esta página generará HTML con codificación UTF-8 --%>
 <%@ page isELIgnored="false" %> <%--  Habilita Expression Language (EL) para usar sintaxis ${variable} -->
 <%-- Taglibs: Importa bibliotecas JSTL --%>
-<%@ taglib uri="jakarta.tags.core" prefix="c" %> <%-- c para control de flujp --%>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %> <%-- c para control de flujo --%>
 <%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %> <%-- fmt para formateo de numeros y fechas --%>
 
-<%-- 1. Incluimos el header que abre <html>, <body> y <main> --%>
+<%-- 1. header --%>
 <jsp:include page="/comun/VistaHeader.jsp">
     <jsp:param name="title" value="Resumen Financiero"/>
 </jsp:include>
 
-<%-- 2. Encabezado Principal: Nombre del modulo y boton para consultar resumenes --%>
+<%-- 2. Variables Reutilizables (Introduce Explaining Variable) --%>
+<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+<c:set var="tieneResumenes" value="${not empty ResumenesFinancieros}"/>
+<c:set var="tieneResultados" value="${not empty Ingresos}"/>
+<c:set var="tieneError" value="${not empty error}"/>
+
+<%-- 3. Encabezado Principal: Nombre del modulo y boton para consultar resumenes --%>
 <div class="page-header">
     <h1>Gestión de Resumen Financiero</h1>
 
-    <a href="${pageContext.request.contextPath}/consultarResumenes" class="btn btn-secondary">
+    <a href="${contextPath}/consultarResumenes" class="btn btn-secondary">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
             </svg>
@@ -22,313 +28,144 @@
 
 </div>
 
-<%-- Mostrar lista de resúmenes si existen --%>
-<c:if test="${not empty ResumenesFinancieros}">
-    <div class="page-header" style="margin-top: 2rem;">
-        <h2>Historial de Resúmenes Financieros</h2>
-            <a href="${pageContext.request.contextPath}/VistaResumenFinanciero.jsp" class="btn btn-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
-                    <span>Subir PDF</span>
-            </a>
+<%-- 4. Sección de Historial de Resúmenes --%>
+<c:if test="${tieneResumenes}">
+    <jsp:include page="componentes/EncabezadoSeccion.jsp">
+        <jsp:param name="titulo" value="Historial de Resúmenes Financieros"/>
+        <jsp:param name="textoBoton" value="Subir PDF"/>
+        <jsp:param name="urlBoton" value="${contextPath}/VistaResumenFinanciero.jsp"/>
+    </jsp:include>
 
-    </div>
-
-    <c:forEach var="resumen" items="${ResumenesFinancieros}" varStatus="status">
-        <div style="margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 2px solid var(--border-color);">
-            <h3 style="margin-bottom: 1rem; color: var(--accent-primary);">Resumen #${resumen.id}</h3>
-            <span><p style="color: var(--text-secondary); margin: 0.5rem 0;">Fecha de Creación: ${resumen.fechaCreacionFormateada}</p></span>
-            <span>Período: ${resumen.fechaPeriodoAnterior} / ${resumen.fechaPeriodoActual}</span>
+    <c:forEach var="resumen" items="${ResumenesFinancieros}">
+        <div class="resumen-container">
+            <h3 class="resumen-titulo">Resumen #${resumen.id}</h3>
+            <p class="resumen-fecha">Fecha de Creación: ${resumen.fechaCreacionFormateada}</p>
+            <p class="resumen-periodo">Período: ${resumen.fechaPeriodoAnterior} / ${resumen.fechaPeriodoActual}</p>
             <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
-                <%-- Tarjeta de Ingresos --%>
-                <article class="card">
-                    <div class="card-header">
-                        <div class="card-icon" style="color: #10b981;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="12" y1="1" x2="12" y2="23"></line>
-                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                            </svg>
-                        </div>
-                        <h3 class="card-title">Ingresos</h3>
-                    </div>
-                    <div class="card-body">
-                        <p style="font-size: 1.75rem; font-weight: 600; color: #10b981; margin: 0;">
-                            <fmt:formatNumber value="${resumen.ingresosTotales}" type="currency" currencySymbol="$" />
-                        </p>
-                        <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">
-                            Depósitos y créditos
-                        </p>
-                    </div>
-                </article>
+                <%-- Tarjetas Reutilizables --%>
+                <jsp:include page="componentes/TarjetaMetrica.jsp">
+                    <jsp:param name="titulo" value="Ingresos"/>
+                    <jsp:param name="valor" value="${resumen.ingresosTotales}"/>
+                    <jsp:param name="color" value="#10b981"/>
+                    <jsp:param name="descripcion" value="Depósitos y créditos"/>
+                    <jsp:param name="icono" value="ingresos"/>
+                </jsp:include>
 
-                <%-- Tarjeta de Gastos --%>
-                <article class="card">
-                    <div class="card-header">
-                        <div class="card-icon" style="color: #ef4444;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="15" y1="9" x2="9" y2="15"></line>
-                                <line x1="9" y1="9" x2="15" y2="15"></line>
-                            </svg>
-                        </div>
-                        <h3 class="card-title">Gastos</h3>
-                    </div>
-                    <div class="card-body">
-                        <p style="font-size: 1.75rem; font-weight: 600; color: #ef4444; margin: 0;">
-                            <fmt:formatNumber value="${resumen.gastosTotales}" type="currency" currencySymbol="$" />
-                        </p>
-                        <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">
-                            Cheques y débitos
-                        </p>
-                    </div>
-                </article>
+                <jsp:include page="componentes/TarjetaMetrica.jsp">
+                    <jsp:param name="titulo" value="Gastos"/>
+                    <jsp:param name="valor" value="${resumen.gastosTotales}"/>
+                    <jsp:param name="color" value="#ef4444"/>
+                    <jsp:param name="descripcion" value="Cheques y débitos"/>
+                    <jsp:param name="icono" value="gastos"/>
+                </jsp:include>
 
-                <%-- Tarjeta de Ahorro Neto --%>
-                <article class="card">
-                    <div class="card-header">
-                        <div class="card-icon" style="color: ${resumen.ahorroNeto >= 0 ? '#10b981' : '#ef4444'};">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                            </svg>
-                        </div>
-                        <h3 class="card-title">Ahorro Neto</h3>
-                    </div>
-                    <div class="card-body">
-                        <p style="font-size: 1.75rem; font-weight: 600; color: ${resumen.ahorroNeto >= 0 ? '#10b981' : '#ef4444'}; margin: 0;">
-                            <fmt:formatNumber value="${resumen.ahorroNeto}" type="currency" currencySymbol="$" />
-                        </p>
-                        <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;">
-                            ${resumen.ahorroNeto >= 0 ? 'Balance positivo' : 'Balance negativo'}
-                        </p>
-                    </div>
-                </article>
+                <jsp:include page="componentes/TarjetaAhorroNeto.jsp">
+                    <jsp:param name="valor" value="${resumen.ahorroNeto}"/>
+                </jsp:include>
 
-                <%-- Nueva card del PDF --%>
+                <%-- Tarjeta PDF --%>
                 <c:if test="${not empty resumen.documentoPDF}">
-                <%-- Tarjeta del PDF con opción de descarga --%>
-                <article class="card">
-                    <div class="card-header">
-                        <div class="card-icon" style="color: #3b82f6;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                                <line x1="16" y1="13" x2="8" y2="13"></line>
-                                <line x1="16" y1="17" x2="8" y2="17"></line>
-                                <polyline points="10 9 9 9 8 9"></polyline>
-                            </svg>
-                        </div>
-                        <h3 class="card-title">Documento PDF</h3>
-                    </div>
-                    <div class="card-body">
-                        <div style="text-align: center;">
-
-                            <p style="font-weight: 600; color: var(--text-primary); margin: 0.25rem 0;">
-                                ${resumen.documentoPDF.nombre}
-                            </p>
-                            <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0.25rem 0;">
-                                <fmt:formatNumber value="${resumen.documentoPDF.tamanio / 1024}" maxFractionDigits="0" /> KB
-                            </p>
-
-                        </div>
-
-                        <div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center;">
-                            <a href="${pageContext.request.contextPath}/descargarPDF?id=${resumen.documentoPDF.id}"
-                               class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                    <polyline points="7 10 12 15 17 10"></polyline>
-                                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                                </svg>
-                                Descargar
-                            </a>
-                        </div>
-                    </div>
-                </article>
+                    <jsp:include page="componentes/TarjetaPDF.jsp">
+                        <jsp:param name="documentoId" value="${resumen.documentoPDF.id}"/>
+                        <jsp:param name="documentoNombre" value="${resumen.documentoPDF.nombre}"/>
+                        <jsp:param name="documentoTamanio" value="${resumen.documentoPDF.tamanio}"/>
+                    </jsp:include>
                 </c:if>
             </section>
         </div>
+        <br>
     </c:forEach>
 </c:if>
 
-<%-- Mostrar error si existe --%>
-<c:if test="${not empty error}">
-    <div class="page-header" style="margin-top: 2rem;">
-                <h2>Resultados del Análisis</h2>
-                <a href="${pageContext.request.contextPath}/VistaResumenFinanciero.jsp" class="btn btn-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
-                    <span>Subir Otro PDF</span>
-                </a>
-        </div>
-    <div>
+<%-- 5. Sección de Error --%>
+<c:if test="${tieneError}">
+    <jsp:include page="componentes/EncabezadoSeccion.jsp">
+        <jsp:param name="titulo" value="Resultados del Análisis"/>
+        <jsp:param name="textoBoton" value="Subir Otro PDF"/>
+        <jsp:param name="urlBoton" value="${contextPath}/VistaResumenFinanciero.jsp"/>
+    </jsp:include>
 
-    </div>
-
-    <div class="alert alert-danger" style="margin-top: 1.5rem;">
+    <div class="alert alert-danger">
         <strong>Error:</strong> ${error}
     </div>
 </c:if>
 
-<%-- Mostrar resultados si existen (FUERA del formulario) --%>
-<c:if test="${not empty Ingresos}">
+<%-- 6. Sección de Resultados Individuales --%>
+<c:if test="${tieneResultados}">
+    <jsp:include page="componentes/EncabezadoSeccion.jsp">
+        <jsp:param name="titulo" value="Resultados del Análisis"/>
+        <jsp:param name="textoBoton" value="Subir Otro PDF"/>
+        <jsp:param name="urlBoton" value="${contextPath}/VistaResumenFinanciero.jsp"/>
+    </jsp:include>
 
-    <div class="page-header" style="margin-top: 2rem;">
-            <h2>Resultados del Análisis</h2>
-            <a href="${pageContext.request.contextPath}/VistaResumenFinanciero.jsp" class="btn btn-primary">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="7 10 12 15 17 10"></polyline>
-                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                </svg>
+    <p class="resumen-fecha">Fecha de Creación: ${fechaCreacionFormateada}</p>
+    <p class="resumen-periodo">Período: ${fechaPeriodoAnterior} / ${fechaPeriodoActual}</p>
+    <br>
+    <section class="grid">
+        <jsp:include page="componentes/TarjetaMetrica.jsp">
+            <jsp:param name="titulo" value="Ingresos Totales"/>
+            <jsp:param name="valor" value="${Ingresos}"/>
+            <jsp:param name="color" value="#10b981"/>
+            <jsp:param name="descripcion" value="Depósitos y créditos del período"/>
+            <jsp:param name="tamanoFuente" value="2rem"/>
+            <jsp:param name="icono" value="ingresos"/>
+        </jsp:include>
 
-                <span>Subir Otro PDF</span>
-            </a>
-
-    </div>
-
-    <span>    <p style="color: var(--text-secondary); margin: 0.5rem 0;">Fecha de Creación: ${fechaCreacionFormateada}</p></span>
-    <span><p style="margin: 1.rem;"> Período: ${fechaPeriodoAnterior} / ${fechaPeriodoActual} </p></span>
-
-
-    <section class="grid" style="margin-top: 1rem;">
-        <%-- Tarjeta de Ingresos --%>
-        <article class="card">
-            <div class="card-header">
-                <div class="card-icon" style="color: #10b981;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="1" x2="12" y2="23"></line>
-                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                    </svg>
-                </div>
-                <h3 class="card-title">Ingresos Totales</h3>
-            </div>
-            <div class="card-body">
-                <p style="font-size: 2rem; font-weight: 600; color: #10b981; margin: 0;">
-                    <fmt:formatNumber value="${Ingresos}" type="currency" currencySymbol="$" />
-                </p>
-                <p style="margin-top: 0.5rem; color: var(--text-secondary);">
-                    Depósitos y créditos del período
-                </p>
-            </div>
-        </article>
-
-        <%-- Tarjeta de Gastos --%>
         <c:if test="${not empty Gastos}">
-            <article class="card">
-                <div class="card-header">
-                    <div class="card-icon" style="color: #ef4444;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="15" y1="9" x2="9" y2="15"></line>
-                            <line x1="9" y1="9" x2="15" y2="15"></line>
-                        </svg>
-                    </div>
-                    <h3 class="card-title">Gastos Totales</h3>
-                </div>
-                <div class="card-body">
-                    <p style="font-size: 2rem; font-weight: 600; color: #ef4444; margin: 0;">
-                        <fmt:formatNumber value="${Gastos}" type="currency" currencySymbol="$" />
-                    </p>
-                    <p style="margin-top: 0.5rem; color: var(--text-secondary);">
-                        Cheques y débitos del período
-                    </p>
-                </div>
-            </article>
+            <jsp:include page="componentes/TarjetaMetrica.jsp">
+                <jsp:param name="titulo" value="Gastos Totales"/>
+                <jsp:param name="valor" value="${Gastos}"/>
+                <jsp:param name="color" value="#ef4444"/>
+                <jsp:param name="descripcion" value="Cheques y débitos del período"/>
+                <jsp:param name="tamanoFuente" value="2rem"/>
+                <jsp:param name="icono" value="gastos"/>
+            </jsp:include>
         </c:if>
 
-        <%-- Tarjeta de Ahorro Neto con color condicional --%>
         <c:if test="${not empty AhorroNeto}">
-            <article class="card">
-                <div class="card-header">
-                    <div class="card-icon" style="color: ${AhorroNeto  >= 0 ? '#10b981' : '#ef4444'};">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                        </svg>
-                    </div>
-                    <h3 class="card-title">AhorroNeto</h3>
-                </div>
-                <div class="card-body">
-                    <p style="font-size: 2rem; font-weight: 600; color: ${AhorroNeto >= 0 ? '#10b981' : '#ef4444'}; margin: 0;">
-                        <fmt:formatNumber value="${AhorroNeto}" type="currency" currencySymbol="$" />
-                    </p>
-                    <p style="margin-top: 0.5rem; color: var(--text-secondary);">
-                        ${AhorroNeto >= 0 ? 'Balance positivo del período' : 'Balance negativo del período'}
-                    </p>
-                </div>
-            </article>
+            <jsp:include page="componentes/TarjetaAhorroNeto.jsp">
+                <jsp:param name="valor" value="${AhorroNeto}"/>
+                <jsp:param name="tamanoFuente" value="2rem"/>
+                <jsp:param name="descripcionPersonalizada" value="${AhorroNeto >= 0 ? 'Balance positivo del período' : 'Balance negativo del período'}"/>
+            </jsp:include>
         </c:if>
-                </div>
-            </div>
-        </article>
     </section>
 </c:if>
 
-<%-- Estado vacío cuando no hay resultados --%>
+<%-- 7. Estado Vacío --%>
 <c:if test="${empty Ingresos and empty error and empty ResumenesFinancieros}">
     <div class="empty-state">
         <div class="empty-state-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10 9 9 9 8 9"></polyline>
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
             </svg>
         </div>
         <h2>Sube tu estado de cuenta</h2>
         <p>Envía tu archivo PDF del estado de cuenta bancario</p>
 
-        <form action="subirPDF" method="post" enctype="multipart/form-data" style="max-width: 500px; margin: 1rem auto;">
-            <div class="form-group">
-                <label for="archivoPDF" class="btn btn-secondary" style="cursor: pointer; display: inline-block; margin-bottom: 1rem;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 0.5rem;">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
-                    Seleccionar Archivo PDF
-                </label>
-                <input type="file" id="archivoPDF" name="archivoPDF" accept="application/pdf" required style="display: none;" onchange="updateFileName(this)">
-                <p id="file-name" style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 0.9rem;">Ningún archivo seleccionado</p>
-            </div>
-
-            <div style="text-align: center; margin-top: 1. rem;">
-                <button type="submit" class="btn btn-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="17 8 12 3 7 8"></polyline>
-                        <line x1="12" y1="3" x2="12" y2="15"></line>
-                    </svg>
-                    <span>Procesar</span>
-                </button>
-            </div>
-        </form>
+        <jsp:include page="componentes/FormularioSubirPDF.jsp"/>
     </div>
 </c:if>
 
+<%-- 8. Scripts --%>
 <script>
 function updateFileName(input) {
     const fileName = input.files[0]?.name || 'Ningún archivo seleccionado';
     document.getElementById('file-name').textContent = fileName;
 }
-// Limpiar el input file cuando la página carga (evita problema de caché)
- window.addEventListener('load', function() {
-     const fileInput = document.getElementById('archivoPDF');
-     if (fileInput) {
-         fileInput.value = '';
-         const fileNameElement = document.getElementById('file-name');
-         if (fileNameElement) {
-             fileNameElement.textContent = 'Ningún archivo seleccionado';
-         }
-     }
- });
+
+window.addEventListener('load', function() {
+    const fileInput = document.getElementById('archivoPDF');
+    if (fileInput) {
+        fileInput.value = '';
+        document.getElementById('file-name').textContent = 'Ningún archivo seleccionado';
+    }
+});
 </script>
 
-<%-- 3. Footer que cierra <main>, <body> y <html> --%>
-<jsp:include page="/comun/VistaFooter.jsp" />
+<%-- 9. Footer --%>
+<jsp:include page="/comun/VistaFooter.jsp"/>
