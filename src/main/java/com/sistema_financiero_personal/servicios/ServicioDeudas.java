@@ -1,11 +1,12 @@
 package com.sistema_financiero_personal.servicios;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import com.sistema_financiero_personal.daos.DAODeudaPrestamo;
 import com.sistema_financiero_personal.modelos.DeudaPrestamo;
 import com.sistema_financiero_personal.modelos.EstadoDeudaPrestamo;
 import com.sistema_financiero_personal.modelos.TipoDeudaPrestamo;
-import java.time.LocalDate;
-import java.util.List;
 
 public class ServicioDeudas {
     private final DAODeudaPrestamo daoDeudaPrestamo;
@@ -33,13 +34,16 @@ public class ServicioDeudas {
         if (deuda != null && deuda.getEstado() == EstadoDeudaPrestamo.PENDIENTE) {
             deuda.registrarAbono(monto);
             daoDeudaPrestamo.actualizar(deuda);
-            // Actualizar saldo de cartera según el tipo de deuda/prestamo
-            String nombreCartera = "Cartera principal"; // Puedes parametrizar esto si lo necesitas
-            if (deuda.getTipo() == com.sistema_financiero_personal.modelos.TipoDeudaPrestamo.DEUDA) {
-                servicioMovimientos.registrarGasto(monto, "Abono deuda a " + deuda.getNombrePersona(), "Deudas", nombreCartera);
-            } else if (deuda.getTipo() == com.sistema_financiero_personal.modelos.TipoDeudaPrestamo.PRESTAMO) {
-                servicioMovimientos.registrarIngreso(monto, "Abono préstamo de " + deuda.getNombrePersona(), "Préstamos", nombreCartera);
-            }
+            registrarMovimientoPorAbono(deuda, monto);
+        }
+    }
+
+    private void registrarMovimientoPorAbono(DeudaPrestamo deuda, double monto) {
+        String nombreCartera = "Cartera principal";
+        if (deuda.getTipo() == com.sistema_financiero_personal.modelos.TipoDeudaPrestamo.DEUDA) {
+            servicioMovimientos.registrarGasto(monto, "Abono deuda a " + deuda.getNombrePersona(), "Deudas", nombreCartera);
+        } else if (deuda.getTipo() == com.sistema_financiero_personal.modelos.TipoDeudaPrestamo.PRESTAMO) {
+            servicioMovimientos.registrarIngreso(monto, "Abono préstamo de " + deuda.getNombrePersona(), "Préstamos", nombreCartera);
         }
     }
 

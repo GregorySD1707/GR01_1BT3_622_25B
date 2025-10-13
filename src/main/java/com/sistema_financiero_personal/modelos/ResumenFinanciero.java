@@ -29,8 +29,9 @@ public class ResumenFinanciero {
     @Column(name="fecha_periodo_actual", nullable = false)
     private LocalDate fechaPeriodoActual;
 
-    @Column(name="documento_pdf_id", nullable = false)
-    private int documentoPDFId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "documento_pdf_id")
+    private DocumentoPDF documentoPDF;
 
     @Column(name = "fecha_creacion", nullable = false)
     private LocalDateTime fechaCreacion;
@@ -41,58 +42,49 @@ public class ResumenFinanciero {
         this.ahorroNeto = -1.0;
         fechaPeriodoAnterior = null;
         fechaPeriodoActual = null;
-        documentoPDFId = -1;
+        documentoPDF = null;
         this.fechaCreacion = LocalDateTime.now();
     }
 
-    public ResumenFinanciero(Double ingresosTotales, double gastosTotales, double ahorroNeto, LocalDate fechaPeriodoAnterior, LocalDate fechaPeriodoActual, int documentoPDFId) {
+    public ResumenFinanciero(Double ingresosTotales, double gastosTotales, LocalDate fechaPeriodoAnterior, LocalDate fechaPeriodoActual, DocumentoPDF documentoPDF) {
         this.ingresosTotales = ingresosTotales;
         this.gastosTotales = gastosTotales;
-        this.ahorroNeto = ahorroNeto;
         this.fechaPeriodoAnterior = fechaPeriodoAnterior;
         this.fechaPeriodoActual = fechaPeriodoActual;
-        this.documentoPDFId = documentoPDFId;
+        this.documentoPDF = documentoPDF;
         this.fechaCreacion = LocalDateTime.now();
     }
+
+    public double getAhorroNeto() {return calcularAhorroNeto();}
+
+    public double calcularAhorroNeto(){return ingresosTotales - gastosTotales;}
+
     public Long getId(){return id;}
 
-    public double getIngresosTotales() {
-        return ingresosTotales;
-    }
+    public double getIngresosTotales() {return ingresosTotales;}
 
-    public double getGastosTotales() {
-        return gastosTotales;
-    }
-
-    public double getAhorroNeto() {
-        return ahorroNeto;
-    }
+    public double getGastosTotales() {return gastosTotales;}
 
     public LocalDate getFechaPeriodoAnterior() {return  fechaPeriodoAnterior;}
 
     public LocalDate getFechaPeriodoActual() {return  fechaPeriodoActual;}
 
-    public int getDocumentoPDFId() {return documentoPDFId;}
+    public DocumentoPDF getDocumentoPDF() {return documentoPDF;}
 
-    public void setIngresosTotales(double ingresosTotales) {
-        this.ingresosTotales = ingresosTotales;
-    }
+    public void setIngresosTotales(double ingresosTotales) {this.ingresosTotales = ingresosTotales;}
 
-    public void setGastosTotales(double gastosTotales) {
-        this.gastosTotales = gastosTotales;
-    }
+    public void setGastosTotales(double gastosTotales) {this.gastosTotales = gastosTotales;}
 
-    public void setAhorroNeto(double ahorroNeto) {
-        this.ahorroNeto = ahorroNeto;
-    }
+    public void setAhorroNeto(double ahorroNeto) {this.ahorroNeto = ahorroNeto;}
 
     public void setFechaPeriodoAnterior(LocalDate fechaPeriodoAnterior){ this.fechaPeriodoAnterior = fechaPeriodoAnterior;}
 
     public void setFechaPeriodoActual(LocalDate fechaPeriodoActual){ this.fechaPeriodoActual = fechaPeriodoActual;}
 
-    public void setDocumentoPDFId(int documentoPDFId){this.documentoPDFId = documentoPDFId;}
+    public void setDocumentoPDF(DocumentoPDF documentoPDF){this.documentoPDF = documentoPDF;}
 
     public LocalDateTime getFechaCreacion() { return fechaCreacion; }
+
     public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
 
     public String getFechaCreacionFormateada() {

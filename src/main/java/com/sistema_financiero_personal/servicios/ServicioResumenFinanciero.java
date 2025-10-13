@@ -1,6 +1,9 @@
 package com.sistema_financiero_personal.servicios;
 
+import com.sistema_financiero_personal.modelos.DocumentoPDF;
+import com.sistema_financiero_personal.modelos.ResumenFinanciero;
 import com.sistema_financiero_personal.utilidades.ExtractorTexto;
+import com.sistema_financiero_personal.utilidades.GestorDeArchivos;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,7 +41,32 @@ public class ServicioResumenFinanciero {
         return fecha;
     }
 
-    public static Double calcularAhorroNeto(Double ingresos, Double gastos){
-        return  ingresos - gastos;
+    public static ResumenFinanciero procesarInformacion(HttpServletRequest request, HttpServletResponse response, String rutaArchivo, DocumentoPDF documentoPDF) throws IOException, ServletException {
+        // Extraer texto del PDF
+        String textoPDF = ExtractorTexto.extraerTextoDePDF(rutaArchivo);
+        System.out.println(textoPDF);
+
+        int posicionGrupoDeParentesis = 1;
+
+        // Extraer ingresos y gastos
+        String patronParaExtraerIngresos = "DEPÓSITO / CRÉDITOS\\s*\\(\\d+\\)\\s+(\\d+\\.\\d+)";
+        Double ingresos = ServicioResumenFinanciero.extraerMonto(patronParaExtraerIngresos, posicionGrupoDeParentesis, request, response, textoPDF);
+        if (ingresos == null) return null;
+
+        String patroneParaExtraerGastos = "CHEQUES / DÉBITOS\\s*\\(\\d+\\)\\s+(\\d+\\.\\d+)";
+        Double gastos = ServicioResumenFinanciero.extraerMonto( patroneParaExtraerGastos,posicionGrupoDeParentesis, request, response,textoPDF);
+        if(gastos == null) return null;
+
+        String patronParaExtraerFechaPeriodoAnterior = "FECHA ÚLTIMO CORTE\\s*\\(FACTURA\\)\\s*(\\d{2}-\\d{2}-\\d{4})";
+        LocalDate fechaPeriodoAnterior = ServicioResumenFinanciero.extraerFecha(patronParaExtraerFechaPeriodoAnterior, posicionGrupoDeParentesis, request, response, textoPDF);
+        if(fechaPeriodoAnterior == null) {return null;}
+
+        String patronParaExtraerFechaPeriodoActual = "FECHA ESTE CORTE\\s*\\(FACTURA\\)\\s*(\\d{2}\\-\\d{2}\\-\\d{4})";
+        LocalDate fechaPeriodoActual = ServicioResumenFinanciero.extraerFecha(patronParaExtraerFechaPeriodoActual, posicionGrupoDeParentesis, request, response, textoPDF);
+        if(fechaPeriodoActual == null) return null;
+
+        GestorDeArchivos.eliminarArchivo(rutaArchivo);
+
+        return new ResumenFinanciero(ingresos, gastos, fechaPeriodoAnterior, fechaPeriodoActual, documentoPDF);
     }
 }
