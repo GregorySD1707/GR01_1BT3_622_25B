@@ -66,20 +66,30 @@ public class Recordatorio {
 
 
     public Optional<LocalDate> obtenerFechaNotificable(LocalDate hoy) {
+
         LocalDate proximaFechaVencimiento = calcularProximaFechaVencimiento(recurrencia, fechaInicio, hoy);
+        int diasDeAnticipacion = getDiasDeAnticipacionAUX(hoy);
+        LocalDate fechaNotificacion = proximaFechaVencimiento.minusDays(diasDeAnticipacion);
+
+        if (fechaEsNotificable(hoy, proximaFechaVencimiento, fechaNotificacion)){
+            return Optional.of(proximaFechaVencimiento);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    private boolean fechaEsNotificable(LocalDate hoy, LocalDate proximaFechaVencimiento, LocalDate fechaNotificacion) {
+        boolean estaEnRangoDeNotificacion = !hoy.isBefore(fechaNotificacion);
+        boolean noHaVencido = !hoy.isAfter(proximaFechaVencimiento);
+        return estaEnRangoDeNotificacion && noHaVencido;
+    }
+    private int getDiasDeAnticipacionAUX(LocalDate hoy) {
         int diasDeAnticipacionAUX = diasDeAnticipacion;
 
         if (recurrencia == Recurrencia.DIARIA && !hoy.isBefore(fechaInicio)) {
             diasDeAnticipacionAUX = 0; // Notificar todos los días desde inicio
         }
-
-        LocalDate fechaNotificacion = proximaFechaVencimiento.minusDays(diasDeAnticipacionAUX);
-
-        if (!hoy.isBefore(fechaNotificacion) && !hoy.isAfter(proximaFechaVencimiento)) {
-            return Optional.of(proximaFechaVencimiento);
-        } else {
-            return Optional.empty();
-        }
+        return diasDeAnticipacionAUX;
     }
 
 

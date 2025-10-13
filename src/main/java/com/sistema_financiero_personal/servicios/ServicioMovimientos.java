@@ -4,6 +4,10 @@ import com.sistema_financiero_personal.daos.CarteraDAO;
 import com.sistema_financiero_personal.daos.DAOMovimiento;
 import com.sistema_financiero_personal.modelos.Cartera;
 import com.sistema_financiero_personal.modelos.Movimiento;
+import com.sistema_financiero_personal.modelos.TipoMovimiento;
+import com.sistema_financiero_personal.modelos.Ingreso;
+import com.sistema_financiero_personal.modelos.Gasto;
+
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -22,25 +26,34 @@ public class ServicioMovimientos {
         this.movimientoDAO = movimientoDAO;
         this.carteraDAO = carteraDAO;
     }
+    public Movimiento registrarMovimiento(TipoMovimiento tipo, double monto, String descripcion, String categoria, String  nombreCartera){
 
-    public Movimiento registrarIngreso(double monto, String descripcion, String categoria, String nombreCartera) {
         validarMonto(monto);
         Objects.requireNonNull(nombreCartera, "nombreCartera no puede ser null");
-        com.sistema_financiero_personal.modelos.Ingreso ingreso =
-                new com.sistema_financiero_personal.modelos.Ingreso(monto, LocalDateTime.now(), descripcion, categoria);
-        movimientoDAO.crear(ingreso);
-        actualizarCartera(monto, nombreCartera, null);
-        return ingreso;
+        Movimiento mov = construirMovimiento(tipo, monto, descripcion, categoria);
+        movimientoDAO.crear(mov);
+
+        double delta = deltaFrom(tipo, monto);
+        actualizarCartera(delta, nombreCartera, null);
+        return mov;
+    }
+    private Movimiento construirMovimiento(TipoMovimiento tipo, double monto, String descripcion, String categoria) {
+        return (tipo == TipoMovimiento.INGRESO)
+                 ?new Ingreso (monto, LocalDateTime.now(), descripcion, categoria)
+                : new Gasto(monto, LocalDateTime.now(), descripcion, categoria);
     }
 
+
+    public Movimiento registrarIngreso(double monto, String descripcion, String categoria, String nombreCartera) {
+        return registrarMovimiento(TipoMovimiento.INGRESO, monto, descripcion, categoria, nombreCartera);
+    }
     public Movimiento registrarGasto(double monto, String descripcion, String categoria, String nombreCartera) {
-        validarMonto(monto);
-        Objects.requireNonNull(nombreCartera, "nombreCartera no puede ser null");
-        com.sistema_financiero_personal.modelos.Gasto gasto =
-                new com.sistema_financiero_personal.modelos.Gasto(monto, LocalDateTime.now(), descripcion, categoria);
-        movimientoDAO.crear(gasto);
-        actualizarCartera(-monto, nombreCartera, null);
-        return gasto;
+        return registrarMovimiento(TipoMovimiento.GASTO, monto, descripcion, categoria, nombreCartera);
+    }
+
+
+    private double deltaFrom(TipoMovimiento tipo, double monto) {
+        return (tipo == TipoMovimiento.INGRESO) ? monto : -monto;
     }
 
     public Cartera actualizarCartera(double delta, String nombreCartera, String tipoSiNoExiste) {
