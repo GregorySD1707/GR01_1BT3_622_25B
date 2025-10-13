@@ -16,61 +16,33 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet(name = "ServletDeudas", urlPatterns = {"/deudas"})
 public class ServletDeudas extends HttpServlet {
+
     private final ServicioDeudas servicioDeudas = new ServicioDeudas();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String accion = req.getParameter("accion");
-        // Soporte por defecto: listar cuando no se especifica acción o cuando es "listar"
-        if (accion == null || "listar".equals(accion)) {
-            List<DeudaPrestamo> deudasBase = servicioDeudas.obtenerDeudasPendientes();
 
-            // Filtros opcionales por query params: nombrePersona, fechaInicio, fechaFin
+        if (accion == null || "listar".equals(accion)) {
+            List<DeudaPrestamo> deudas = servicioDeudas.obtenerDeudasPendientes();
+
+            // Parámetros de filtro
             String nombreFiltro = req.getParameter("nombrePersona");
             String fechaInicioStr = req.getParameter("fechaInicio");
             String fechaFinStr = req.getParameter("fechaFin");
+            // Aplicar filtros
+            deudas = filtrarPorNombre(deudas, nombreFiltro);
+            deudas = filtrarPorFechaInicio(deudas, fechaInicioStr);
+            deudas = filtrarPorFechaFin(deudas, fechaFinStr);
 
-            List<DeudaPrestamo> deudasFiltradasPorNombre = deudasBase;
-            if (nombreFiltro != null && !nombreFiltro.trim().isEmpty()) {
-                String lower = nombreFiltro.trim().toLowerCase();
-                deudasFiltradasPorNombre = deudasBase.stream()
-                        .filter(d -> d.getNombrePersona() != null && d.getNombrePersona().toLowerCase().contains(lower))
-                        .collect(Collectors.toList());
-            }
-
-            List<DeudaPrestamo> deudasFiltradasPorFechaInicio = deudasFiltradasPorNombre;
-            if (fechaInicioStr != null && !fechaInicioStr.trim().isEmpty()) {
-                try {
-                    LocalDate inicio = LocalDate.parse(fechaInicioStr);
-                    deudasFiltradasPorFechaInicio = deudasFiltradasPorNombre.stream()
-                            .filter(d -> d.getFechaPago() != null && !d.getFechaPago().isBefore(inicio))
-                            .collect(Collectors.toList());
-                } catch (Exception ignored) {
-                    // Si el formato no es válido, ignoramos el filtro
-                }
-            }
-
-            List<DeudaPrestamo> deudasFiltradasPorFechaFin = deudasFiltradasPorFechaInicio;
-            if (fechaFinStr != null && !fechaFinStr.trim().isEmpty()) {
-                try {
-                    LocalDate fin = LocalDate.parse(fechaFinStr);
-                    deudasFiltradasPorFechaFin = deudasFiltradasPorFechaInicio.stream()
-                            .filter(d -> d.getFechaPago() != null && !d.getFechaPago().isAfter(fin))
-                            .collect(Collectors.toList());
-                } catch (Exception ignored) {
-                    // Ignorar si no es válido
-                }
-            }
-
-            List<DeudaPrestamo> deudas = deudasFiltradasPorFechaFin;
-
-            // Lista de personas (para autocompletar/select en la vista)
+            // Lista de personas
             List<String> personas = deudas.stream()
                     .map(DeudaPrestamo::getNombrePersona)
                     .filter(p -> p != null && !p.trim().isEmpty())
                     .distinct()
                     .collect(Collectors.toList());
 
+            // Pasar datos a la vista
             req.setAttribute("deudas", deudas);
             req.setAttribute("personas", personas);
             req.setAttribute("filtroNombre", nombreFiltro);
@@ -80,21 +52,60 @@ public class ServletDeudas extends HttpServlet {
         }
     }
 
+    private List<DeudaPrestamo> filtrarPorNombre(List<DeudaPrestamo> deudas, String nombreFiltro) {
+        if (nombreFiltro == null || nombreFiltro.trim().isEmpty()) {
+            return deudas;
+        }
+        String lower = nombreFiltro.trim().toLowerCase();
+        return deudas.stream()
+                .filter(d -> d.getNombrePersona() != null && d.getNombrePersona().toLowerCase().contains(lower))
+                .collect(Collectors.toList());
+    }
+    private List<DeudaPrestamo> filtrarPorFechaInicio(List<DeudaPrestamo> deudas, String fechaInicioStr) {
+        if (fechaInicioStr == null || fechaInicioStr.trim().isEmpty()) {
+            return deudas;
+        }
+        try {
+            LocalDate inicio = LocalDate.parse(fechaInicioStr);
+            return deudas.stream()
+                    .filter(d -> d.getFechaPago() != null && !d.getFechaPago().isBefore(inicio))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            return deudas;
+        }
+    }
+    private List<DeudaPrestamo> filtrarPorFechaFin(List<DeudaPrestamo> deudas, String fechaFinStr) {
+        if (fechaFinStr == null || fechaFinStr.trim().isEmpty()) {
+            return deudas;
+        }
+        try {
+            LocalDate fin = LocalDate.parse(fechaFinStr);
+            return deudas.stream()
+                    .filter(d -> d.getFechaPago() != null && !d.getFechaPago().isAfter(fin))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            return deudas;
+        }
+    }
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String accion = req.getParameter("accion");
+
         if ("registrar".equals(accion)) {
             String nombrePersona = req.getParameter("nombrePersona");
             double montoTotal = Double.parseDouble(req.getParameter("montoTotal"));
             LocalDate fechaPago = LocalDate.parse(req.getParameter("fechaPago"));
-            // Respetar el tipo enviado desde la vista: DEUDA o PRESTAMO
             String tipo = req.getParameter("tipo");
-            if (tipo != null && tipo.equalsIgnoreCase("PRESTAMO")) {
+
+            if ("PRESTAMO".equalsIgnoreCase(tipo)) {
                 servicioDeudas.registrarPrestamo(nombrePersona, montoTotal, fechaPago);
             } else {
                 servicioDeudas.registrarDeuda(nombrePersona, montoTotal, fechaPago);
             }
+
             resp.sendRedirect("deudas?accion=listar");
+
         } else if ("abonar".equals(accion)) {
             Long idDeuda = Long.parseLong(req.getParameter("idDeuda"));
             double monto = Double.parseDouble(req.getParameter("monto"));
