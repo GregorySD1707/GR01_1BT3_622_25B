@@ -19,7 +19,7 @@
 <div class="page-header">
     <h1>Gestión de Resumen Financiero</h1>
 
-    <a href="${contextPath}/consultarResumenes" class="btn btn-secondary">
+    <a href="${contextPath}/resumen_financiero/consultarResumenes" class="btn btn-secondary">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
             </svg>
@@ -30,10 +30,10 @@
 
 <%-- 4. Sección de Historial de Resúmenes --%>
 <c:if test="${tieneResumenes}">
-    <jsp:include page="componentes/EncabezadoSeccion.jsp">
+    <jsp:include page="componentes_resumen_financiero/EncabezadoSeccion.jsp">
         <jsp:param name="titulo" value="Historial de Resúmenes Financieros"/>
         <jsp:param name="textoBoton" value="Subir PDF"/>
-        <jsp:param name="urlBoton" value="${contextPath}/VistaResumenFinanciero.jsp"/>
+        <jsp:param name="urlBoton" value="${contextPath}/resumen_financiero/VistaResumenFinanciero.jsp"/>
     </jsp:include>
 
     <c:forEach var="resumen" items="${ResumenesFinancieros}">
@@ -43,7 +43,7 @@
             <p class="resumen-periodo">Período: ${resumen.fechaPeriodoAnterior} / ${resumen.fechaPeriodoActual}</p>
             <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
                 <%-- Tarjetas Reutilizables --%>
-                <jsp:include page="componentes/TarjetaMetrica.jsp">
+                <jsp:include page="componentes_resumen_financiero/TarjetaMetrica.jsp">
                     <jsp:param name="titulo" value="Ingresos"/>
                     <jsp:param name="valor" value="${resumen.ingresosTotales}"/>
                     <jsp:param name="color" value="#10b981"/>
@@ -51,7 +51,7 @@
                     <jsp:param name="icono" value="ingresos"/>
                 </jsp:include>
 
-                <jsp:include page="componentes/TarjetaMetrica.jsp">
+                <jsp:include page="componentes_resumen_financiero/TarjetaMetrica.jsp">
                     <jsp:param name="titulo" value="Gastos"/>
                     <jsp:param name="valor" value="${resumen.gastosTotales}"/>
                     <jsp:param name="color" value="#ef4444"/>
@@ -59,13 +59,13 @@
                     <jsp:param name="icono" value="gastos"/>
                 </jsp:include>
 
-                <jsp:include page="componentes/TarjetaAhorroNeto.jsp">
+                <jsp:include page="componentes_resumen_financiero/TarjetaAhorroNeto.jsp">
                     <jsp:param name="valor" value="${resumen.ahorroNeto}"/>
                 </jsp:include>
 
                 <%-- Tarjeta PDF --%>
                 <c:if test="${not empty resumen.documentoPDF}">
-                    <jsp:include page="componentes/TarjetaPDF.jsp">
+                    <jsp:include page="componentes_resumen_financiero/TarjetaPDF.jsp">
                         <jsp:param name="documentoId" value="${resumen.documentoPDF.id}"/>
                         <jsp:param name="documentoNombre" value="${resumen.documentoPDF.nombre}"/>
                         <jsp:param name="documentoTamanio" value="${resumen.documentoPDF.tamanio}"/>
@@ -79,10 +79,10 @@
 
 <%-- 5. Sección de Error --%>
 <c:if test="${tieneError}">
-    <jsp:include page="componentes/EncabezadoSeccion.jsp">
+    <jsp:include page="componentes_resumen_financiero/EncabezadoSeccion.jsp">
         <jsp:param name="titulo" value="Resultados del Análisis"/>
         <jsp:param name="textoBoton" value="Subir Otro PDF"/>
-        <jsp:param name="urlBoton" value="${contextPath}/VistaResumenFinanciero.jsp"/>
+        <jsp:param name="urlBoton" value="${contextPath}/resumen_financiero/VistaResumenFinanciero.jsp"/>
     </jsp:include>
 
     <div class="alert alert-danger">
@@ -92,17 +92,17 @@
 
 <%-- 6. Sección de Resultados Individuales --%>
 <c:if test="${tieneResultados}">
-    <jsp:include page="componentes/EncabezadoSeccion.jsp">
+    <jsp:include page="componentes_resumen_financiero/EncabezadoSeccion.jsp">
         <jsp:param name="titulo" value="Resultados del Análisis"/>
         <jsp:param name="textoBoton" value="Subir Otro PDF"/>
-        <jsp:param name="urlBoton" value="${contextPath}/VistaResumenFinanciero.jsp"/>
+        <jsp:param name="urlBoton" value="${contextPath}/resumen_financiero/VistaResumenFinanciero.jsp"/>
     </jsp:include>
 
     <p class="resumen-fecha">Fecha de Creación: ${fechaCreacionFormateada}</p>
     <p class="resumen-periodo">Período: ${fechaPeriodoAnterior} / ${fechaPeriodoActual}</p>
     <br>
     <section class="grid">
-        <jsp:include page="componentes/TarjetaMetrica.jsp">
+        <jsp:include page="componentes_resumen_financiero/TarjetaMetrica.jsp">
             <jsp:param name="titulo" value="Ingresos Totales"/>
             <jsp:param name="valor" value="${Ingresos}"/>
             <jsp:param name="color" value="#10b981"/>
@@ -112,7 +112,7 @@
         </jsp:include>
 
         <c:if test="${not empty Gastos}">
-            <jsp:include page="componentes/TarjetaMetrica.jsp">
+            <jsp:include page="componentes_resumen_financiero/TarjetaMetrica.jsp">
                 <jsp:param name="titulo" value="Gastos Totales"/>
                 <jsp:param name="valor" value="${Gastos}"/>
                 <jsp:param name="color" value="#ef4444"/>
@@ -123,7 +123,7 @@
         </c:if>
 
         <c:if test="${not empty AhorroNeto}">
-            <jsp:include page="componentes/TarjetaAhorroNeto.jsp">
+            <jsp:include page="componentes_resumen_financiero/TarjetaAhorroNeto.jsp">
                 <jsp:param name="valor" value="${AhorroNeto}"/>
                 <jsp:param name="tamanoFuente" value="2rem"/>
                 <jsp:param name="descripcionPersonalizada" value="${AhorroNeto >= 0 ? 'Balance positivo del período' : 'Balance negativo del período'}"/>
@@ -147,7 +147,7 @@
         <h2>Sube tu estado de cuenta</h2>
         <p>Envía tu archivo PDF del estado de cuenta bancario</p>
 
-        <jsp:include page="componentes/FormularioSubirPDF.jsp"/>
+        <jsp:include page="componentes_resumen_financiero/FormularioSubirPDF.jsp"/>
     </div>
 </c:if>
 

@@ -1,7 +1,6 @@
-package com.sistema_financiero_personal.modelos;
+package com.sistema_financiero_personal.resumen_financiero.modelos;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "documentopdf")

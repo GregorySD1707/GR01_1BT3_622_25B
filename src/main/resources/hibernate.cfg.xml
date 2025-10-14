@@ -21,8 +21,8 @@
 
         <!-- Entidades -->
         <mapping class="com.sistema_financiero_personal.modelos.Recordatorio"/>
-        <mapping class="com.sistema_financiero_personal.modelos.ResumenFinanciero"/>
-        <mapping class="com.sistema_financiero_personal.modelos.DocumentoPDF"/>
+        <mapping class="com.sistema_financiero_personal.resumen_financiero.modelos.ResumenFinanciero"/>
+        <mapping class="com.sistema_financiero_personal.resumen_financiero.modelos.DocumentoPDF"/>
         <!-- Nuevas entidades de movimientos y cartera -->
         <mapping class="com.sistema_financiero_personal.modelos.Movimiento"/>
         <mapping class="com.sistema_financiero_personal.modelos.Ingreso"/>

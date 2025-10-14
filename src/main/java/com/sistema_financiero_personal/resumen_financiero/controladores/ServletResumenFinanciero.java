@@ -1,10 +1,10 @@
-package com.sistema_financiero_personal.controladores;
+package com.sistema_financiero_personal.resumen_financiero.controladores;
 
-import com.sistema_financiero_personal.daos.DAOResumenFinanciero;
-import com.sistema_financiero_personal.daos.DAODocumentoPDF;
-import com.sistema_financiero_personal.modelos.DocumentoPDF;
-import com.sistema_financiero_personal.modelos.ResumenFinanciero;
-import com.sistema_financiero_personal.servicios.ServicioResumenFinanciero;
+import com.sistema_financiero_personal.resumen_financiero.daos.DAOResumenFinanciero;
+import com.sistema_financiero_personal.resumen_financiero.daos.DAODocumentoPDF;
+import com.sistema_financiero_personal.resumen_financiero.modelos.DocumentoPDF;
+import com.sistema_financiero_personal.resumen_financiero.modelos.ResumenFinanciero;
+import com.sistema_financiero_personal.resumen_financiero.servicios.ServicioResumenFinanciero;
 import com.sistema_financiero_personal.utilidades.GestorDeArchivos;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -16,7 +16,7 @@ import jakarta.servlet.http.Part;
 
 import java.io.IOException;
 
-@WebServlet(urlPatterns = {"/subirPDF"})
+@WebServlet(urlPatterns = {"/resumen_financiero/subirPDF"})
 @MultipartConfig(
         fileSizeThreshold =  1024 * 1024 * 2, // 2MB
         maxFileSize = 1024 * 1024 * 10, // 10 MB
@@ -59,11 +59,11 @@ public class ServletResumenFinanciero extends HttpServlet {
             prepararVistaResumenFinanciero(request, response, resumenFinanciero);
 
             // Enviar resultado al JSP
-            request.getRequestDispatcher("/VistaResumenFinanciero.jsp").forward(request, response);
+            request.getRequestDispatcher("/resumen_financiero/VistaResumenFinanciero.jsp").forward(request, response);
 
         } catch (Exception e){
             request.setAttribute("error", "Error al procesar el PDF: "+e.getMessage());
-            request.getRequestDispatcher("/VistaResumenFinanciero.jsp").forward(request, response);
+            request.getRequestDispatcher("/resumen_financiero/VistaResumenFinanciero.jsp").forward(request, response);
         }
     }
 

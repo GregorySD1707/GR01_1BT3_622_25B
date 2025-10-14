@@ -27,7 +27,7 @@
   <nav class="sidebar-nav">
     <a href="${pageContext.request.contextPath}/movimientos">Ingresos y gastos</a>
     <a href="${pageContext.request.contextPath}/deudas?accion=listar">Deudas y prestamos</a>
-    <a href="${pageContext.request.contextPath}/VistaResumenFinanciero.jsp">Reportes</a>
+    <a href="${pageContext.request.contextPath}/resumen_financiero/VistaResumenFinanciero.jsp">Resumen Financiero</a>
     <a href="${pageContext.request.contextPath}/recordatorios">Recordatorios</a>
     
   </nav>

@@ -1,7 +1,7 @@
-package com.sistema_financiero_personal.controladores;
+package com.sistema_financiero_personal.resumen_financiero.controladores;
 
-import com.sistema_financiero_personal.daos.DAODocumentoPDF;
-import com.sistema_financiero_personal.modelos.DocumentoPDF;
+import com.sistema_financiero_personal.resumen_financiero.daos.DAODocumentoPDF;
+import com.sistema_financiero_personal.resumen_financiero.modelos.DocumentoPDF;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.annotation.WebServlet;
@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 // Anotación para indicar al servidor que este servlet responderá a las peticiones a la URL /descargarPDF
-@WebServlet("/descargarPDF")
+@WebServlet(urlPatterns = {"/resumen_financiero/descargarPDF"})
 public class ServletDescargaPDF extends HttpServlet { // Hereda de la clase base que maneja peticiones HTTP
     private DAODocumentoPDF DAODocumentoPDF;
 

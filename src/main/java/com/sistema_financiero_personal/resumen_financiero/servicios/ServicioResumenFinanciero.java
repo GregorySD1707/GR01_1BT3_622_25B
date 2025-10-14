@@ -1,7 +1,7 @@
-package com.sistema_financiero_personal.servicios;
+package com.sistema_financiero_personal.resumen_financiero.servicios;
 
-import com.sistema_financiero_personal.modelos.DocumentoPDF;
-import com.sistema_financiero_personal.modelos.ResumenFinanciero;
+import com.sistema_financiero_personal.resumen_financiero.modelos.DocumentoPDF;
+import com.sistema_financiero_personal.resumen_financiero.modelos.ResumenFinanciero;
 import com.sistema_financiero_personal.utilidades.ExtractorTexto;
 import com.sistema_financiero_personal.utilidades.GestorDeArchivos;
 import jakarta.servlet.ServletException;

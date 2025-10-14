@@ -1,8 +1,8 @@
-package com.sistema_financiero_personal.daos;
+package com.sistema_financiero_personal.resumen_financiero.daos;
 
-import com.sistema_financiero_personal.modelos.ResumenFinanciero;
+import com.sistema_financiero_personal.daos.DAOBase;
+import com.sistema_financiero_personal.resumen_financiero.modelos.ResumenFinanciero;
 import jakarta.persistence.criteria.JoinType;
-import org.hibernate.Session;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
