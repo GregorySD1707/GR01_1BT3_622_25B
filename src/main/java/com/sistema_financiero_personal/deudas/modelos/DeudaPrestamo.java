@@ -1,4 +1,4 @@
-package com.sistema_financiero_personal.modelos;
+package com.sistema_financiero_personal.deudas.modelos;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
