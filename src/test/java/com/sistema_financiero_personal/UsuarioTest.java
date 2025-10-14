@@ -1,7 +1,12 @@
 package com.sistema_financiero_personal;
 
+import com.sistema_financiero_personal.modelos.DeudaPrestamo;
+import com.sistema_financiero_personal.modelos.TipoDeudaPrestamo;
 import com.sistema_financiero_personal.usuario.Usuario;
 import org.junit.Test;
+
+import java.time.LocalDate;
+
 import static org.junit.Assert.*;
 
 public class UsuarioTest {
