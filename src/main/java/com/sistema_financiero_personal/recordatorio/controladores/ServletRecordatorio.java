@@ -1,13 +1,13 @@
-package com.sistema_financiero_personal.controladores;
+package com.sistema_financiero_personal.recordatorio.controladores;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
-import com.sistema_financiero_personal.daos.DAORecordatorio;
-import com.sistema_financiero_personal.modelos.Recordatorio;
-import com.sistema_financiero_personal.modelos.Recurrencia;
+import com.sistema_financiero_personal.recordatorio.daos.DAORecordatorio;
+import com.sistema_financiero_personal.recordatorio.modelos.Recordatorio;
+import com.sistema_financiero_personal.recordatorio.modelos.Recurrencia;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

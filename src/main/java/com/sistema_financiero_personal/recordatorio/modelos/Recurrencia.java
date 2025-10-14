@@ -1,4 +1,4 @@
-package com.sistema_financiero_personal.modelos;
+package com.sistema_financiero_personal.recordatorio.modelos;
 
 public enum Recurrencia {
     NINGUNA,

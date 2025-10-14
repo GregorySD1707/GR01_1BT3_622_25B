@@ -1,6 +1,6 @@
 package com.sistema_financiero_personal.resumen_financiero.daos;
 
-import com.sistema_financiero_personal.daos.DAOBase;
+import com.sistema_financiero_personal.comun.DAOBase;
 import com.sistema_financiero_personal.resumen_financiero.modelos.DocumentoPDF;
 
 public class DAODocumentoPDF extends DAOBase<DocumentoPDF> {

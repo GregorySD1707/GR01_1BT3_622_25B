@@ -1,6 +1,7 @@
 
 package com.sistema_financiero_personal.daos;
 
+import com.sistema_financiero_personal.comun.DAOBase;
 import com.sistema_financiero_personal.modelos.DeudaPrestamo;
 import com.sistema_financiero_personal.modelos.EstadoDeudaPrestamo;
 import java.util.List;

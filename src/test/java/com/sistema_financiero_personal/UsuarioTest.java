@@ -1,11 +1,8 @@
-import com.sistema_financiero_personal.usuarios.Usuario;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+package com.sistema_financiero_personal;
 
-import java.util.List;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
+import com.sistema_financiero_personal.usuario.Usuario;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class UsuarioTest {
 

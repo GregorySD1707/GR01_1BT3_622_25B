@@ -1,8 +1,4 @@
-package com.sistema_financiero_personal.usuarios;
-
-import com.sistema_financiero_personal.resumen_financiero.modelos.ResumenFinanciero;
-
-import java.util.List;
+package com.sistema_financiero_personal.usuario;
 
 public class Usuario {
     private String nombre;

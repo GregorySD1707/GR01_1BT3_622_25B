@@ -1,4 +1,4 @@
-package com.sistema_financiero_personal.utilidades;
+package com.sistema_financiero_personal.comun.utilidades;
 
 import java.io.File;
 import java.io.IOException;

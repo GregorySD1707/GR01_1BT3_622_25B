@@ -1,4 +1,4 @@
-package com.sistema_financiero_personal.daos;
+package com.sistema_financiero_personal.comun;
 
 import jakarta.persistence.Query;
 import jakarta.persistence.criteria.CriteriaBuilder;

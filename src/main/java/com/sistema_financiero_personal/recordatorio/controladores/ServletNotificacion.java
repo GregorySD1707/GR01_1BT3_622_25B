@@ -1,4 +1,4 @@
-package com.sistema_financiero_personal.controladores;
+package com.sistema_financiero_personal.recordatorio.controladores;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
-import com.sistema_financiero_personal.daos.DAORecordatorio;
-import com.sistema_financiero_personal.modelos.Recordatorio;
+import com.sistema_financiero_personal.recordatorio.daos.DAORecordatorio;
+import com.sistema_financiero_personal.recordatorio.modelos.Recordatorio;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

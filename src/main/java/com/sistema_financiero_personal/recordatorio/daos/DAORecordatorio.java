@@ -1,5 +1,6 @@
-package com.sistema_financiero_personal.daos;
+package com.sistema_financiero_personal.recordatorio.daos;
 
+import com.sistema_financiero_personal.comun.DAOBase;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
@@ -7,7 +8,7 @@ import jakarta.persistence.criteria.Root;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.sistema_financiero_personal.modelos.Recordatorio;
+import com.sistema_financiero_personal.recordatorio.modelos.Recordatorio;
 
 public class DAORecordatorio extends DAOBase<Recordatorio> {
     public DAORecordatorio(){

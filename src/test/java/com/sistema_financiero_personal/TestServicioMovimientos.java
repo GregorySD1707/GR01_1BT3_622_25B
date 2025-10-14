@@ -1,26 +1,27 @@
-import com.sistema_financiero_personal.daos.CarteraDAO;
+package com.sistema_financiero_personal;
+
+import com.sistema_financiero_personal.daos.DAOCartera;
 import com.sistema_financiero_personal.daos.DAOMovimiento;
 import com.sistema_financiero_personal.modelos.Cartera;
 import com.sistema_financiero_personal.modelos.Movimiento;
 import com.sistema_financiero_personal.servicios.ServicioMovimientos;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 public class TestServicioMovimientos {
 
     private ServicioMovimientos servicio;
-    private CarteraDAO carteraDAO;
+    private DAOCartera carteraDAO;
     private DAOMovimiento movimientoDAO;
 
-    @BeforeEach
+    @Before
     void setup() {
         servicio = new ServicioMovimientos();
-        carteraDAO = new CarteraDAO();
+        carteraDAO = new DAOCartera();
         movimientoDAO = new DAOMovimiento();
     }
 

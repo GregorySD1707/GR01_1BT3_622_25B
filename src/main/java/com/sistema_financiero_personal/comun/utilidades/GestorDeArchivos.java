@@ -1,4 +1,4 @@
-package com.sistema_financiero_personal.utilidades;
+package com.sistema_financiero_personal.comun.utilidades;
 
 import jakarta.servlet.GenericServlet;
 import jakarta.servlet.ServletException;

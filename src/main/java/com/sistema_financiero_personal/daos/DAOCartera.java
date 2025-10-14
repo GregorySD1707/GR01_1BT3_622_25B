@@ -1,5 +1,6 @@
 package com.sistema_financiero_personal.daos;
 
+import com.sistema_financiero_personal.comun.DAOBase;
 import com.sistema_financiero_personal.modelos.Cartera;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
