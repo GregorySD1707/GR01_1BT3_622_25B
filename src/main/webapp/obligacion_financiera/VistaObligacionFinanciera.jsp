@@ -22,14 +22,15 @@
     </div>
 
     <div class="grid">
-        <% java.util.List<com.sistema_financiero_personal.deuda_prestamo.modelos.DeudaPrestamo> deudas = (java.util.List<com.sistema_financiero_personal.deuda_prestamo.modelos.DeudaPrestamo>) request.getAttribute("deudas");
+
+        <% List<ObligacionFinanciera> deudas = (List<ObligacionFinanciera>) request.getAttribute("deudas");
             if (deudas != null && !deudas.isEmpty()) {
-                for (com.sistema_financiero_personal.deuda_prestamo.modelos.DeudaPrestamo deuda : deudas) {
+                for (com.sistema_financiero_personal.modelos.ObligacionFinanciera deuda : deudas) {
         %>
         <div class="card">
             <div class="card-header">
                 <div class="card-title">ID: <strong><%= deuda.getId() %></strong></div>
-                <div style="margin-left:auto;color:var(--text-secondary);">Tipo: <%= deuda.getTipo() %></div>
+                <div style="margin-left:auto;color:var(--text-secondary);">Tipo: <%= deuda.getClass().getSimpleName() %></div>
             </div>
             <div class="card-body">
                 <p><strong>Persona:</strong> <%= deuda.getNombrePersona() %></p>
