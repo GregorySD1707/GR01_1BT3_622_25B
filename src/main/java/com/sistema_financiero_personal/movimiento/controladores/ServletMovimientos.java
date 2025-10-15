@@ -1,7 +1,7 @@
-package com.sistema_financiero_personal.controladores;
+package com.sistema_financiero_personal.movimiento.controladores;
 
-import com.sistema_financiero_personal.modelos.Movimiento;
-import com.sistema_financiero_personal.servicios.ServicioMovimientos;
+import com.sistema_financiero_personal.movimiento.modelos.Movimiento;
+import com.sistema_financiero_personal.movimiento.servicios.ServicioMovimientos;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

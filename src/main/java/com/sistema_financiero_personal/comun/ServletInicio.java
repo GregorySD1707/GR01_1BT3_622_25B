@@ -1,6 +1,6 @@
-package com.sistema_financiero_personal.controladores;
+package com.sistema_financiero_personal.comun;
 
-import com.sistema_financiero_personal.servicios.ServicioMovimientos;
+import com.sistema_financiero_personal.movimiento.servicios.ServicioMovimientos;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -24,7 +24,7 @@ public class ServletInicio extends HttpServlet {
         request.setAttribute("saldoActual", saldoActual);
         request.setAttribute("ingresosTotales", ingresosTotales);
         request.setAttribute("gastosTotales", gastosTotales);
-        request.getRequestDispatcher("/VistaInicio.jsp").forward(request, response);
+        request.getRequestDispatcher("comun/VistaInicio.jsp").forward(request, response);
     }
 }
 

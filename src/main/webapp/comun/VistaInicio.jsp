@@ -1,7 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ include file="comun/VistaHeader.jsp" %>
+<%@ include file="VistaHeader.jsp" %>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const pageContent = document.querySelector('.page-content');
@@ -92,4 +92,4 @@
     </div>
 </section>
 
-<%@ include file="comun/VistaFooter.jsp" %>
+<%@ include file="VistaFooter.jsp" %>

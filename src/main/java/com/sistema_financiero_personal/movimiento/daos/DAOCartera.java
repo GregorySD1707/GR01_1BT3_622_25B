@@ -1,7 +1,7 @@
-package com.sistema_financiero_personal.daos;
+package com.sistema_financiero_personal.movimiento.daos;
 
 import com.sistema_financiero_personal.comun.DAOBase;
-import com.sistema_financiero_personal.modelos.Cartera;
+import com.sistema_financiero_personal.movimiento.modelos.Cartera;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;

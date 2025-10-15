@@ -68,13 +68,13 @@ public class ServletRecordatorio extends HttpServlet {
     private void listarRecordatorios(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Recordatorio> listaRecordatorios = recordatorioDAO.listar();
         request.setAttribute("recordatorios", listaRecordatorios);
-        request.getRequestDispatcher("/VistaRecordatorios.jsp").forward(request, response);
+        request.getRequestDispatcher("/recordatorio/VistaRecordatorios.jsp").forward(request, response);
     }
 
     private void mostrarFormulario(HttpServletRequest request, HttpServletResponse response, Recordatorio recordatorio) throws ServletException, IOException {
         request.setAttribute("recordatorio", recordatorio);
         request.setAttribute("recurrencias", Recurrencia.values());
-        request.getRequestDispatcher("/VistaFormularioRecordatorio.jsp").forward(request, response);
+        request.getRequestDispatcher("/recordatorio/VistaFormularioRecordatorio.jsp").forward(request, response);
     }
 
     private void mostrarFormularioEditar(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
