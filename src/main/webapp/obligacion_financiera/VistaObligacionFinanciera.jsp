@@ -1,3 +1,5 @@
+<%@ page import="com.sistema_financiero_personal.obligaciones_financieras.modelos.ObligacionFinanciera" %>
+<%@ page import="java.util.List" %>
 <%@ include file="../comun/VistaHeader.jsp" %>
 
 <html>
@@ -25,7 +27,8 @@
 
         <% List<ObligacionFinanciera> deudas = (List<ObligacionFinanciera>) request.getAttribute("deudas");
             if (deudas != null && !deudas.isEmpty()) {
-                for (com.sistema_financiero_personal.modelos.ObligacionFinanciera deuda : deudas) {
+                for (ObligacionFinanciera deuda : deudas)
+            {
         %>
         <div class="card">
             <div class="card-header">

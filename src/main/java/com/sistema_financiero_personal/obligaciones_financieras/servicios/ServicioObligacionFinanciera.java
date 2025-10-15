@@ -3,7 +3,7 @@ package com.sistema_financiero_personal.obligaciones_financieras.servicios;
 import com.sistema_financiero_personal.obligaciones_financieras.daos.DAOObligacionFinanciera;
 import com.sistema_financiero_personal.obligaciones_financieras.modelos.ObligacionFinanciera;
 import com.sistema_financiero_personal.obligaciones_financieras.modelos.EstadoObligacionFinanciera;
-import com.sistema_financiero_personal.servicios.ServicioMovimientos;
+import com.sistema_financiero_personal.movimiento.servicios.ServicioMovimientos;
 
 public class ServicioObligacionFinanciera {
 

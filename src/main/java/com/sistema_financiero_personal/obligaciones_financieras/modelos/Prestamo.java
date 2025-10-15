@@ -9,6 +9,8 @@ import java.time.LocalDate;
 @DiscriminatorValue("PRESTAMO")
 public class Prestamo extends ObligacionFinanciera {
 
+    public Prestamo(){} // Constructor sin parámetros requerido por JPA
+
     public Prestamo(String nombrePersona, double montoTotal, LocalDate fechaPago) {
         super(nombrePersona, montoTotal, fechaPago);
     }

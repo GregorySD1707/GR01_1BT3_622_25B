@@ -41,17 +41,12 @@ public class ServletObligacionFinanciera extends HttpServlet {
 
     private void listarDeudas(HttpServletRequest req, HttpServletResponse resp) throws  ServletException, IOException{
 
-        //List<ObligacionFinanciera> deudas = daoObligacionFinanciera.listarPendientes();
-
         // Parámetros de filtro
         String nombreFiltro = req.getParameter("nombrePersona");
         LocalDate fechaInicioStr = parseFecha(req.getParameter("fechaInicio"));
         LocalDate fechaFinStr = parseFecha(req.getParameter("fechaFin"));
 
         // Aplicar filtros
-        //deudas = filtrarPorNombre(deudas, nombreFiltro);
-        //deudas = filtrarPorFechaInicio(deudas, fechaInicioStr);
-        //deudas = filtrarPorFechaFin(deudas, fechaFinStr);
         // TODO: PATRON CRITERIA
         List<ObligacionFinanciera> deudas = daoObligacionFinanciera.buscarConFiltros(nombreFiltro, fechaInicioStr, fechaFinStr);
 
@@ -87,42 +82,6 @@ public class ServletObligacionFinanciera extends HttpServlet {
             return null;
         }
     }
-    /*
-    private List<ObligacionFinanciera> filtrarPorNombre(List<ObligacionFinanciera> deudas, String nombreFiltro) {
-        if (nombreFiltro == null || nombreFiltro.trim().isEmpty()) {
-            return deudas;
-        }
-        String lower = nombreFiltro.trim().toLowerCase();
-        return deudas.stream()
-                .filter(d -> d.getNombrePersona() != null && d.getNombrePersona().toLowerCase().contains(lower))
-                .collect(Collectors.toList());
-    }
-    private List<ObligacionFinanciera> filtrarPorFechaInicio(List<ObligacionFinanciera> deudas, String fechaInicioStr) {
-        if (fechaInicioStr == null || fechaInicioStr.trim().isEmpty()) {
-            return deudas;
-        }
-        try {
-            LocalDate inicio = LocalDate.parse(fechaInicioStr);
-            return deudas.stream()
-                    .filter(d -> d.getFechaPago() != null && !d.getFechaPago().isBefore(inicio))
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            return deudas;
-        }
-    }
-    private List<ObligacionFinanciera> filtrarPorFechaFin(List<ObligacionFinanciera> deudas, String fechaFinStr) {
-        if (fechaFinStr == null || fechaFinStr.trim().isEmpty()) {
-            return deudas;
-        }
-        try {
-            LocalDate fin = LocalDate.parse(fechaFinStr);
-            return deudas.stream()
-                    .filter(d -> d.getFechaPago() != null && !d.getFechaPago().isAfter(fin))
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            return deudas;
-        }
-    }*/
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
