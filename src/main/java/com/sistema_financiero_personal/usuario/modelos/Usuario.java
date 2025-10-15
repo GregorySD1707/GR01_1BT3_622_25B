@@ -8,7 +8,7 @@ import jakarta.persistence.*;
  * Contiene la información personal esencial y las credenciales para la autenticación.
  */
 @Entity
-@Table(name = "usuarios")
+@Table(name = "usuario")
 public class Usuario {
 
     @Id
