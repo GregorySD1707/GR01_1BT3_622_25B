@@ -2,6 +2,7 @@ package com.sistema_financiero_personal;
 
 import com.sistema_financiero_personal.usuario.Usuario;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 public class UsuarioTest {
