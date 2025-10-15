@@ -48,7 +48,7 @@ public class ServletDeudas extends HttpServlet {
             req.setAttribute("filtroNombre", nombreFiltro);
             req.setAttribute("filtroFechaInicio", fechaInicioStr);
             req.setAttribute("filtroFechaFin", fechaFinStr);
-            req.getRequestDispatcher("/VistaDeudas.jsp").forward(req, resp);
+            req.getRequestDispatcher("/deuda_prestamo/VistaDeudas.jsp").forward(req, resp);
         }
     }
 
@@ -109,7 +109,8 @@ public class ServletDeudas extends HttpServlet {
         } else if ("abonar".equals(accion)) {
             Long idDeuda = Long.parseLong(req.getParameter("idDeuda"));
             double monto = Double.parseDouble(req.getParameter("monto"));
-            servicioDeudas.abonarADeuda(idDeuda, monto);
+            Long idCartera = Long.parseLong(req.getParameter("idCartera"));
+            servicioDeudas.abonarADeuda(idCartera, idDeuda, monto);
             resp.sendRedirect("deudas?accion=listar");
         }
     }

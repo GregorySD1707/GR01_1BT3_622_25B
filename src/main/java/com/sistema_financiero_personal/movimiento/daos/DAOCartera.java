@@ -7,30 +7,84 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 
 public class DAOCartera extends DAOBase<Cartera> {
-    public DAOCartera() { super(Cartera.class); }
 
-    public Cartera buscarPorNombre(String nombre) {
+    public DAOCartera() {
+        super(Cartera.class);
+    }
+
+    /**
+     * Obtiene el saldo de una cartera específica
+     */
+    public double obtenerSaldo(Long carteraId) {
         return executeQuery(session -> {
-            CriteriaBuilder cb = session.getCriteriaBuilder();
-            CriteriaQuery<Cartera> cq = cb.createQuery(Cartera.class);
-            Root<Cartera> root = cq.from(Cartera.class);
-            cq.select(root).where(cb.equal(root.get("nombre"), nombre));
-            return session.createQuery(cq).uniqueResult();
+            Double saldo = session.createQuery(
+                            "select c.saldo from Cartera c where c.id = :id",
+                            Double.class
+                    ).setParameter("id", carteraId)
+                    .uniqueResult();
+            return saldo != null ? saldo : 0.0;
         });
     }
 
-    public Cartera obtenerOCrear(String nombre, String tipo) {
-        Cartera existente = buscarPorNombre(nombre);
-        if (existente != null) return existente;
-        Cartera nueva = new Cartera(nombre, 0.0, tipo);
-        crear(nueva);
-        return buscarPorNombre(nombre);
-    }
-
-    public double sumSaldoActual() {
+    /**
+     * Suma el saldo de TODAS las carteras del sistema
+     * (Útil para dashboards administrativos)
+     */
+    public double sumSaldoTotalSistema() {
         return executeQuery(session -> session.createQuery(
-                "select coalesce(sum(c.saldoActual), 0) from Cartera c",
+                "select coalesce(sum(c.saldo), 0) from Cartera c",
                 Double.class
         ).getSingleResult());
+    }
+
+    /**
+     * Verifica si existe una cartera con el ID dado
+     */
+    public boolean existe(Long id) {
+        return executeQuery(session -> session.createQuery(
+                        "select count(c) > 0 from Cartera c where c.id = :id",
+                        Boolean.class
+                ).setParameter("id", id)
+                .getSingleResult());
+    }
+
+    /**
+     * Busca una cartera con todos sus movimientos cargados
+     * (Evita problemas de lazy loading)
+     */
+    public Cartera buscarConMovimientos(Long id) {
+        return executeQuery(session -> session.createQuery(
+                        "select c from Cartera c " +
+                                "left join fetch c.movimientos " +
+                                "where c.id = :id",
+                        Cartera.class
+                ).setParameter("id", id)
+                .uniqueResult());
+    }
+
+    /**
+     * Actualiza el saldo de una cartera
+     */
+    public void actualizarSaldo(Long carteraId, double nuevoSaldo) {
+        executeInTransaction(session -> {
+            session.createQuery(
+                            "update Cartera c set c.saldo = :saldo where c.id = :id"
+                    ).setParameter("saldo", nuevoSaldo)
+                    .setParameter("id", carteraId)
+                    .executeUpdate();
+        });
+    }
+
+    /**
+     * Incrementa o decrementa el saldo de una cartera
+     */
+    public void ajustarSaldo(Long carteraId, double cambio) {
+        executeInTransaction(session -> {
+            session.createQuery(
+                            "update Cartera c set c.saldo = c.saldo + :cambio where c.id = :id"
+                    ).setParameter("cambio", cambio)
+                    .setParameter("id", carteraId)
+                    .executeUpdate();
+        });
     }
 }

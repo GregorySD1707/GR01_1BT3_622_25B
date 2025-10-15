@@ -20,6 +20,8 @@ public class Recordatorio {
 
     @Column(length = 50)
     private String descripcion;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "recurrencia")
     private Recurrencia recurrencia;
     @Column(name = "dias_de_anticipacion")
     private int diasDeAnticipacion;

@@ -1,7 +1,10 @@
+<%@ page import="com.sistema_financiero_personal.movimiento.modelos.CategoriaIngreso" %>
+<%@ page import="com.sistema_financiero_personal.movimiento.modelos.CategoriaGasto" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <html>
+
 <head>
     <title>Gestor de Movimientos</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css">
@@ -18,7 +21,6 @@
             padding: 32px 24px;
             width: 100%;
             margin: 0;
-            /* position ya no necesaria para la flecha */
         }
         .movimientos-title {
             text-align: center;
@@ -37,6 +39,8 @@
             border-radius: 8px;
             padding: 10px;
             font-size: 1rem;
+            width: 100%;
+            box-sizing: border-box;
         }
         .movimientos-form button {
             background: var(--accent-primary);
@@ -50,7 +54,6 @@
             transition: background 0.2s;
         }
         .movimientos-form button:hover { background: var(--accent-hover); }
-        /* Flecha fuera del recuadro */
         .back-arrow { position: absolute; top: -16px; left: -84px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: var(--bg-light); border: 1px solid var(--border-color); color: var(--text-primary); text-decoration: none; box-shadow: 0 2px 6px var(--shadow-color); transition: background 0.2s ease; z-index: 10; }
         .back-arrow:hover { background: #2f3a52; }
         @media (max-width: 480px) {
@@ -75,23 +78,69 @@
                     ${mensajeError}
             </div>
         </c:if>
-        <form class="movimientos-form" method="post" action="movimientos">
-            <label>Tipo:</label>
-            <select name="tipo">
+        <form class="movimientos-form" method="post" action="${pageContext.request.contextPath}/movimientos">
+            <label for="tipoSelect">Tipo:</label>
+            <select name="tipo" id="tipoSelect">
                 <option value="INGRESO">Ingreso</option>
                 <option value="GASTO">Gasto</option>
             </select>
-            <label>Monto:</label>
-            <input type="number" step="0.01" name="monto" required>
-            <label>Descripción:</label>
-            <input type="text" name="descripcion">
-            <label>Categoría:</label>
-            <input type="text" name="categoria">
-            <label>Cartera:</label>
-            <input type="text" name="cartera" required>
+
+            <label for="monto">Monto:</label>
+            <input type="number" id="monto" step="0.01" name="monto" required>
+
+            <label for="descripcion">Descripción:</label>
+            <input type="text" id="descripcion" name="descripcion">
+
+            <label for="categoria">Categoría:</label>
+
+            <%-- Dropdown para Ingresos (visible por defecto) --%>
+            <select id="categoriaIngreso" name="categoria">
+                <c:forEach var="categoria" items="<%= CategoriaIngreso.values() %>">
+                    <option value="${categoria.name()}">${categoria.name()}</option>
+                </c:forEach>
+            </select>
+
+            <%-- Dropdown para Gastos (oculto por defecto) --%>
+            <select id="categoriaGasto" name="categoria" style="display: none;" disabled>
+                <c:forEach var="categoria" items="<%= CategoriaGasto.values() %>">
+                    <option value="${categoria.name()}">${categoria.name()}</option>
+                </c:forEach>
+            </select>
+
             <button type="submit">Registrar</button>
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tipoSelect = document.getElementById('tipoSelect');
+        const categoriaIngresoSelect = document.getElementById('categoriaIngreso');
+        const categoriaGastoSelect = document.getElementById('categoriaGasto');
+
+        function toggleCategorias() {
+            if (tipoSelect.value === 'INGRESO') {
+                categoriaIngresoSelect.style.display = 'block';
+                categoriaIngresoSelect.disabled = false;
+
+                categoriaGastoSelect.style.display = 'none';
+                categoriaGastoSelect.disabled = true;
+            } else { // GASTO
+                categoriaIngresoSelect.style.display = 'none';
+                categoriaIngresoSelect.disabled = true;
+
+                categoriaGastoSelect.style.display = 'block';
+                categoriaGastoSelect.disabled = false;
+            }
+        }
+
+        // Ejecutar al cargar la página por si hay valores preseleccionados
+        toggleCategorias();
+
+        // Añadir el listener para cambios
+        tipoSelect.addEventListener('change', toggleCategorias);
+    });
+</script>
+
 </body>
 </html>

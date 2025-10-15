@@ -1,5 +1,6 @@
 package com.sistema_financiero_personal.deuda_prestamo.servicios;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -7,15 +8,17 @@ import com.sistema_financiero_personal.deuda_prestamo.daos.DAODeudaPrestamo;
 import com.sistema_financiero_personal.deuda_prestamo.modelos.DeudaPrestamo;
 import com.sistema_financiero_personal.deuda_prestamo.modelos.EstadoDeudaPrestamo;
 import com.sistema_financiero_personal.deuda_prestamo.modelos.TipoDeudaPrestamo;
-import com.sistema_financiero_personal.movimiento.servicios.ServicioMovimientos;
+import com.sistema_financiero_personal.movimiento.modelos.CategoriaGasto;
+import com.sistema_financiero_personal.movimiento.modelos.CategoriaIngreso;
+import com.sistema_financiero_personal.movimiento.servicios.ServicioMovimiento;
 
 public class ServicioDeudas {
     private final DAODeudaPrestamo daoDeudaPrestamo;
-    private final ServicioMovimientos servicioMovimientos;
+    private final ServicioMovimiento servicioMovimiento;
 
     public ServicioDeudas() {
         this.daoDeudaPrestamo = new DAODeudaPrestamo();
-        this.servicioMovimientos = new ServicioMovimientos();
+        this.servicioMovimiento = new ServicioMovimiento();
     }
 
     public DeudaPrestamo registrarDeuda(String nombrePersona, double montoTotal, LocalDate fechaPago) {
@@ -30,21 +33,20 @@ public class ServicioDeudas {
         return prestamo;
     }
 
-    public void abonarADeuda(Long idDeuda, double monto) {
+    public void abonarADeuda(Long idDeuda, Long idCartera, double monto) {
         DeudaPrestamo deuda = daoDeudaPrestamo.buscarPorId(idDeuda);
         if (deuda != null && deuda.getEstado() == EstadoDeudaPrestamo.PENDIENTE) {
             deuda.registrarAbono(monto);
             daoDeudaPrestamo.actualizar(deuda);
-            registrarMovimientoPorAbono(deuda, monto);
+            registrarMovimientoPorAbono(idCartera, deuda, monto);
         }
     }
 
-    private void registrarMovimientoPorAbono(DeudaPrestamo deuda, double monto) {
-        String nombreCartera = "Cartera principal";
-        if (deuda.getTipo() == com.sistema_financiero_personal.deuda_prestamo.modelos.TipoDeudaPrestamo.DEUDA) {
-            servicioMovimientos.registrarGasto(monto, "Abono deuda a " + deuda.getNombrePersona(), "Deudas", nombreCartera);
-        } else if (deuda.getTipo() == com.sistema_financiero_personal.deuda_prestamo.modelos.TipoDeudaPrestamo.PRESTAMO) {
-            servicioMovimientos.registrarIngreso(monto, "Abono préstamo de " + deuda.getNombrePersona(), "Préstamos", nombreCartera);
+    private void registrarMovimientoPorAbono(Long idCartera, DeudaPrestamo deuda, double monto) {
+         if (deuda.getTipo() == com.sistema_financiero_personal.deuda_prestamo.modelos.TipoDeudaPrestamo.DEUDA) {
+            servicioMovimiento.registrarGasto(idCartera, monto,"Abono deuda a " + deuda.getNombrePersona(), CategoriaGasto.ABONO_DEUDA);
+             } else if (deuda.getTipo() == com.sistema_financiero_personal.deuda_prestamo.modelos.TipoDeudaPrestamo.PRESTAMO) {
+            servicioMovimiento.registrarIngreso(idCartera, monto, "Abono préstamo de " + deuda.getNombrePersona(), CategoriaIngreso.ABONO_PRESTAMO);
         }
     }
 

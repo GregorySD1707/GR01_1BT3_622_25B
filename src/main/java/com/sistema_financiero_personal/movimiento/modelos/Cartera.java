@@ -1,44 +1,45 @@
 package com.sistema_financiero_personal.movimiento.modelos;
 
+import com.sistema_financiero_personal.movimiento.modelos.Gasto;
+import com.sistema_financiero_personal.movimiento.modelos.Movimiento;
 import jakarta.persistence.*;
+
+import java.math.BigDecimal; // 1. Importar BigDecimal
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "cartera")
 public class Cartera {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "cartera_id")
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 60)
-    private String nombre;
+    @Column(name = "saldo", nullable = false)
+    private double saldo;
 
-    @Column(name = "saldo_actual", nullable = false)
-    private double saldoActual;
+    @OneToMany(
+            mappedBy = "cartera",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Movimiento> movimientos = new ArrayList<>();
 
-    @Column(length = 30)
-    private String tipo; // e.g., EFECTIVO, BANCO
+    public Cartera() {
+        this.saldo = 0.0;
+    }
 
-    public Cartera() { }
+    public void addMovimiento(Movimiento movimiento) {
+        this.movimientos.add(movimiento);
+        movimiento.setCartera(this);
+    }
 
-    public Cartera(String nombre, double saldoActual, String tipo) {
-        this.nombre = nombre;
-        this.saldoActual = saldoActual;
-        this.tipo = tipo;
+    public void ajustarSaldo(double cambio) {
+        this.saldo += cambio;
     }
 
     public Long getId() { return id; }
-    public String getNombre() { return nombre; }
-    public double getSaldoActual() { return saldoActual; }
-    public String getTipo() { return tipo; }
-
-    public void setNombre(String nombre) { this.nombre = nombre; }
-    public void setSaldoActual(double saldoActual) { this.saldoActual = saldoActual; }
-    public void setTipo(String tipo) { this.tipo = tipo; }
-
-    // Actualiza el saldo de la cartera aplicando el delta (positivo ingreso, negativo gasto)
-    public void actualizarCartera(double monto) {
-        this.saldoActual += monto;
-    }
+    public double getSaldo() { return saldo; }
+    public List<Movimiento> getMovimientos() { return movimientos; }
 }

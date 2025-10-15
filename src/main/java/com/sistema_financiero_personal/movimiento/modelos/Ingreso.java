@@ -1,16 +1,28 @@
-package com.sistema_financiero_personal.movimiento.modelos;
+    package com.sistema_financiero_personal.movimiento.modelos;
 
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+    import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+    import java.math.BigDecimal;
+    import java.time.LocalDateTime;
 
-@Entity
-@DiscriminatorValue("INGRESO")
-public class Ingreso extends Movimiento {
-    public Ingreso() { }
-    public Ingreso(double monto, LocalDateTime fecha, String descripcion, String categoria) {
-        super(monto, fecha, descripcion, categoria);
+    @Entity
+    @DiscriminatorValue("INGRESO")
+    public class Ingreso extends Movimiento {
+        @Enumerated(EnumType.STRING)
+        @Column(name = "categoria")
+        CategoriaIngreso categoria;
+        public Ingreso() { }
+        public Ingreso(double monto, LocalDateTime fecha, String descripcion, CategoriaIngreso categoria) {
+            super(monto, fecha, descripcion);
+            this.categoria = categoria;
+        }
+
+        public CategoriaIngreso getCategoria() {
+            return categoria;
+        }
+
+        public void setCategoria(CategoriaIngreso categoria) {
+            this.categoria = categoria;
+        }
     }
-}
 
