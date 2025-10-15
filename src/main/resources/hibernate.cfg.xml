@@ -28,6 +28,9 @@
         <mapping class="com.sistema_financiero_personal.movimiento.modelos.Ingreso"/>
         <mapping class="com.sistema_financiero_personal.movimiento.modelos.Gasto"/>
         <mapping class="com.sistema_financiero_personal.movimiento.modelos.Cartera"/>
-        <mapping class="com.sistema_financiero_personal.deuda_prestamo.modelos.DeudaPrestamo"/>
+
+        <mapping class="com.sistema_financiero_personal.obligaciones_financieras.modelos.ObligacionFinanciera"/>
+        <mapping class="com.sistema_financiero_personal.obligaciones_financieras.modelos.Deuda"/>
+        <mapping class="com.sistema_financiero_personal.obligaciones_financieras.modelos.Prestamo"/>
     </session-factory>
 </hibernate-configuration>

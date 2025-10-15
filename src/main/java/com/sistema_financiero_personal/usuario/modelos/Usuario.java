@@ -1,5 +1,6 @@
 package com.sistema_financiero_personal.usuario.modelos;
 
+import com.sistema_financiero_personal.movimiento.modelos.Cartera;
 import jakarta.persistence.*;
 
 /**
@@ -29,6 +30,8 @@ public class Usuario {
     @Column(nullable = false, length = 60) // Longitud ideal para un hash de BCrypt
     private String contrasena;
 
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Cartera cartera;
     public Usuario() {
     }
 

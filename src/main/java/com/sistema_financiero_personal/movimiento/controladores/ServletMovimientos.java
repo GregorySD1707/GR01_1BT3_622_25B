@@ -36,7 +36,7 @@ public class ServletMovimientos extends HttpServlet {
         double ingresosTotales = servicioMovimiento.obtenerIngresosTotales();
         double gastosTotales = servicioMovimiento.obtenerGastosTotales();
 
-        double saldoActual = servicioCartera.obtenerSaldo(1L); // Cambia esto según tu lógica
+        double saldoActual = servicioCartera.obtenerSaldo(1L);
 
         request.setAttribute("ingresosTotales", ingresosTotales);
         request.setAttribute("gastosTotales", gastosTotales);

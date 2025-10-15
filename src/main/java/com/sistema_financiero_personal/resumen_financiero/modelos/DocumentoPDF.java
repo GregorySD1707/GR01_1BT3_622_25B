@@ -3,7 +3,7 @@ package com.sistema_financiero_personal.resumen_financiero.modelos;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "documentopdf")
+@Table(name = "documento_pdf")
 public class DocumentoPDF {
 
     @Id
