@@ -1,12 +1,12 @@
-package com.sistema_financiero_personal.deudas.controladores;
+package com.sistema_financiero_personal.deuda_prestamo.controladores;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.sistema_financiero_personal.deudas.modelos.DeudaPrestamo;
-import com.sistema_financiero_personal.deudas.servicios.ServicioDeudas;
+import com.sistema_financiero_personal.deuda_prestamo.modelos.DeudaPrestamo;
+import com.sistema_financiero_personal.deuda_prestamo.servicios.ServicioDeudas;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

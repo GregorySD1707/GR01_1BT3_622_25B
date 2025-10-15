@@ -1,10 +1,10 @@
 package com.sistema_financiero_personal;
 
-import com.sistema_financiero_personal.daos.DAOCartera;
-import com.sistema_financiero_personal.daos.DAOMovimiento;
-import com.sistema_financiero_personal.modelos.Cartera;
-import com.sistema_financiero_personal.modelos.Movimiento;
-import com.sistema_financiero_personal.servicios.ServicioMovimientos;
+import com.sistema_financiero_personal.movimiento.daos.DAOCartera;
+import com.sistema_financiero_personal.movimiento.daos.DAOMovimiento;
+import com.sistema_financiero_personal.movimiento.modelos.Cartera;
+import com.sistema_financiero_personal.movimiento.modelos.Movimiento;
+import com.sistema_financiero_personal.movimiento.servicios.ServicioMovimientos;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;

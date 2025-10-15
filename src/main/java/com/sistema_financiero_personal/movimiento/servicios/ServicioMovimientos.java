@@ -1,12 +1,12 @@
-package com.sistema_financiero_personal.servicios;
+package com.sistema_financiero_personal.movimiento.servicios;
 
-import com.sistema_financiero_personal.daos.DAOCartera;
-import com.sistema_financiero_personal.daos.DAOMovimiento;
-import com.sistema_financiero_personal.modelos.Cartera;
-import com.sistema_financiero_personal.modelos.Movimiento;
-import com.sistema_financiero_personal.modelos.TipoMovimiento;
-import com.sistema_financiero_personal.modelos.Ingreso;
-import com.sistema_financiero_personal.modelos.Gasto;
+import com.sistema_financiero_personal.movimiento.daos.DAOCartera;
+import com.sistema_financiero_personal.movimiento.daos.DAOMovimiento;
+import com.sistema_financiero_personal.movimiento.modelos.Cartera;
+import com.sistema_financiero_personal.movimiento.modelos.Movimiento;
+import com.sistema_financiero_personal.movimiento.modelos.TipoMovimiento;
+import com.sistema_financiero_personal.movimiento.modelos.Ingreso;
+import com.sistema_financiero_personal.movimiento.modelos.Gasto;
 
 
 import java.time.LocalDateTime;

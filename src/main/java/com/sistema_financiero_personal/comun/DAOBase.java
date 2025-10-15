@@ -15,6 +15,7 @@ import java.util.function.Function;
 
 public abstract class DAOBase<T> {
     private static final SessionFactory factory = new Configuration().configure().buildSessionFactory();
+
     private final Class<T> entityClass;
 
     protected DAOBase(Class<T> entityClass) {

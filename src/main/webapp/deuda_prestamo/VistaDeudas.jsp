@@ -1,9 +1,9 @@
-<%@ include file="comun/VistaHeader.jsp" %>
+<%@ include file="../comun/VistaHeader.jsp" %>
 
 <html>
 <head>
     <title>Gestión de Deudas y Préstamos</title>
-    <link rel="stylesheet" href="resources/css/style.css">
+    <link rel="stylesheet" href="../resources/css/style.css">
 </head>
 <body>
 <div class="container page-content">
@@ -22,9 +22,9 @@
     </div>
 
     <div class="grid">
-        <% java.util.List<com.sistema_financiero_personal.modelos.DeudaPrestamo> deudas = (java.util.List<com.sistema_financiero_personal.modelos.DeudaPrestamo>) request.getAttribute("deudas");
+        <% java.util.List<com.sistema_financiero_personal.deuda_prestamo.modelos.DeudaPrestamo> deudas = (java.util.List<com.sistema_financiero_personal.deuda_prestamo.modelos.DeudaPrestamo>) request.getAttribute("deudas");
             if (deudas != null && !deudas.isEmpty()) {
-                for (com.sistema_financiero_personal.modelos.DeudaPrestamo deuda : deudas) {
+                for (com.sistema_financiero_personal.deuda_prestamo.modelos.DeudaPrestamo deuda : deudas) {
         %>
         <div class="card">
             <div class="card-header">
@@ -95,6 +95,6 @@
     </div>
 
 </div>
-<%@ include file="comun/VistaFooter.jsp" %>
+<%@ include file="../comun/VistaFooter.jsp" %>
 </body>
 </html>

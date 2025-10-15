@@ -1,9 +1,9 @@
 
-package com.sistema_financiero_personal.deudas.daos;
+package com.sistema_financiero_personal.deuda_prestamo.daos;
 
 import com.sistema_financiero_personal.comun.DAOBase;
-import com.sistema_financiero_personal.deudas.modelos.DeudaPrestamo;
-import com.sistema_financiero_personal.deudas.modelos.EstadoDeudaPrestamo;
+import com.sistema_financiero_personal.deuda_prestamo.modelos.DeudaPrestamo;
+import com.sistema_financiero_personal.deuda_prestamo.modelos.EstadoDeudaPrestamo;
 import java.util.List;
 
 public class DAODeudaPrestamo extends DAOBase<DeudaPrestamo> {
