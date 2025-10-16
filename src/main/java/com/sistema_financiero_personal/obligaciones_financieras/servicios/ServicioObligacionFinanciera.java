@@ -29,12 +29,4 @@ public class ServicioObligacionFinanciera {
         deuda.registrarMovimientoAsociado(idCartera, monto);
     }
 
-    private void registrarMovimientoPorAbono(Long idCartera, ObligacionFinanciera deuda, double monto) {
-        deuda.registrarMovimientoAsociado(idCartera, monto);
-        /*if (deuda.getTipo() == TipoDeudaPrestamo.DEUDA) {
-            servicioMovimientos.registrarGasto(monto, "Abono deuda a " + deuda.getNombrePersona(), "Deudas", nombreCartera);
-        } else if (deuda.getTipo() == com.sistema_financiero_personal.obligaciones_financieras.modelos) {
-            servicioMovimientos.registrarIngreso(monto, "Abono préstamo de " + deuda.getNombrePersona(), "Préstamos", nombreCartera);
-        }*/
-    }
 }

@@ -3,6 +3,8 @@ package com.sistema_financiero_personal.usuario.modelos;
 import com.sistema_financiero_personal.movimiento.modelos.Cartera;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 /**
  * Representa a un usuario del sistema.
  * Contiene la información personal esencial y las credenciales para la autenticación.
@@ -24,23 +26,32 @@ public class Usuario {
     @Column(nullable = false, unique = true, length = 100)
     private String correo;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(name="nombre_usuario",nullable = false, unique = true, length = 50)
     private String nombreUsuario;
 
     @Column(nullable = false, length = 60) // Longitud ideal para un hash de BCrypt
     private String contrasena;
 
-    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(name="fecha_nacimiento", nullable = true)
+    private LocalDateTime fechaNacimiento;
+
+    @Column(name="fecha_creacion", nullable = false)
+    private LocalDateTime fechaCreacion;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "cartera_id", nullable = false, unique = true)
     private Cartera cartera;
     public Usuario() {
     }
 
-    public Usuario(String nombre, String apellido, String correo, String nombreUsuario, String contrasena) {
+    public Usuario(String nombre, String apellido, String correo, String nombreUsuario, String contrasena, LocalDateTime fechaNacimiento) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.correo = correo;
         this.nombreUsuario = nombreUsuario;
         this.contrasena = contrasena;
+        this.fechaCreacion = LocalDateTime.now();
+        this.fechaNacimiento = fechaNacimiento;
     }
 
     // --- Getters y Setters ---
@@ -91,5 +102,15 @@ public class Usuario {
 
     public void setContrasena(String contrasena) {
         this.contrasena = contrasena;
+    }
+
+    public void setCartera(Cartera cartera) {
+        this.cartera = cartera;
+        if (cartera != null) {
+            cartera.setUsuario(this);
+        }
+    }
+    public Cartera getCartera() {
+        return cartera;
     }
 }
