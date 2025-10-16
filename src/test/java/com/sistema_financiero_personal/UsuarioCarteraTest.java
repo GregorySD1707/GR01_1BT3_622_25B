@@ -10,10 +10,10 @@ import org.junit.Test;
 import java.time.LocalDate;
 
 public class UsuarioCarteraTest {
-
     @Test
     public void given_user_when_register_then_create_wallet(){
-        Usuario usuario = registrarUsuario("Mateo", "Rodriguez", "mateo@gmail.com", "Matein", "123456", LocalDate.of(2008, 5, 15));
+        Usuario usuario = registrarUsuario("Mateo", "Rodriguez", "mateo@gmail.com", "Matein",
+                "123456", LocalDate.of(2008, 5, 15));
         assertNotNull(usuario.getCartera());
     }
 
