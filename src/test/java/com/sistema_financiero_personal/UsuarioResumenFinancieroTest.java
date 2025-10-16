@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class ResumenFinancieroTest {
+public class UsuarioResumenFinancieroTest {
     @Test
     public void given_user_when_create_resumenFinanciero_then_associate_user() {
         Usuario usuario = new Usuario("mateo", "calvache", "matecavache123",
