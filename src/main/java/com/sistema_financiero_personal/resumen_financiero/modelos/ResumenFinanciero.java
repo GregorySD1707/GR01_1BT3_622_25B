@@ -1,14 +1,15 @@
 package com.sistema_financiero_personal.resumen_financiero.modelos;
 
+import com.sistema_financiero_personal.usuario.modelos.Usuario;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+
 @Entity
 @Table(name = "Resumen_Financiero")
 public class ResumenFinanciero {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "resumen_financiero_id")
@@ -35,6 +36,9 @@ public class ResumenFinanciero {
 
     @Column(name = "fecha_creacion", nullable = false)
     private LocalDateTime fechaCreacion;
+    @ManyToOne
+    @JoinColumn (name = "usuario_id", nullable = false)
+    private Usuario usuario;
 
     public ResumenFinanciero() {
         this.ingresosTotales = -1.0;
@@ -90,6 +94,13 @@ public class ResumenFinanciero {
     public String getFechaCreacionFormateada() {
         if (fechaCreacion == null) return "";
         return fechaCreacion.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
 }
