@@ -5,7 +5,6 @@ import com.sistema_financiero_personal.usuario.daos.DAOUsuario;
 import com.sistema_financiero_personal.usuario.modelos.Usuario;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class ServicioUsuario {
     private final DAOUsuario daoUsuario;

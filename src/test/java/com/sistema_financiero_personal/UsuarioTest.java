@@ -5,7 +5,6 @@ import com.sistema_financiero_personal.usuario.modelos.Usuario;
 import org.junit.Test;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import static org.junit.Assert.*;
 
