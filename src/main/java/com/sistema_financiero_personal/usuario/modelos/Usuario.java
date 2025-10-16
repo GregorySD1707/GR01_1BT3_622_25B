@@ -3,6 +3,7 @@ package com.sistema_financiero_personal.usuario.modelos;
 import com.sistema_financiero_personal.movimiento.modelos.Cartera;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -33,7 +34,7 @@ public class Usuario {
     private String contrasena;
 
     @Column(name="fecha_nacimiento", nullable = true)
-    private LocalDateTime fechaNacimiento;
+    private LocalDate fechaNacimiento;
 
     @Column(name="fecha_creacion", nullable = false)
     private LocalDateTime fechaCreacion;
@@ -44,7 +45,7 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(String nombre, String apellido, String correo, String nombreUsuario, String contrasena, LocalDateTime fechaNacimiento) {
+    public Usuario(String nombre, String apellido, String correo, String nombreUsuario, String contrasena, LocalDate fechaNacimiento) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.correo = correo;
