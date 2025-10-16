@@ -5,19 +5,23 @@ import com.sistema_financiero_personal.usuario.daos.DAOUsuario;
 import com.sistema_financiero_personal.usuario.modelos.Usuario;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class ServicioUsuario {
-    private final DAOUsuario daoUsuario;
+    private DAOUsuario daoUsuario;
     public ServicioUsuario() {
         this.daoUsuario = new DAOUsuario();
     }
 
-    public Usuario registrarUsuario(String nombre, String apellido, String correo, String nombreUsuario, String contrasena, LocalDate fechaNacimiento) {
+    public Usuario registrarUsuario(String nombre, String apellido, String correo, String nombreUsuario,
+                                    String contrasena, LocalDate fechaNacimiento) {
         Usuario usuario = new Usuario(nombre, apellido, correo, nombreUsuario, contrasena, fechaNacimiento);
-        Cartera cartera = new Cartera();
-        usuario.setCartera(cartera);
+        asignarCartera(usuario);
         daoUsuario.crear(usuario);
         return usuario;
+    }
+
+    private void asignarCartera(Usuario usuario) {
+        Cartera cartera = new Cartera();
+        usuario.setCartera(cartera);
     }
 }
