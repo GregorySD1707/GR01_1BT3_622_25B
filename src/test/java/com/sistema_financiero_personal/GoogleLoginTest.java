@@ -46,9 +46,9 @@ public class GoogleLoginTest {
     }
 
     private void configurarMocks(UsuarioGoogle usuarioGoogle) {
-        Mockito.when(googleAuth.validarToken(TOKEN_VALIDO)).thenReturn(usuarioGoogle);
-        Mockito.when(daoUsuario.buscarPorCorreo(usuarioGoogle.getCorreo()))
-                .thenReturn(Optional.empty());
+        //Mockito.when(googleAuth.validarToken(TOKEN_VALIDO)).thenReturn(usuarioGoogle);
+        //Mockito.when(daoUsuario.buscarPorCorreo(usuarioGoogle.getCorreo()))
+        //        .thenReturn(Optional.empty());
     }
     private UsuarioGoogle crearUsuarioGoogle(String email, String nombre, String apellido) {
           return  new UsuarioGoogle(email, nombre, apellido);

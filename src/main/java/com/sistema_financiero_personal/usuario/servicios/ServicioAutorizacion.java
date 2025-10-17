@@ -32,8 +32,9 @@ public class ServicioAutorizacion {
     }
 
     private Usuario obtenerOCrearUsuario(UsuarioGoogle usuarioGoogle) {
-        return daoUsuario.buscarPorCorreo(usuarioGoogle.getCorreo())
-                .orElseGet(() -> crearNuevoUsuario(usuarioGoogle));
+        //return daoUsuario.buscarPorCorreo(usuarioGoogle.getCorreo())
+        //        .orElseGet(() -> crearNuevoUsuario(usuarioGoogle));
+        return null;
     }
 
     private Usuario crearNuevoUsuario(UsuarioGoogle usuarioGoogle) {

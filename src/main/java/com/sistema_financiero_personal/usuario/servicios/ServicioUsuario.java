@@ -6,13 +6,15 @@ import com.sistema_financiero_personal.usuario.daos.DAOUsuario;
 import com.sistema_financiero_personal.usuario.modelos.Usuario;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServicioUsuario {
     private DAOUsuario daoUsuario;
     private ServicioCartera servicioCartera;
     public ServicioUsuario() {
-        this.daoUsuario = new DAOUsuario();
-        this.servicioCartera = new ServicioCartera();
+        //this.daoUsuario = new DAOUsuario();
+        //this.servicioCartera = new ServicioCartera();
     }
 
     public Usuario registrarUsuario(String nombre, String apellido, String correo, String nombreUsuario,
@@ -30,5 +32,14 @@ public class ServicioUsuario {
 
     public Cartera obtenerCartera(Long carteraId) {
         return servicioCartera.buscarPorId(carteraId);
+    }
+
+    public List<Usuario> listar() {
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
     }
 }
