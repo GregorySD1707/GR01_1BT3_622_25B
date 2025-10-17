@@ -8,9 +8,14 @@ import java.util.List;
 
 public interface DAOUsuario {
     public Optional<Usuario> buscarPorCorreo(String correo);
-    Usuario crear(Usuario usuario);
+
+    void crear(Usuario usuario);
 
     Usuario borrar(Usuario usuario);
 
     List<Usuario> listar();
+
+    boolean existe(String correo);
+
+    boolean credencialesCorrectas(String correo, String password);
 }

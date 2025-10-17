@@ -20,14 +20,16 @@ import static org.mockito.ArgumentMatchers.any;
 public class UsuarioTest {
 
     @Test()
-    public void given_data_when_login_then_ok() {
-        Usuario usuario = new Usuario("Pepe", "Zambrano", "pepe.zambrano@gmail.com",
+    public void given_data_when_sign_up_then_ok() {
+        ServicioUsuario servicioUsuario = new ServicioUsuario();
+        servicioUsuario.registrarUsuario("Pepe", "Zambrano", "pepe.zambrano@gmail.com",
                 "xXXpepeXxx", "abc123", LocalDate.parse("2002-11-27"));
-        DAOUsuario daoUsuario = Mockito.mock(DAOUsuario.class);
-        Usuario usuarioRegistrado = (Usuario) Mockito.when(daoUsuario.crear(usuario)).thenReturn(usuario);
 
-        assertNotNull(usuarioRegistrado);
+        DAOUsuario daoUsuario = Mockito.mock(DAOUsuario.class);
+        Mockito.when(daoUsuario.existe("pepe.zambrano@gmail.com")).thenReturn(true);
+        assertEquals(true, daoUsuario.existe("pepe.zambrano@gmail.com"));
     }
+
 
     @Test(timeout = 500)
     public void given_dao_when_list_users_then_tiemout(){

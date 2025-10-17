@@ -4,6 +4,7 @@ import com.sistema_financiero_personal.movimiento.modelos.Cartera;
 import com.sistema_financiero_personal.movimiento.servicios.ServicioCartera;
 import com.sistema_financiero_personal.usuario.daos.DAOUsuario;
 import com.sistema_financiero_personal.usuario.modelos.Usuario;
+import com.sistema_financiero_personal.usuario.modelos.UsuarioGoogle;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -11,24 +12,21 @@ import java.util.List;
 
 public class ServicioUsuario {
     private DAOUsuario daoUsuario;
-    private ServicioCartera servicioCartera;
+    // private ServicioCartera servicioCartera;
     private static final String CARACTERES_ESPECIALES = "!@$%^&*_+-=[]{}|;:,.<>?";
     private static final int LONGITUD_MINIMA_CONTRASENA = 8;
 
     public ServicioUsuario() {
-        //this.daoUsuario = new DAOUsuario();
-        // this.daoUsuario = new DAOUsuario();
-        this.servicioCartera = new ServicioCartera();
+        // this.servicioCartera = new ServicioCartera();
     }
 
-    public Usuario registrarUsuario(String nombre, String apellido, String correo, String nombreUsuario,
+    public void registrarUsuario(String nombre, String apellido, String correo, String nombreUsuario,
                                     String contrasena, LocalDate fechaNacimiento) {
         validarDatosUsuario(nombreUsuario, correo, contrasena, fechaNacimiento);
 
         Usuario usuario = new Usuario(nombre, apellido, correo, nombreUsuario, contrasena, fechaNacimiento);
         // asignarCartera(usuario);
-        // daoUsuario.crear(usuario);
-        return usuario;
+        //daoUsuario.crear(usuario);
     }
 
     private void validarDatosUsuario(String nombreUsuario, String correo, String contrasena, LocalDate fechaNacimiento) {
@@ -50,10 +48,10 @@ public class ServicioUsuario {
         }
     }
 
-    private void asignarCartera(Usuario usuario) {
-        Cartera cartera = new Cartera();
-        usuario.setCartera(cartera);
-    }
+//    private void asignarCartera(Usuario usuario) {
+//        Cartera cartera = new Cartera();
+//        usuario.setCartera(cartera);
+//    }
 
     public boolean validarContrasena(String contrasena) {
         if (!esContrasenaValida(contrasena)) {return false;}
@@ -80,7 +78,7 @@ public class ServicioUsuario {
                 .anyMatch(c -> CARACTERES_ESPECIALES.indexOf(c) >= 0);
     }
 
-    public Cartera obtenerCartera(Long carteraId) {return servicioCartera.buscarPorId(carteraId);}
+    //public Cartera obtenerCartera(Long carteraId) {return servicioCartera.buscarPorId(carteraId);}
 
     public List<Usuario> listar() {
         try {
@@ -90,4 +88,6 @@ public class ServicioUsuario {
         }
         return new ArrayList<>();
     }
+
+
 }

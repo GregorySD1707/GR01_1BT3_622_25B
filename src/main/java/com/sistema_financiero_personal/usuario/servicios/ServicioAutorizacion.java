@@ -32,14 +32,13 @@ public class ServicioAutorizacion {
     }
 
     private Usuario obtenerOCrearUsuario(UsuarioGoogle usuarioGoogle) {
-        //return daoUsuario.buscarPorCorreo(usuarioGoogle.getCorreo())
-        //        .orElseGet(() -> crearNuevoUsuario(usuarioGoogle));
-        return null;
+        return daoUsuario.buscarPorCorreo(usuarioGoogle.getCorreo())
+                .orElseGet(() -> crearNuevoUsuario(usuarioGoogle));
     }
 
     private Usuario crearNuevoUsuario(UsuarioGoogle usuarioGoogle) {
         Usuario nuevoUsuario = construirUsuarioDesdeGoogle(usuarioGoogle);
-        asignarCarteraAlUsuario(nuevoUsuario);
+        //asignarCarteraAlUsuario(nuevoUsuario);
         // daoUsuario.crear(nuevoUsuario);
         return nuevoUsuario;
     }
@@ -55,8 +54,8 @@ public class ServicioAutorizacion {
         );
     }
 
-    private void asignarCarteraAlUsuario(Usuario usuario) {
-        Cartera cartera = new Cartera();
-        usuario.setCartera(cartera);
-    }
+//    private void asignarCarteraAlUsuario(Usuario usuario) {
+//        Cartera cartera = new Cartera();
+//        usuario.setCartera(cartera);
+//    }
 }
