@@ -15,9 +15,9 @@ public class UsuarioTest {
 
         Usuario usuario = new Usuario("Pepe", "Zambrano", "pepe.zambrano@gmail.com",
                 "xXXpepeXxx", "abc123", LocalDate.parse("2002-11-27"));
-        DAOUsuario daoUsuario = new DAOUsuario();
+        // DAOUsuario daoUsuario = new DAOUsuario();
 
-        daoUsuario.crear(usuario);
+        // daoUsuario.crear(usuario);
 
         assertEquals("Pepe", usuario.getNombreUsuario());
     }

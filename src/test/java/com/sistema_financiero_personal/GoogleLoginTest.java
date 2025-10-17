@@ -28,23 +28,16 @@ public class GoogleLoginTest {
         daoUsuario = Mockito.mock(DAOUsuario.class);
         servicioAutorizacion = new ServicioAutorizacion(googleAuth, daoUsuario);
     }
-
     @Test
     public void given_googleUser_when_login_then_registresOrReturnExistingUser() {
         UsuarioGoogle usuarioGoogle = crearUsuarioGoogle(CORREO, NOMBRE, APELLIDO);
         configurarMocks(usuarioGoogle);
         Usuario usuario = servicioAutorizacion.loginConGoogle(TOKEN_VALIDO);
-        verificarUsuario(usuario);
-    }
-
-    private void verificarUsuario(Usuario usuario) {
         assertNotNull("usuario no deberia ser null", usuario);
         assertEquals(CORREO, usuario.getCorreo());
         assertEquals(NOMBRE, usuario.getNombre());
         assertEquals(APELLIDO, usuario.getApellido());
-
     }
-
     private void configurarMocks(UsuarioGoogle usuarioGoogle) {
         Mockito.when(googleAuth.validarToken(TOKEN_VALIDO)).thenReturn(usuarioGoogle);
         Mockito.when(daoUsuario.buscarPorCorreo(usuarioGoogle.getCorreo()))
@@ -54,3 +47,4 @@ public class GoogleLoginTest {
           return  new UsuarioGoogle(email, nombre, apellido);
     }
 }
+
