@@ -50,4 +50,8 @@ public class Cartera {
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
+
+    public void setSaldo(double saldo) {
+        this.saldo = saldo;
+    }
 }

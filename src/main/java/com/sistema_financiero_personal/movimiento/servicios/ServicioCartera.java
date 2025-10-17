@@ -50,7 +50,7 @@ public class ServicioCartera {
         if (!existe(carteraId)) {
             throw new IllegalArgumentException("La cartera con ID " + carteraId + " no existe");
         }
-        daoCartera.ajustarSaldo(carteraId, cambio);
+        daoCartera.actualizarSaldo(carteraId, cambio);
     }
 
     /**
