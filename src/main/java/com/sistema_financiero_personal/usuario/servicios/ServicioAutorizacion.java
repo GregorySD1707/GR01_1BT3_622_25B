@@ -40,7 +40,7 @@ public class ServicioAutorizacion {
     private Usuario crearNuevoUsuario(UsuarioGoogle usuarioGoogle) {
         Usuario nuevoUsuario = construirUsuarioDesdeGoogle(usuarioGoogle);
         asignarCarteraAlUsuario(nuevoUsuario);
-        daoUsuario.crear(nuevoUsuario);
+        // daoUsuario.crear(nuevoUsuario);
         return nuevoUsuario;
     }
 
