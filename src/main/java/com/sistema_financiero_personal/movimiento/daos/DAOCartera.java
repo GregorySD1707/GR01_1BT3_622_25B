@@ -75,16 +75,4 @@ public class DAOCartera extends DAOBase<Cartera> {
         });
     }
 
-    /**
-     * Incrementa o decrementa el saldo de una cartera
-     */
-    public void ajustarSaldo(Long carteraId, double cambio) {
-        executeInTransaction(session -> {
-            session.createQuery(
-                            "update Cartera c set c.saldo = c.saldo + :cambio where c.id = :id"
-                    ).setParameter("cambio", cambio)
-                    .setParameter("id", carteraId)
-                    .executeUpdate();
-        });
-    }
 }

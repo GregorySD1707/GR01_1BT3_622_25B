@@ -19,4 +19,6 @@ public class DAOUsuario extends DAOBase<Usuario> {
             return query.uniqueResultOptional();
         });
     }
+
+
 }
