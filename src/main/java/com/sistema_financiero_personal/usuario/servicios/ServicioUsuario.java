@@ -19,7 +19,7 @@ public class ServicioUsuario {
                                     String contrasena, LocalDate fechaNacimiento) {
         Usuario usuario = new Usuario(nombre, apellido, correo, nombreUsuario, contrasena, fechaNacimiento);
         asignarCartera(usuario);
-        daoUsuario.crear(usuario);
+        // daoUsuario.crear(usuario);
         return usuario;
     }
 
