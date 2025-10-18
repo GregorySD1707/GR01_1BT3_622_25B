@@ -30,7 +30,7 @@ public class ServicioUsuario {
 
         Usuario usuario = new Usuario(nombre, apellido, correo, nombreUsuario, contrasena, fechaNacimiento);
         // asignarCartera(usuario);
-        //daoUsuario.crear(usuario);
+        daoUsuario.crear(usuario);
     }
 
     private void validarDatosUsuario(String nombreUsuario, String correo, String contrasena, LocalDate fechaNacimiento) {
@@ -85,12 +85,7 @@ public class ServicioUsuario {
     //public Cartera obtenerCartera(Long carteraId) {return servicioCartera.buscarPorId(carteraId);}
 
     public List<Usuario> listar() {
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return new ArrayList<>();
+        return daoUsuario.listar();
     }
 
     public boolean existeUsuario(String correo) {
