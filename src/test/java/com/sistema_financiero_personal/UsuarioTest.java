@@ -21,13 +21,12 @@ public class UsuarioTest {
 
     @Test()
     public void given_data_when_sign_up_then_ok() {
-        ServicioUsuario servicioUsuario = new ServicioUsuario();
+        DAOUsuario daoUsuario = Mockito.mock(DAOUsuario.class);
+        ServicioUsuario servicioUsuario = new ServicioUsuario(daoUsuario);
+        Mockito.when(daoUsuario.existe("pepe.zambrano@gmail.com")).thenReturn(true);
         servicioUsuario.registrarUsuario("Pepe", "Zambrano", "pepe.zambrano@gmail.com",
                 "xXXpepeXxx", "abc123", LocalDate.parse("2002-11-27"));
-
-        DAOUsuario daoUsuario = Mockito.mock(DAOUsuario.class);
-        Mockito.when(daoUsuario.existe("pepe.zambrano@gmail.com")).thenReturn(true);
-        assertEquals(true, daoUsuario.existe("pepe.zambrano@gmail.com"));
+        assertTrue(servicioUsuario.existeUsuario("pepe.zambrano@gmail.com"));
     }
 
 

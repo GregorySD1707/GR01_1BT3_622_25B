@@ -16,8 +16,12 @@ public class ServicioUsuario {
     private static final String CARACTERES_ESPECIALES = "!@$%^&*_+-=[]{}|;:,.<>?";
     private static final int LONGITUD_MINIMA_CONTRASENA = 8;
 
+    public ServicioUsuario(DAOUsuario daoUsuario) {
+        this.daoUsuario = daoUsuario;
+    }
+
     public ServicioUsuario() {
-        // this.servicioCartera = new ServicioCartera();
+
     }
 
     public void registrarUsuario(String nombre, String apellido, String correo, String nombreUsuario,
@@ -89,5 +93,16 @@ public class ServicioUsuario {
         return new ArrayList<>();
     }
 
+    public boolean existeUsuario(String correo) {
+        return daoUsuario.existe(correo);
+    }
+
+    public boolean loginUsuario(String correo, String contrasena) {
+        boolean credencialesValidas = daoUsuario.credencialesCorrectas(correo, contrasena);
+        if (!credencialesValidas) {
+            throw new RuntimeException("Credenciales incorrectas");
+        }
+        return true; // login exitoso
+    }
 
 }
