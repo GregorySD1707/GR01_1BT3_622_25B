@@ -31,13 +31,13 @@ public class UsuarioTest {
 
     @Test()
     public void given_data_when_sign_up_then_ok() {
-        Mockito.when(daoUsuario.existe("pepe.zambrano@gmail.com")).thenReturn(true);
+        Mockito.when(daoUsuario.existe("pepe12.zambrano@gmail.com")).thenReturn(true);
 
-        servicioUsuario.registrarUsuario("Pepe", "Zambrano", "pepe.zambrano@gmail.com",
-                "xXXpepeXxx", "abc123", LocalDate.parse("2002-11-27"));
+        servicioUsuario.registrarUsuario("Pepe", "Zambrano", "pepe.zambrano1234@gmail.com",
+                "pepe123", "abc123", LocalDate.parse("2002-11-27"));
 
         Mockito.verify(daoUsuario).crear(Mockito.any(Usuario.class));
-        assertTrue(servicioUsuario.existeUsuario("pepe.zambrano@gmail.com"));
+        assertTrue(servicioUsuario.existeUsuario("pepe.zambrano123@gmail.com"));
     }
 
     @Test(timeout = 700)
