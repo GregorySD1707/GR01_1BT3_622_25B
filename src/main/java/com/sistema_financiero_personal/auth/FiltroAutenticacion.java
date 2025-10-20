@@ -37,7 +37,7 @@ public class FiltroAutenticacion implements Filter {
         HttpSession session = httpRequest.getSession(false);
 
         // Verificar si el usuario está logueado
-        boolean usuarioLogueado = (session != null && session.getAttribute("usuarioLogueado") != null);
+        boolean usuarioLogueado = (session != null && session.getAttribute("usuario") != null);
 
         if (usuarioLogueado) {
             // Usuario autenticado, continuar con la petición
