@@ -109,4 +109,28 @@ public class ServicioRegistroUsuario {
         return contrasena.chars()
                 .anyMatch(c -> CARACTERES_ESPECIALES.indexOf(c) >= 0);
     }
+
+    public Usuario autenticarUsuario(String identificadorUsuario, String contrasena) {
+        if (identificadorUsuario == null || identificadorUsuario.trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre de usuario no puede estar vacío");
+        }
+        if (contrasena == null || contrasena.trim().isEmpty()) {
+            throw new IllegalArgumentException("La contraseña no puede estar vacía");
+        }
+
+        Usuario usuario = daoUsuario.buscarPorNombreUsuario(identificadorUsuario);
+        if (usuario == null) {
+           usuario = daoUsuario.buscarPorCorreo(identificadorUsuario);
+        }
+
+        if (usuario == null) {
+            throw new IllegalArgumentException("Usuario o contraseña incorrectos");
+        }
+
+        boolean contrasenaValida = EncriptadorContrasena.verificarContrasena(contrasena, usuario.getContrasena());
+        if (contrasenaValida) {
+            return usuario;
+        }
+        return null;
+    }
 }

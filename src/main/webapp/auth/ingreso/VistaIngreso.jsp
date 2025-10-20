@@ -24,7 +24,7 @@
   </div>
   <% } %>
 
-  <form action="${pageContext.request.contextPath}/LogInUsuario" method="post">
+  <form action="${pageContext.request.contextPath}/ingreso" method="post">
     <div class="form-group">
       <input
               type="text"
