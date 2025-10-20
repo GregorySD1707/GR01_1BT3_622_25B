@@ -22,6 +22,7 @@ public class UsuarioTest {
 
     private static DAOUsuario daoUsuario;
     private static ServicioUsuario servicioUsuario;
+    private static final String CORREO = "pepe.zambrano1234@gmail.com";
 
     @BeforeClass
     public static void setUpClass(){
@@ -31,13 +32,16 @@ public class UsuarioTest {
 
     @Test()
     public void given_data_when_sign_up_then_ok() {
-        Mockito.when(daoUsuario.existe("pepe12.zambrano@gmail.com")).thenReturn(true);
+        // usuario no existe en BD
+        Mockito.when(daoUsuario.existe(CORREO)).thenReturn(false);
 
-        servicioUsuario.registrarUsuario("Pepe", "Zambrano", "pepe.zambrano1234@gmail.com",
+        servicioUsuario.registrarUsuario("Pepe", "Zambrano", CORREO,
                 "pepe123", "abc123", LocalDate.parse("2002-11-27"));
 
+        // usuario existe en BD
+        Mockito.when(daoUsuario.existe(CORREO)).thenReturn(true);
         Mockito.verify(daoUsuario).crear(Mockito.any(Usuario.class));
-        assertTrue(servicioUsuario.existeUsuario("pepe.zambrano123@gmail.com"));
+        assertTrue(servicioUsuario.existeUsuario(CORREO));
     }
 
     @Test(timeout = 700)
