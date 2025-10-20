@@ -33,7 +33,7 @@ public class Usuario {
     @Column(nullable = false, length = 60) // Longitud ideal para un hash de BCrypt
     private String contrasena;
 
-    @Column(name="fecha_nacimiento", nullable = true)
+    @Column(name="fecha_nacimiento", nullable = false)
     private LocalDate fechaNacimiento;
 
     @Column(name="fecha_creacion", nullable = false)

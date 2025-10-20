@@ -2,6 +2,7 @@ package com.sistema_financiero_personal.movimiento.servicios;
 
 import com.sistema_financiero_personal.movimiento.daos.DAOCartera;
 import com.sistema_financiero_personal.movimiento.modelos.Cartera;
+import com.sistema_financiero_personal.usuario.modelos.Usuario;
 
 public class ServicioCartera {
     private final DAOCartera daoCartera;
@@ -58,5 +59,9 @@ public class ServicioCartera {
      */
     public Cartera buscarConMovimientos(Long id) {
         return daoCartera.buscarConMovimientos(id);
+    }
+    public void asignarCartera(Usuario usuario) {
+        Cartera nuevaCartera = new Cartera();
+        usuario.setCartera(nuevaCartera);
     }
 }

@@ -1,7 +1,7 @@
 package com.sistema_financiero_personal;
 import com.sistema_financiero_personal.usuario.modelos.Usuario;
-import com.sistema_financiero_personal.usuario.servicios.ServicioUsuario;
-import com.sistema_financiero_personal.usuario.servicios.ServicioUsuario.UserAlreadyExistsException;
+import com.sistema_financiero_personal.usuario.servicios.ServicioUsuarioTest;
+import com.sistema_financiero_personal.usuario.servicios.ServicioUsuarioTest.UserAlreadyExistsException;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -14,7 +14,7 @@ public class UsuarioServiceDuplicateTest {
 
     @Test
     public void register_fails_if_username_is_duplicate() {
-        ServicioUsuario servicio = Mockito.spy(new ServicioUsuario());
+        ServicioUsuarioTest servicio = Mockito.spy(new ServicioUsuarioTest());
 
         String usernameDuplicado = "vicente";
 

@@ -1,7 +1,6 @@
 package com.sistema_financiero_personal.usuario.servicios;
 
-import com.sistema_financiero_personal.movimiento.modelos.Cartera;
-import com.sistema_financiero_personal.usuario.daos.DAOUsuario;
+import com.sistema_financiero_personal.usuario.daos.DAOUsuarioTest;
 import com.sistema_financiero_personal.usuario.modelos.GoogleAuth;
 import com.sistema_financiero_personal.usuario.modelos.Usuario;
 import com.sistema_financiero_personal.usuario.modelos.UsuarioGoogle;
@@ -9,11 +8,11 @@ import com.sistema_financiero_personal.usuario.modelos.UsuarioGoogle;
 
 public class ServicioAutorizacion {
     private final GoogleAuth googleAuth;
-    private final DAOUsuario daoUsuario;
+    private final DAOUsuarioTest daoUsuarioTest;
 
-    public ServicioAutorizacion(GoogleAuth googleAuth, DAOUsuario daoUsuario) {
+    public ServicioAutorizacion(GoogleAuth googleAuth, DAOUsuarioTest daoUsuarioTest) {
         this.googleAuth = googleAuth;
-        this.daoUsuario = daoUsuario;
+        this.daoUsuarioTest = daoUsuarioTest;
     }
 
     public Usuario loginConGoogle(String token) {
@@ -32,7 +31,7 @@ public class ServicioAutorizacion {
     }
 
     private Usuario obtenerOCrearUsuario(UsuarioGoogle usuarioGoogle) {
-        return daoUsuario.buscarPorCorreo(usuarioGoogle.getCorreo())
+        return daoUsuarioTest.buscarPorCorreo(usuarioGoogle.getCorreo())
                 .orElseGet(() -> crearNuevoUsuario(usuarioGoogle));
     }
 

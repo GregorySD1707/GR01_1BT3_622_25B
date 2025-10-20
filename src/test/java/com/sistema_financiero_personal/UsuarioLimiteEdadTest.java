@@ -1,6 +1,6 @@
 package com.sistema_financiero_personal;
 
-import com.sistema_financiero_personal.usuario.servicios.ServicioUsuario;
+import com.sistema_financiero_personal.usuario.servicios.ServicioUsuarioTest;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -10,10 +10,10 @@ import static org.junit.Assert.assertThrows;
 
 public class UsuarioLimiteEdadTest {
 
-    private ServicioUsuario servicio;
+    private ServicioUsuarioTest servicio;
     @Before
     public void setUp() {
-        servicio = new ServicioUsuario();
+        servicio = new ServicioUsuarioTest();
     }
     @Test
     public void registrar_debeLanzarIllegalArgumentException_si_edadEsMenorA13() {

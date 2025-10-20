@@ -52,7 +52,7 @@
 
   <!-- Links debajo del botón -->
   <div class="links">
-    <a href="${pageContext.request.contextPath}/SignUpUsuario">¿Eres nuevo? Regístrate</a>
+    <a href="${pageContext.request.contextPath}/registro">¿Eres nuevo? Regístrate</a>
     <a href="${pageContext.request.contextPath}/forgot-password.jsp">¿Olvidaste tu contraseña?</a>
   </div>
 </div>

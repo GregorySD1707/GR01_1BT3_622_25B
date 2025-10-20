@@ -1,6 +1,6 @@
 package com.sistema_financiero_personal;
 
-import com.sistema_financiero_personal.usuario.servicios.ServicioUsuario;
+import com.sistema_financiero_personal.usuario.servicios.ServicioUsuarioTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 @RunWith(Parameterized.class)
 public class ValidarContrasenaParamTest {
 
-    private ServicioUsuario servicioUsuario;
+    private ServicioUsuarioTest servicioUsuarioTest;
 
     @Parameterized.Parameter(0)
     public String password;
@@ -24,7 +24,7 @@ public class ValidarContrasenaParamTest {
 
     @Before
     public void setUp() {
-        servicioUsuario = new ServicioUsuario();
+        servicioUsuarioTest = new ServicioUsuarioTest();
     }
 
     @Parameterized.Parameters(name = "{index}: password=\"{0}\" => esperado={1}")
@@ -42,7 +42,7 @@ public class ValidarContrasenaParamTest {
 
     @Test
     public void given_password_when_validate_then_expected_result() {
-        boolean result = servicioUsuario.validarContrasena(password);
+        boolean result = servicioUsuarioTest.validarContrasena(password);
         assertEquals(
                 "Fallo al validar la contraseña: \"" + password + "\"",
                 expectedResult,

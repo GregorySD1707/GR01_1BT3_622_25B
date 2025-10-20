@@ -8,11 +8,12 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-@WebServlet("/LogInUsuario")
+@WebServlet("/ingreso")
 public class ServletLogInUsuario extends HttpServlet {
+    private static final String PATH = "auth/ingreso/VistaIngreso.jsp";
     @Override
     protected void doGet(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response) throws jakarta.servlet.ServletException, java.io.IOException {
-        request.getRequestDispatcher("auth/logIn/VistaLogIn.jsp").forward(request, response);
+        request.getRequestDispatcher(PATH).forward(request, response);
     }
 
     @Override
@@ -25,7 +26,7 @@ public class ServletLogInUsuario extends HttpServlet {
                 contrasena == null || contrasena.trim().isEmpty()) {
 
             request.setAttribute("error", "Por favor complete todos los campos");
-            request.getRequestDispatcher("/login.jsp").forward(request, response);
+            request.getRequestDispatcher(PATH).forward(request, response);
             return;
 
             // logica con DAO

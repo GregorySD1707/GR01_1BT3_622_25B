@@ -1,6 +1,6 @@
 package com.sistema_financiero_personal;
 
-import com.sistema_financiero_personal.usuario.daos.DAOUsuario;
+import com.sistema_financiero_personal.usuario.daos.DAOUsuarioTest;
 import com.sistema_financiero_personal.usuario.modelos.GoogleAuth;
 import com.sistema_financiero_personal.usuario.modelos.Usuario;
 import com.sistema_financiero_personal.usuario.modelos.UsuarioGoogle;
@@ -20,13 +20,13 @@ public class GoogleLoginTest {
     private static final String APELLIDO = "Perez";
     private GoogleAuth googleAuth;
     private ServicioAutorizacion servicioAutorizacion;
-    private DAOUsuario daoUsuario;
+    private DAOUsuarioTest daoUsuarioTest;
 
     @Before
     public void setUp(){
         googleAuth = Mockito.mock(GoogleAuth.class);
-        daoUsuario = Mockito.mock(DAOUsuario.class);
-        servicioAutorizacion = new ServicioAutorizacion(googleAuth, daoUsuario);
+        daoUsuarioTest = Mockito.mock(DAOUsuarioTest.class);
+        servicioAutorizacion = new ServicioAutorizacion(googleAuth, daoUsuarioTest);
     }
     @Test
     public void given_googleUser_when_login_then_registresOrReturnExistingUser() {
@@ -40,7 +40,7 @@ public class GoogleLoginTest {
     }
     private void configurarMocks(UsuarioGoogle usuarioGoogle) {
         Mockito.when(googleAuth.validarToken(TOKEN_VALIDO)).thenReturn(usuarioGoogle);
-        Mockito.when(daoUsuario.buscarPorCorreo(usuarioGoogle.getCorreo()))
+        Mockito.when(daoUsuarioTest.buscarPorCorreo(usuarioGoogle.getCorreo()))
                 .thenReturn(Optional.empty());
     }
     private UsuarioGoogle crearUsuarioGoogle(String email, String nombre, String apellido) {

@@ -2,19 +2,17 @@ package com.sistema_financiero_personal.usuario.servicios;
 
 import com.sistema_financiero_personal.movimiento.modelos.Cartera;
 import com.sistema_financiero_personal.movimiento.servicios.ServicioCartera;
-import com.sistema_financiero_personal.usuario.daos.DAOUsuario;
+import com.sistema_financiero_personal.usuario.daos.DAOUsuarioTest;
 import com.sistema_financiero_personal.usuario.modelos.Usuario;
-import com.sistema_financiero_personal.usuario.modelos.UsuarioGoogle;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ServicioUsuario {
-    private DAOUsuario daoUsuario;
+public class ServicioUsuarioTest {
+    private DAOUsuarioTest daoUsuarioTest;
     private ServicioCartera servicioCartera;
     private static final String CARACTERES_ESPECIALES = "!@$%^&*_+-=[]{}|;:,.<>?";
     private static final int LONGITUD_MINIMA_CONTRASENA = 8;
@@ -23,11 +21,11 @@ public class ServicioUsuario {
     private final Set<String> nombresUsuarioUsados = new HashSet<>();
     private final Set<String> correosUsados = new HashSet<>();
 
-    public ServicioUsuario(DAOUsuario daoUsuario) {
+    public ServicioUsuarioTest(DAOUsuarioTest daoUsuarioTest) {
         this.servicioCartera = new ServicioCartera();
-        this.daoUsuario = daoUsuario;
+        this.daoUsuarioTest = daoUsuarioTest;
     }
-    public ServicioUsuario() {
+    public ServicioUsuarioTest() {
        this(null);
     }
 
@@ -47,12 +45,12 @@ public class ServicioUsuario {
         if (usuario.getCartera() == null) {
             asignarCartera(usuario);
         }
-        if(daoUsuario != null) {
-            daoUsuario.crear(usuario);
+        if(daoUsuarioTest != null) {
+            daoUsuarioTest.crear(usuario);
         }
 
         // Registrar en memoria (case-insensitive) para futuras comprobaciones
-        if (daoUsuario == null) {
+        if (daoUsuarioTest == null) {
             if (correo != null) {
                 correosUsados.add(correo.toLowerCase());
             }
@@ -77,7 +75,7 @@ public class ServicioUsuario {
         if (correo == null) return false;
         String key = correo.toLowerCase();
         boolean enMemoria = correosUsados.contains(key);
-        boolean enDao = daoUsuario != null && daoUsuario.existe(correo);
+        boolean enDao = daoUsuarioTest != null && daoUsuarioTest.existe(correo);
         return enMemoria || enDao;
     }
 
@@ -148,15 +146,15 @@ public class ServicioUsuario {
     //public Cartera obtenerCartera(Long carteraId) {return servicioCartera.buscarPorId(carteraId);}
 
     public List<Usuario> listar() {
-        return daoUsuario.listar();
+        return daoUsuarioTest.listar();
     }
 
     public boolean existeUsuario(String correo) {
-        return daoUsuario.existe(correo);
+        return daoUsuarioTest.existe(correo);
     }
 
     public boolean loginUsuario(String correo, String contrasena) {
-        boolean credencialesValidas = daoUsuario.credencialesCorrectas(correo, contrasena);
+        boolean credencialesValidas = daoUsuarioTest.credencialesCorrectas(correo, contrasena);
         if (!credencialesValidas) {
             throw new RuntimeException("Credenciales incorrectas");
         }

@@ -18,7 +18,7 @@
         </div>
 
         <div class="brand-footer">
-            <p>¿Ya tienes una cuenta? <a href="${pageContext.request.contextPath}/LogInUsuario">Iniciar sesión</a></p>
+            <p>¿Ya tienes una cuenta? <a href="${pageContext.request.contextPath}/ingreso">Iniciar sesión</a></p>
         </div>
     </div>
 
@@ -39,7 +39,7 @@
             </div>
             <% } %>
 
-            <form action="${pageContext.request.contextPath}/RegistroUsuario" method="post">
+            <form action="${pageContext.request.contextPath}/registro" method="post">
                 <div class="form-row">
                     <div class="form-group">
                         <input
