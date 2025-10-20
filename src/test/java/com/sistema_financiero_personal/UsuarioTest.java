@@ -40,7 +40,6 @@ public class UsuarioTest {
 
         // usuario existe en BD
         Mockito.when(daoUsuario.existe(CORREO)).thenReturn(true);
-        Mockito.verify(daoUsuario).crear(Mockito.any(Usuario.class));
         assertTrue(servicioUsuario.existeUsuario(CORREO));
     }
 
