@@ -31,7 +31,7 @@ public class ServletRecordatorio extends HttpServlet {
         // Verificar sesión
         Usuario usuario = obtenerUsuarioSesion(request);
         if (usuario == null) {
-            response.sendRedirect(request.getContextPath() + "/login");
+            response.sendRedirect(request.getContextPath() + "/ingreso");
             return;
         }
 
