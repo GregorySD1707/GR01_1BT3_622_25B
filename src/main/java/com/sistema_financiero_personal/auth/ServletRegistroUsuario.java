@@ -6,6 +6,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -54,7 +55,9 @@ public class ServletRegistroUsuario extends HttpServlet {
 
             // Registro exitoso
             request.setAttribute("success", "¡Cuenta creada exitosamente! Ya puedes iniciar sesión.");
-            request.getRequestDispatcher(PATH).forward(request, response);
+            HttpSession session = request.getSession();
+            session.setAttribute("usuario", nombreUsuario);
+            response.sendRedirect(request.getContextPath() + "/inicio");
 
         } catch (DateTimeParseException e) {
             request.setAttribute("error", "La fecha de nacimiento no es válida");
