@@ -1,10 +1,13 @@
 package com.sistema_financiero_personal.usuario.modelos;
 
 import com.sistema_financiero_personal.movimiento.modelos.Cartera;
+import com.sistema_financiero_personal.recordatorio.modelos.Recordatorio;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Representa a un usuario del sistema.
@@ -38,6 +41,9 @@ public class Usuario {
 
     @Column(name="fecha_creacion", nullable = false)
     private LocalDateTime fechaCreacion;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Recordatorio> recordatorios = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "cartera_id", nullable = false, unique = true)
@@ -113,5 +119,12 @@ public class Usuario {
     }
     public Cartera getCartera() {
         return cartera;
+    }
+    public List<Recordatorio> getRecordatorios() {
+        return recordatorios;
+    }
+
+    public void setRecordatorios(List<Recordatorio> recordatorios) {
+        this.recordatorios = recordatorios;
     }
 }

@@ -1,5 +1,6 @@
 package com.sistema_financiero_personal.auth;
 
+import com.sistema_financiero_personal.usuario.modelos.Usuario;
 import com.sistema_financiero_personal.usuario.servicios.ServicioRegistroUsuario;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -44,7 +45,7 @@ public class ServletRegistroUsuario extends HttpServlet {
                 return;
             }
 
-            servicioRegistroUsuario.registrarUsuario(
+            Usuario usuarioRegistrado = servicioRegistroUsuario.registrarUsuario(
                     nombre,
                     apellido,
                     correo,
@@ -56,7 +57,7 @@ public class ServletRegistroUsuario extends HttpServlet {
             // Registro exitoso
             request.setAttribute("success", "¡Cuenta creada exitosamente! Ya puedes iniciar sesión.");
             HttpSession session = request.getSession();
-            session.setAttribute("usuario", nombreUsuario);
+            session.setAttribute("usuario", usuarioRegistrado);
             response.sendRedirect(request.getContextPath() + "/inicio");
 
         } catch (DateTimeParseException e) {

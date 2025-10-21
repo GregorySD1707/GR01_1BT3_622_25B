@@ -1,5 +1,6 @@
 package com.sistema_financiero_personal.recordatorio.modelos;
 
+import com.sistema_financiero_personal.usuario.modelos.Usuario;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -13,6 +14,9 @@ public class Recordatorio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "recordatorio_id")
     private Long id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
     @Column(name = "fecha_inicio")
     private LocalDate fechaInicio;
     @Column(name = "fecha_fin")
@@ -150,5 +154,10 @@ public class Recordatorio {
     public void setMonto(double monto) {
         this.monto = monto;
     }
-
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+    public Usuario getUsuario() {
+        return this.usuario;
+    }
 }

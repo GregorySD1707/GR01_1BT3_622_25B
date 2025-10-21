@@ -10,12 +10,14 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.sistema_financiero_personal.recordatorio.daos.DAORecordatorio;
 import com.sistema_financiero_personal.recordatorio.modelos.Recordatorio;
+import com.sistema_financiero_personal.usuario.modelos.Usuario;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/notificaciones")
 public class ServletNotificacion extends HttpServlet {
@@ -29,10 +31,19 @@ public class ServletNotificacion extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         try {
+            Usuario usuario = obtenerUsuarioSesion(request);
+            System.out.println("Usuario en sesión: " + usuario.getId());
+            if (usuario == null) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Usuario no autenticado");
+                return;
+            }
+
             LocalDate hoy = LocalDate.now();
-            List<Recordatorio> recordatorios = recordatorioDAO.listarActivos();
+
+            List<Recordatorio> recordatorios = recordatorioDAO.listarActivos(usuario.getId());
             List<Map<String, String>> notificaciones = new ArrayList<>();
 
             if (recordatorios != null && !recordatorios.isEmpty()) {
@@ -41,6 +52,7 @@ public class ServletNotificacion extends HttpServlet {
                         Map<String, String> notificacion = new HashMap<>();
                         notificacion.put("descripcion", r.getDescripcion());
                         notificacion.put("fecha", fechaVencimiento.toString());
+                        notificacion.put("monto", String.valueOf(r.getMonto()));
                         notificaciones.add(notificacion);
                     });
                 }
@@ -56,15 +68,24 @@ public class ServletNotificacion extends HttpServlet {
 
     /**
      * Procesa las notificaciones generadas y las envía como respuesta JSON
-     * @param response HttpServletResponse para escribir la respuesta
-     * @param notificaciones Lista de notificaciones a procesar y enviar
-     * @throws IOException Si hay error al escribir la respuesta
      */
-    private void procesarNotificaciones(HttpServletResponse response, List<Map<String, String>> notificaciones) throws IOException {
+    private void procesarNotificaciones(HttpServletResponse response, List<Map<String, String>> notificaciones)
+            throws IOException {
         String jsonResponse = this.gson.toJson(notificaciones);
 
         response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");  
+        response.setCharacterEncoding("UTF-8");
         response.getWriter().write(jsonResponse);
+    }
+
+    /**
+     * Obtiene el usuario de la sesión actual
+     */
+    private Usuario obtenerUsuarioSesion(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            return (Usuario) session.getAttribute("usuario");
+        }
+        return null;
     }
 }

@@ -109,5 +109,22 @@ public abstract class DAOBase<T> {
             return (List<T>) query.getResultList();
         });
     };
+    public List<T> buscarPorCampo(String fieldName, Object value) {
+        return executeQuery(session -> {
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<T> cq = cb.createQuery(entityClass);
+            Root<T> root = cq.from(entityClass);
+
+            String[] campos = fieldName.split("\\.");
+            jakarta.persistence.criteria.Path<?> path = root;
+            for (String campo : campos) {
+                path = path.get(campo);
+            }
+
+            cq.select(root).where(cb.equal(path, value));
+
+            return session.createQuery(cq).getResultList();  // ← Retorna LISTA
+        });
+    }
 }
 

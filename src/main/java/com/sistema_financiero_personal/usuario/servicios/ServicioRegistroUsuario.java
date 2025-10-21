@@ -20,7 +20,7 @@ public class ServicioRegistroUsuario {
         this.servicioCartera = new ServicioCartera();
     }
 
-    public void registrarUsuario(String nombre, String apellido, String correo, String nombreUsuario,
+    public Usuario registrarUsuario(String nombre, String apellido, String correo, String nombreUsuario,
                                     String contrasena, LocalDate fechaNacimiento) {
 
         validarCampos(nombre, apellido, correo, nombreUsuario, contrasena, fechaNacimiento);
@@ -39,6 +39,7 @@ public class ServicioRegistroUsuario {
         );
         servicioCartera.asignarCartera(usuario);
         daoUsuario.crear(usuario);
+        return usuario;
     }
 
     private void validarCampos(String nombre, String apellido, String correo, String nombreUsuario, String contrasena, LocalDate fechaNacimiento) {
