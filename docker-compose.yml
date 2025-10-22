@@ -1,42 +1,10 @@
-version: '3.8'
-
 services:
-  # Base de datos MySQL
-  mysql:
-    image: mysql:8.0
-    container_name: mysql-db
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: nombre_tu_bd
-      MYSQL_USER: usuario
-      MYSQL_PASSWORD: password
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - app-network
-
-  # Aplicación web
   webapp:
     build: .
-    container_name: webapp-container
+    container_name: sistema-financiero-webapp
     ports:
-      - "8081:8080"  # Mapear a 8081 para evitar conflicto con Jenkins
-    depends_on:
-      - mysql
+      - "8081:8080"
     environment:
-      DB_HOST: mysql
-      DB_PORT: 3306
-      DB_NAME: nombre_tu_bd
-      DB_USER: usuario
-      DB_PASSWORD: password
-    networks:
-      - app-network
-
-volumes:
-  mysql_data:
-
-networks:
-  app-network:
-    driver: bridge
+      # Variables de entorno (opcional, ya las tienes en hibernate.cfg.xml)
+      CATALINA_OPTS: "-Xms512m -Xmx1024m"
+    restart: unless-stopped
