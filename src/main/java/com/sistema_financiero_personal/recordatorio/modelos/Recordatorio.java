@@ -41,7 +41,8 @@ public class Recordatorio {
         this.recurrencia = recurrencia;
         this.diasDeAnticipacion = diasDeAnticipacion;
         this.monto = monto;
-        System.out.println("Este es un test de CI con el contenedor Jenkins");
+        System.out.println("Este es un test 1 de CI con el contenedor Jenkins");
+        System.out.println("Este es un test 2 de CI con el contenedor Jenkins");
     }
 
     public LocalDate calcularProximaFechaVencimiento(Recurrencia recurrencia, LocalDate fechaInicio,
