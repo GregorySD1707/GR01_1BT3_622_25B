@@ -1,38 +1,57 @@
 package com.sistema_financiero_personal.resumen_financiero.controladores;
 
-import com.sistema_financiero_personal.resumen_financiero.daos.DAODocumentoPDF;
+import com.sistema_financiero_personal.resumen_financiero.daos.DAOResumenFinanciero;
 import com.sistema_financiero_personal.resumen_financiero.modelos.DocumentoPDF;
+import com.sistema_financiero_personal.resumen_financiero.modelos.ResumenFinanciero;
+import com.sistema_financiero_personal.usuario.modelos.Usuario;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-// Anotación para indicar al servidor que este servlet responderá a las peticiones a la URL /descargarPDF
 @WebServlet(urlPatterns = {"/resumen_financiero/descargarPDF"})
-public class ServletDescargaPDF extends HttpServlet { // Hereda de la clase base que maneja peticiones HTTP
-    private DAODocumentoPDF DAODocumentoPDF;
+public class ServletDescargaPDF extends HttpServlet {
+
+    private DAOResumenFinanciero daoResumenFinanciero;
 
     @Override
-    public void init() throws ServletException { // Se ejecuta UNA SOLA VEZ cuando el servlet se carga por primera vez
+    public void init() throws ServletException {
         super.init();
-        this.DAODocumentoPDF = new DAODocumentoPDF();
+        this.daoResumenFinanciero = new DAOResumenFinanciero();
     }
 
-    // HttpServletRequest request -> Contiene toda la información de la petición (parámetros, headers, etc.)
-    // HttpServletResponse response -> Se usa para enviar la respuesta al navegador
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            Long id = obtenerID(request, response);
-            if (id == null) return;
+            // Validar que el usuario esté autenticado
+            HttpSession session = request.getSession(false);
+            if (session == null || session.getAttribute("usuario") == null) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Usuario no autenticado");
+                return;
+            }
 
-            DocumentoPDF documento = DAODocumentoPDF.buscarPorId(id);
-            if (documento == null) {
+            Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+            // Obtener ID del resumen financiero
+            Long resumenId = obtenerIdDelResumen(request, response);
+            if (resumenId == null) return;
+
+            // CRÍTICO: Verificar que el resumen pertenezca al usuario
+            ResumenFinanciero resumen = daoResumenFinanciero.buscarPorIdYUsuario(resumenId, usuario.getId());
+            if (resumen == null) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN,
+                        "No tiene permisos para acceder a este documento");
+                return;
+            }
+
+            DocumentoPDF documento = resumen.getDocumentoPDF();
+            if (documento == null || documento.getArchivoPdf() == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "PDF no encontrado");
                 return;
             }
@@ -43,53 +62,79 @@ public class ServletDescargaPDF extends HttpServlet { // Hereda de la clase base
             // Escribir el PDF en la respuesta
             escribirContenidoDelArchivoEnLaRespuesta(response, documento);
 
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID inválido");
         } catch (Exception e) {
+            System.err.println("Error al descargar el PDF: " + e.getMessage());
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Error al descargar el PDF");
+                    "Error al procesar la descarga del PDF");
         }
     }
 
-    private void configurarRespuestaDeDescarga(HttpServletResponse response, DocumentoPDF documento) throws IOException {
-        // Configurar headers para descarga
-        response.setContentType("application/pdf"); // Le dice al navegador que es un PDF
-
-        response.setHeader(
-                "Content-Disposition",
-                // "attachment" fuerza la descarga en lugar de mostrar en el navegador
-                "attachment; filename=\"" + sanitizarNombreArchivo(documento.getNombre())  + "\"");
-
-        response.setContentLength(documento.getArchivoPdf().length); // tamaño del archivo
+    /**
+     * Configura los headers HTTP para la descarga del PDF
+     */
+    private void configurarRespuestaDeDescarga(HttpServletResponse response, DocumentoPDF documento) {
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition",
+                "attachment; filename=\"" + sanitizarNombreArchivo(documento.getNombre()) + "\"");
+        response.setContentLength(documento.getArchivoPdf().length);
 
         // Headers de seguridad
-        response.setHeader("X-Content-Type-Options", "nosniff"); // OBLIGATORIAMENTE el navegador usa el Content-Type que le envíe para que no decida por él mismo el tipo
-        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // No guardar en caché
+        response.setHeader("X-Content-Type-Options", "nosniff");
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
     }
 
-    private static void escribirContenidoDelArchivoEnLaRespuesta(HttpServletResponse response, DocumentoPDF documento) throws IOException {
-        try (ServletOutputStream out = response.getOutputStream()){
-            out.write(documento.getArchivoPdf()); // Escribe los bytes del PDF
-            out.flush(); // Asegura que se envía completamente
+    /**
+     * Escribe el contenido del PDF en la respuesta HTTP
+     */
+    private void escribirContenidoDelArchivoEnLaRespuesta(HttpServletResponse response, DocumentoPDF documento)
+            throws IOException {
+        try (ServletOutputStream out = response.getOutputStream()) {
+            out.write(documento.getArchivoPdf());
+            out.flush();
         }
     }
 
+    /**
+     * Sanitiza el nombre del archivo removiendo caracteres peligrosos
+     */
     private String sanitizarNombreArchivo(String nombre) {
-        if (nombre == null) return "documento.pdf";
+        if (nombre == null || nombre.trim().isEmpty()) {
+            return "documento.pdf";
+        }
 
-        // Remover caracteres peligrosos
-        // Reemplazar lo que no sea letras o números por "_"
-        return nombre.replaceAll("[^a-zA-Z0-9._-]", "_");
+        // Remover caracteres peligrosos y espacios
+        String nombreSanitizado = nombre.replaceAll("[^a-zA-Z0-9._-]", "_");
+
+        // Asegurar que termine en .pdf
+        if (!nombreSanitizado.toLowerCase().endsWith(".pdf")) {
+            nombreSanitizado += ".pdf";
+        }
+
+        return nombreSanitizado;
     }
 
-    private Long obtenerID(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String idParam = request.getParameter("id");  // Si la URL es /descargarPDF?id=123, idParam será 123
+    /**
+     * Obtiene y valida el ID del resumen financiero desde los parámetros
+     */
+    private Long obtenerIdDelResumen(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        String idParam = request.getParameter("resumenId");
 
-        if (idParam == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID no proporcionado");
+        if (idParam == null || idParam.trim().isEmpty()) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID del resumen no proporcionado");
             return null;
         }
 
-        Long id = Long.parseLong(idParam);
-        return id;
+        try {
+            return Long.parseLong(idParam);
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID del resumen inválido");
+            return null;
+        }
     }
 }

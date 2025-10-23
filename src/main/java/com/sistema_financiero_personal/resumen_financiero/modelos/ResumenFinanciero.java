@@ -36,8 +36,8 @@ public class ResumenFinanciero {
 
     @Column(name = "fecha_creacion", nullable = false)
     private LocalDateTime fechaCreacion;
-    @ManyToOne
-    @JoinColumn (name = "usuario_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
     public ResumenFinanciero() {

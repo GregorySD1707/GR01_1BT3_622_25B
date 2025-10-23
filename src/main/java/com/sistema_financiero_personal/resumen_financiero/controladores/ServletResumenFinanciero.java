@@ -6,13 +6,11 @@ import com.sistema_financiero_personal.resumen_financiero.modelos.DocumentoPDF;
 import com.sistema_financiero_personal.resumen_financiero.modelos.ResumenFinanciero;
 import com.sistema_financiero_personal.resumen_financiero.servicios.ServicioResumenFinanciero;
 import com.sistema_financiero_personal.comun.utilidades.GestorDeArchivos;
+import com.sistema_financiero_personal.usuario.modelos.Usuario;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.Part;
+import jakarta.servlet.http.*;
 
 import java.io.IOException;
 
@@ -26,6 +24,7 @@ public class ServletResumenFinanciero extends HttpServlet {
 
     private DAOResumenFinanciero DAOResumenFinanciero;
     private DAODocumentoPDF DAODocumentoPDF;
+    private static final String PATH = "/resumen_financiero/VistaResumenFinanciero.jsp";
 
     @Override
     public void init() throws ServletException {
@@ -37,6 +36,11 @@ public class ServletResumenFinanciero extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try{
+            Usuario usuario = obtenerUsuarioSesion(request);
+            if (usuario == null) {
+                response.sendRedirect(request.getContextPath() + "/ingreso");
+                return;
+            }
             Part archivo = GestorDeArchivos.obtenerArchivo(request, response);
             if (archivo == null) return;
 
@@ -49,8 +53,7 @@ public class ServletResumenFinanciero extends HttpServlet {
             if (rutaArchivo == null) return;
 
             // Procesar la información del contenido del PDF para crear el resumen financiero
-            ResumenFinanciero resumenFinanciero = ServicioResumenFinanciero.procesarInformacion(request,
-                    response, rutaArchivo, documentoPDF);
+            ResumenFinanciero resumenFinanciero = ServicioResumenFinanciero.procesarInformacion(rutaArchivo, documentoPDF, usuario);
             if (resumenFinanciero == null) return;
 
             // Guardar en la BD el resumen financiero
@@ -59,11 +62,11 @@ public class ServletResumenFinanciero extends HttpServlet {
             prepararVistaResumenFinanciero(request, response, resumenFinanciero);
 
             // Enviar resultado al JSP
-            request.getRequestDispatcher("/resumen_financiero/VistaResumenFinanciero.jsp").forward(request, response);
+            request.getRequestDispatcher(PATH).forward(request, response);
 
         } catch (Exception e){
             request.setAttribute("error", "Error al procesar el PDF: "+e.getMessage());
-            request.getRequestDispatcher("/resumen_financiero/VistaResumenFinanciero.jsp").forward(request, response);
+            request.getRequestDispatcher(PATH).forward(request, response);
         }
     }
 
@@ -74,5 +77,12 @@ public class ServletResumenFinanciero extends HttpServlet {
         request.setAttribute("fechaPeriodoAnterior", resumenFinanciero.getFechaPeriodoAnterior());
         request.setAttribute("fechaPeriodoActual", resumenFinanciero.getFechaPeriodoActual());
         request.setAttribute("fechaCreacionFormateada", resumenFinanciero.getFechaCreacionFormateada());
+    }
+    private Usuario obtenerUsuarioSesion(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            return (Usuario) session.getAttribute("usuario");
+        }
+        return null;
     }
 }
