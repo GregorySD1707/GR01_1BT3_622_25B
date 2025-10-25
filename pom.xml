@@ -14,6 +14,7 @@
     <maven.compiler.target>21</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <junit.jupiter.version>5.10.2</junit.jupiter.version>
+    <bytebuddy.version>1.15.10</bytebuddy.version>
   </properties>
   <dependencies>
 
@@ -69,10 +70,17 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- Byte Buddy actualizado para compatibilidad con JDK 24 -->
     <dependency>
       <groupId>net.bytebuddy</groupId>
       <artifactId>byte-buddy</artifactId>
-      <version>1.14.11</version>
+      <version>${bytebuddy.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.bytebuddy</groupId>
+      <artifactId>byte-buddy-agent</artifactId>
+      <version>${bytebuddy.version}</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -91,6 +99,7 @@
         <version>3.2.5</version>
         <configuration>
           <useModulePath>false</useModulePath>
+          <argLine>-Djdk.attach.allowAttachSelf=true</argLine>
         </configuration>
       </plugin>
     </plugins>
