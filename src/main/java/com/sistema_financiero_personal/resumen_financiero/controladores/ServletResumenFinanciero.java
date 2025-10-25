@@ -1,5 +1,6 @@
 package com.sistema_financiero_personal.resumen_financiero.controladores;
 
+import com.sistema_financiero_personal.comun.utilidades.mensajes.MensajeUtil;
 import com.sistema_financiero_personal.resumen_financiero.daos.DAOResumenFinanciero;
 import com.sistema_financiero_personal.resumen_financiero.daos.DAODocumentoPDF;
 import com.sistema_financiero_personal.resumen_financiero.modelos.DocumentoPDF;
@@ -24,6 +25,7 @@ public class ServletResumenFinanciero extends HttpServlet {
 
     private DAOResumenFinanciero DAOResumenFinanciero;
     private DAODocumentoPDF DAODocumentoPDF;
+    private ServicioResumenFinanciero servicioResumenFinanciero;
     private static final String PATH = "/resumen_financiero/VistaResumenFinanciero.jsp";
 
     @Override
@@ -31,46 +33,63 @@ public class ServletResumenFinanciero extends HttpServlet {
         super.init();
         this.DAOResumenFinanciero = new DAOResumenFinanciero();
         this.DAODocumentoPDF = new DAODocumentoPDF();
+        this.servicioResumenFinanciero = new ServicioResumenFinanciero();
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try{
+        HttpSession session = request.getSession();
+
+        try {
             Usuario usuario = obtenerUsuarioSesion(request);
             if (usuario == null) {
                 response.sendRedirect(request.getContextPath() + "/ingreso");
                 return;
             }
+
             Part archivo = GestorDeArchivos.obtenerArchivo(request, response);
-            if (archivo == null) return;
+            if (archivo == null) {
+                MensajeUtil.agregarError(session, "No se pudo cargar el archivo PDF");
+                response.sendRedirect(request.getContextPath() + "/resumen_financiero/consultarResumenes");
+                return;
+            }
 
             // Guardar reporte en BD con su nombre y contenido en bytes
             byte[] archivoEnBytes = GestorDeArchivos.transformarArchivoABytes(archivo);
-            DocumentoPDF documentoPDF = DAODocumentoPDF.guardarPDF(archivo.getSubmittedFileName(),archivoEnBytes);
+            DocumentoPDF documentoPDF = DAODocumentoPDF.guardarPDF(archivo.getSubmittedFileName(), archivoEnBytes);
 
             // Obtener ruta temporal donde se va a guardar el reporte
             String rutaArchivo = GestorDeArchivos.obtenerRutaDeArchivoTemporal(this, request, response);
-            if (rutaArchivo == null) return;
+            if (rutaArchivo == null) {
+                MensajeUtil.agregarError(session, "Error al procesar el archivo temporal");
+                response.sendRedirect(request.getContextPath() + "/resumen_financiero/consultarResumenes");
+                return;
+            }
 
             // Procesar la información del contenido del PDF para crear el resumen financiero
-            ResumenFinanciero resumenFinanciero = ServicioResumenFinanciero.procesarInformacion(rutaArchivo, documentoPDF, usuario);
-            if (resumenFinanciero == null) return;
+            ResumenFinanciero resumenFinanciero = servicioResumenFinanciero.procesarInformacion(rutaArchivo, documentoPDF, usuario);
+            if (resumenFinanciero == null) {
+                MensajeUtil.agregarError(session, "No se pudo procesar la información del PDF");
+                response.sendRedirect(request.getContextPath() + "/resumen_financiero/consultarResumenes");
+                return;
+            }
 
             // Guardar en la BD el resumen financiero
             DAOResumenFinanciero.crear(resumenFinanciero);
+            MensajeUtil.agregarExito(session, "Resumen financiero procesado exitosamente");
 
-            prepararVistaResumenFinanciero(request, response, resumenFinanciero);
-
-            // Enviar resultado al JSP
+            prepararVistaResumenFinanciero(request, resumenFinanciero);
             request.getRequestDispatcher(PATH).forward(request, response);
 
-        } catch (Exception e){
-            request.setAttribute("error", "Error al procesar el PDF: "+e.getMessage());
-            request.getRequestDispatcher(PATH).forward(request, response);
+
+
+        } catch (Exception e) {
+            MensajeUtil.agregarError(session, "Error al procesar el PDF: " + e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/resumen_financiero/consultarResumenes");
         }
     }
 
-    private static void prepararVistaResumenFinanciero(HttpServletRequest request, HttpServletResponse response, ResumenFinanciero resumenFinanciero) throws ServletException, IOException {
+    private void prepararVistaResumenFinanciero(HttpServletRequest request, ResumenFinanciero resumenFinanciero) {
         request.setAttribute("Ingresos", resumenFinanciero.getIngresosTotales());
         request.setAttribute("Gastos", resumenFinanciero.getGastosTotales());
         request.setAttribute("AhorroNeto", resumenFinanciero.getAhorroNeto());
@@ -78,6 +97,7 @@ public class ServletResumenFinanciero extends HttpServlet {
         request.setAttribute("fechaPeriodoActual", resumenFinanciero.getFechaPeriodoActual());
         request.setAttribute("fechaCreacionFormateada", resumenFinanciero.getFechaCreacionFormateada());
     }
+
     private Usuario obtenerUsuarioSesion(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) {

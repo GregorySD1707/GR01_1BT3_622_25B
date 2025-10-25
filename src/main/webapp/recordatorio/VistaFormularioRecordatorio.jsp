@@ -1,4 +1,3 @@
-<%-- RUTA: /formulario_recordatorios.jsp --%>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ page isELIgnored="false" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
@@ -19,17 +18,7 @@
         <a href="${pageContext.request.contextPath}/recordatorios" class="btn btn-secondary">Cancelar</a>
     </div>
 
-    <%-- Bloque para mostrar errores de validación del servlet --%>
-    <c:if test="${not empty error}">
-        <div class="alert alert-danger">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="15" y1="9" x2="9" y2="15"></line>
-                <line x1="9" y1="9" x2="15" y2="15"></line>
-            </svg>
-            ${error}
-        </div>
-    </c:if>
+    <jsp:include page="/comun/Mensajes.jsp" />
 
     <form method="POST" action="${pageContext.request.contextPath}/recordatorios">
 
@@ -98,7 +87,7 @@
         <%-- Botones de Acción --%>
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
-                ${modoEdicion ? 'Actualizar Recordatorio' : 'Guardar Recordatorio'}
+                ${modoEdicion ? 'Actualizar' : 'Registrar'}
             </button>
         </div>
     </form>
