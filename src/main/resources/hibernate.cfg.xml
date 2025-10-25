@@ -33,5 +33,6 @@
         <mapping class="com.sistema_financiero_personal.obligaciones_financieras.modelos.Deuda"/>
         <mapping class="com.sistema_financiero_personal.obligaciones_financieras.modelos.Prestamo"/>
         <mapping class="com.sistema_financiero_personal.usuario.modelos.Usuario"/>
+        <mapping class="com.sistema_financiero_personal.cuentas.modelos.Cuenta"/>
     </session-factory>
 </hibernate-configuration>
