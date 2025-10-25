@@ -17,23 +17,22 @@
 
 <%-- 3. Encabezado Principal: Nombre del modulo y boton para consultar resumenes --%>
 <div class="page-header">
-    <h1>Gestión de Resumen Financiero</h1>
-
-    <a href="${contextPath}/resumen_financiero/consultarResumenes" class="btn btn-secondary">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-            </svg>
-            <span>Consultar Resúmenes</span>
+    <h1>Resúmenenes Financieros</h1>
+    <a href="${contextPath}/resumen_financiero/componentes_resumen_financiero/FormularioSubirPDF.jsp" class="btn btn-secondary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 18l-6-6 6-6"/>
+        </svg>
+        <span>Volver</span>
     </a>
-
 </div>
 
+<jsp:include page="/comun/Mensajes.jsp" />
 <%-- 4. Sección de Historial de Resúmenes --%>
 <c:if test="${tieneResumenes}">
     <jsp:include page="componentes_resumen_financiero/EncabezadoSeccion.jsp">
         <jsp:param name="titulo" value="Historial de Resúmenes Financieros"/>
         <jsp:param name="textoBoton" value="Subir PDF"/>
-        <jsp:param name="urlBoton" value="${contextPath}/resumen_financiero/VistaResumenFinanciero.jsp"/>
+        <jsp:param name="urlBoton" value="${contextPath}/resumen_financiero/componentes_resumen_financiero/FormularioSubirPDF.jsp"/>
     </jsp:include>
 
     <c:forEach var="resumen" items="${ResumenesFinancieros}">
@@ -77,25 +76,12 @@
     </c:forEach>
 </c:if>
 
-<%-- 5. Sección de Error --%>
-<c:if test="${tieneError}">
-    <jsp:include page="componentes_resumen_financiero/EncabezadoSeccion.jsp">
-        <jsp:param name="titulo" value="Resultados del Análisis"/>
-        <jsp:param name="textoBoton" value="Subir Otro PDF"/>
-        <jsp:param name="urlBoton" value="${contextPath}/resumen_financiero/VistaResumenFinanciero.jsp"/>
-    </jsp:include>
-
-    <div class="alert alert-danger">
-        <strong>Error:</strong> ${error}
-    </div>
-</c:if>
-
 <%-- 6. Sección de Resultados Individuales --%>
 <c:if test="${tieneResultados}">
     <jsp:include page="componentes_resumen_financiero/EncabezadoSeccion.jsp">
         <jsp:param name="titulo" value="Resultados del Análisis"/>
         <jsp:param name="textoBoton" value="Subir Otro PDF"/>
-        <jsp:param name="urlBoton" value="${contextPath}/resumen_financiero/VistaResumenFinanciero.jsp"/>
+        <jsp:param name="urlBoton" value="${contextPath}/resumen_financiero/componentes_resumen_financiero/FormularioSubirPDF.jsp"/>
     </jsp:include>
 
     <p class="resumen-fecha">Fecha de Creación: ${fechaCreacionFormateada}</p>
@@ -137,17 +123,23 @@
     <div class="empty-state">
         <div class="empty-state-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                            <polyline points="10 9 9 9 8 9"></polyline>
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
             </svg>
         </div>
-        <h2>Sube tu estado de cuenta</h2>
-        <p>Envía tu archivo PDF del estado de cuenta bancario</p>
+        <h2>No existen resúmenes financieros registrados</h2>
+        <p>Comienza registrando tu primer estado de cuenta bancario</p>
 
-        <jsp:include page="componentes_resumen_financiero/FormularioSubirPDF.jsp"/>
+        <a href="${contextPath}/resumen_financiero/componentes_resumen_financiero/FormularioSubirPDF.jsp" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+            <span>Registrar Resumen</span>
+        </a>
     </div>
 </c:if>
 

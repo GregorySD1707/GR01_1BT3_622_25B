@@ -87,7 +87,7 @@
         <%-- Botones de Acción --%>
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">
-                ${modoEdicion ? 'Actualizar Recordatorio' : 'Guardar Recordatorio'}
+                ${modoEdicion ? 'Actualizar' : 'Registrar'}
             </button>
         </div>
     </form>

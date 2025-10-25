@@ -1,6 +1,6 @@
 package com.sistema_financiero_personal.comun.utilidades.mensajes;
 
-public class Mensaje {
+public class  Mensaje {
     private TipoMensaje tipo;
     private String texto;
 

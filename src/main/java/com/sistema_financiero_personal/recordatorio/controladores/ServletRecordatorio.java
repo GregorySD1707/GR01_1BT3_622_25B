@@ -210,13 +210,13 @@ public class ServletRecordatorio extends HttpServlet {
 
         // Validar que fechaInicio no sea anterior a hoy
         if (fechaInicio.isBefore(hoy)) {
-            MensajeUtil.agregarError(session, "La fecha de inicio no puede ser anterior a hoy");
+            MensajeUtil.agregarError(session, "La fecha de inicio no puede ser anterior a la fecha actual");
             return false;
         }
 
         // Validar que fechaFin no sea anterior a fechaInicio (si existe fechaFin)
         if (fechaFin != null && fechaFin.isBefore(fechaInicio)) {
-            MensajeUtil.agregarError(session, "La fecha de fin no puede ser anterior a la fecha de inicio");
+            MensajeUtil.agregarError(session, "La fecha de inicio no puede ser posterior a la fecha final");
             return false;
         }
 
