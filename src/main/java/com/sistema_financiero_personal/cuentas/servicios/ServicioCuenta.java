@@ -14,10 +14,14 @@ public class ServicioCuenta {
         daoCuenta = new DAOCuenta();
     }
     public void crearCuenta(Cuenta cuenta) {
+        validarSaldoInicial(cuenta.getMonto());
         daoCuenta.crear(cuenta);
     }
 
     public Cuenta buscarCuenta(Long id) {
         return daoCuenta.buscarPorId(id);
+    }
+    public boolean validarSaldoInicial(double saldo) {
+        return saldo > 0;
     }
 }
