@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css">
-
+  <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/resources/images/Logo.png">
 </head>
 <body>
 
@@ -60,20 +60,39 @@
         </div>
        </div>
           <div class="user-menu">
-          <button class="user-avatar"><span>EU</span></button>
-          <div class="dropdown-menu">
-            <div class="dropdown-header">
-              <p class="username">Nombre de Usuario</p>
-              <p class="email">usuario@email.com</p>
+            <button class="user-avatar">
+            <span>
+              ${not empty sessionScope.usuario.nombre ?
+                      sessionScope.usuario.nombre.substring(0,1).toUpperCase() :
+                      'U'}${not empty sessionScope.usuario.apellido ?
+                      sessionScope.usuario.apellido.substring(0,1).toUpperCase() :
+                      'U'}
+            </span>
+            </button>
+            <div class="dropdown-menu">
+              <div class="dropdown-header">
+                <p class="username">
+                  ${not empty sessionScope.usuario.nombre ?
+                          sessionScope.usuario.nombre :
+                          'Usuario'}
+                  ${not empty sessionScope.usuario.apellido ?
+                          sessionScope.usuario.apellido :
+                          ''}
+                </p>
+                <p class="email">
+                  ${not empty sessionScope.usuario.correo ?
+                          sessionScope.usuario.correo :
+                          'usuario@email.com'}
+                </p>
+              </div>
+              <a href="${pageContext.request.contextPath}/perfil" class="dropdown-item">Mi Perfil</a>
+              <a href="#" class="dropdown-item">Configuración</a>
+              <div class="dropdown-divider"></div>
+              <a href="${pageContext.request.contextPath}/salir" class="dropdown-item logout">Cerrar Sesión</a>
             </div>
-            <a href="${pageContext.request.contextPath}/perfil" class="dropdown-item">Mi Perfil</a>
-            <a href="#" class="dropdown-item">Configuración</a>
-            <div class="dropdown-divider"></div>
-            <a href="salir" class="dropdown-item logout">Cerrar Sesión</a>
           </div>
-        </div>
     </div>
-  </div>
+    </div>
 </header>
 
 <main class="container page-content">

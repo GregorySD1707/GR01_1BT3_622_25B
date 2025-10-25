@@ -36,21 +36,19 @@ public class ServicioCartera {
         return daoCartera.buscarPorId(id);
     }
 
-    /**
-     * Verifica si una cartera existe
-     */
     public boolean existe(Long id) {
         return daoCartera.existe(id);
     }
-
     /**
      * Ajusta el saldo de una cartera (suma o resta)
      * Usa el método directo del DAO para mejor rendimiento
      */
     public void actualizarSaldo(Long carteraId, double cambio) {
-        if (!existe(carteraId)) {
+        Cartera cartera = buscarPorId(carteraId);
+        if (cartera == null) {
             throw new IllegalArgumentException("La cartera con ID " + carteraId + " no existe");
         }
+        cartera.ajustarSaldo(cambio);
         daoCartera.actualizarSaldo(carteraId, cambio);
     }
 

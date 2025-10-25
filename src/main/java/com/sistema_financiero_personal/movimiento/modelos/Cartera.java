@@ -27,7 +27,8 @@ public class Cartera {
     )
     private List<Movimiento> movimientos = new ArrayList<>();
 
-    @OneToOne(mappedBy = "cartera", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne
+    @JoinColumn(name = "usuario_id", nullable = false, unique = true)
     private Usuario usuario;
 
     public Cartera() {
@@ -39,10 +40,6 @@ public class Cartera {
         movimiento.setCartera(this);
     }
 
-    public void ajustarSaldo(double cambio) {
-        this.saldo += cambio;
-    }
-
     public Long getId() { return id; }
     public double getSaldo() { return saldo; }
     public List<Movimiento> getMovimientos() { return movimientos; }
@@ -51,7 +48,10 @@ public class Cartera {
         this.usuario = usuario;
     }
 
-    public void setSaldo(double saldo) {
-        this.saldo = saldo;
+    public Usuario getUsuario() {
+        return usuario;
+    }
+    public void ajustarSaldo(double monto){
+        this.saldo += monto;
     }
 }

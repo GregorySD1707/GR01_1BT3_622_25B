@@ -20,7 +20,7 @@ public class DAOResumenFinanciero extends DAOBase<ResumenFinanciero> {
         crear(resumenFinanciero);
     }
 
-    public List<ResumenFinanciero> listarConDocumentosPDF(){
+    public List<ResumenFinanciero> listarConDocumentosPDF(Long usuarioId){
         return executeQuery(session -> {
             CriteriaBuilder cb = session.getCriteriaBuilder();
             CriteriaQuery<ResumenFinanciero> cq = cb.createQuery(ResumenFinanciero.class);
@@ -28,10 +28,32 @@ public class DAOResumenFinanciero extends DAOBase<ResumenFinanciero> {
 
             root.fetch("documentoPDF", JoinType.INNER);
 
-            cq.select(root);
+            cq.select(root).where(cb.equal(root.get("usuario").get("id"), usuarioId));
 
+            cq.orderBy(cb.desc(root.get("fechaCreacion")));
             return  session.createQuery(cq).getResultList();
         });
     }
 
+    public ResumenFinanciero buscarPorIdYUsuario(Long resumenId, Long usuarioId) {
+        return executeQuery(session -> {
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<ResumenFinanciero> cq = cb.createQuery(ResumenFinanciero.class);
+            Root<ResumenFinanciero> root = cq.from(ResumenFinanciero.class);
+
+            // Fetch del documento PDF para evitar lazy loading
+            root.fetch("documentoPDF", JoinType.LEFT);
+
+            // Filtrar por ID del resumen Y por usuario
+            cq.select(root).where(
+                    cb.and(
+                            cb.equal(root.get("id"), resumenId),
+                            cb.equal(root.get("usuario").get("id"), usuarioId)
+                    )
+            );
+
+            List<ResumenFinanciero> resultados = session.createQuery(cq).getResultList();
+            return resultados.isEmpty() ? null : resultados.get(0);
+        });
+    }
 }

@@ -2,6 +2,7 @@ package com.sistema_financiero_personal.usuario.modelos;
 
 import com.sistema_financiero_personal.movimiento.modelos.Cartera;
 import com.sistema_financiero_personal.recordatorio.modelos.Recordatorio;
+import com.sistema_financiero_personal.resumen_financiero.modelos.ResumenFinanciero;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -45,9 +46,12 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Recordatorio> recordatorios = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "cartera_id", nullable = false, unique = true)
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private Cartera cartera;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ResumenFinanciero> resumenesFinancieros = new ArrayList<>();
+
     public Usuario() {
     }
 
@@ -126,5 +130,23 @@ public class Usuario {
 
     public void setRecordatorios(List<Recordatorio> recordatorios) {
         this.recordatorios = recordatorios;
+    }
+    // Getter
+    public List<ResumenFinanciero> getResumenesFinancieros() {
+        return resumenesFinancieros;
+    }
+
+    public void setResumenesFinancieros(List<ResumenFinanciero> resumenesFinancieros) {
+        this.resumenesFinancieros = resumenesFinancieros;
+    }
+
+    public void addResumenFinanciero(ResumenFinanciero resumen) {
+        resumenesFinancieros.add(resumen);
+        resumen.setUsuario(this);
+    }
+
+    public void removeResumenFinanciero(ResumenFinanciero resumen) {
+        resumenesFinancieros.remove(resumen);
+        resumen.setUsuario(null);
     }
 }
