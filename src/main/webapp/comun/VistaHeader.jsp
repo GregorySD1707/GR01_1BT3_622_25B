@@ -13,6 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css">
+  <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/resources/images/Logo.png">
 </head>
 <body>
 
@@ -23,13 +24,13 @@
   <div class="sidebar-header">
     <h3>Menú</h3>
     <button id="close-sidebar-btn" class="icon-btn">&times;</button>
+    <a href="${pageContext.request.contextPath}/salir">Salir</a>
   </div>
   <nav class="sidebar-nav">
     <a href="${pageContext.request.contextPath}/movimientos">Ingresos y gastos</a>
-    <a href="${pageContext.request.contextPath}/deudas?accion=listar">Deudas y prestamos</a>
-    <a href="${pageContext.request.contextPath}/VistaResumenFinanciero.jsp">Reportes</a>
+    <a href="${pageContext.request.contextPath}/obligacion_financiera/deudas?accion=listar">Deudas y prestamos</a>
+    <a href="${pageContext.request.contextPath}/resumen_financiero/VistaResumenFinanciero.jsp">Resumen Financiero</a>
     <a href="${pageContext.request.contextPath}/recordatorios">Recordatorios</a>
-    
   </nav>
 </aside>
 <div id="overlay"></div>
@@ -57,22 +58,41 @@
         </button>
         <div id="notification-list" class="dropdown-menu">
         </div>
-     <!-- </div>
-        <div class="user-menu">
-        <button class="user-avatar"><span>EU</span></button>
-        <div class="dropdown-menu">
-          <div class="dropdown-header">
-            <p class="username">Nombre de Usuario</p>
-            <p class="email">usuario@email.com</p>
+       </div>
+          <div class="user-menu">
+            <button class="user-avatar">
+            <span>
+              ${not empty sessionScope.usuario.nombre ?
+                      sessionScope.usuario.nombre.substring(0,1).toUpperCase() :
+                      'U'}${not empty sessionScope.usuario.apellido ?
+                      sessionScope.usuario.apellido.substring(0,1).toUpperCase() :
+                      'U'}
+            </span>
+            </button>
+            <div class="dropdown-menu">
+              <div class="dropdown-header">
+                <p class="username">
+                  ${not empty sessionScope.usuario.nombre ?
+                          sessionScope.usuario.nombre :
+                          'Usuario'}
+                  ${not empty sessionScope.usuario.apellido ?
+                          sessionScope.usuario.apellido :
+                          ''}
+                </p>
+                <p class="email">
+                  ${not empty sessionScope.usuario.correo ?
+                          sessionScope.usuario.correo :
+                          'usuario@email.com'}
+                </p>
+              </div>
+              <a href="${pageContext.request.contextPath}/perfil" class="dropdown-item">Mi Perfil</a>
+              <a href="#" class="dropdown-item">Configuración</a>
+              <div class="dropdown-divider"></div>
+              <a href="${pageContext.request.contextPath}/salir" class="dropdown-item logout">Cerrar Sesión</a>
+            </div>
           </div>
-          <a href="${pageContext.request.contextPath}/perfil" class="dropdown-item">Mi Perfil</a>
-          <a href="#" class="dropdown-item">Configuración</a>
-          <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item logout">Cerrar Sesión</a>
-        </div>  
-      </div> -->
     </div>
-  </div>
+    </div>
 </header>
 
 <main class="container page-content">

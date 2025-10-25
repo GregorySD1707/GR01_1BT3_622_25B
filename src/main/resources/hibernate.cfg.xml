@@ -20,14 +20,19 @@
         <property name="hibernate.hbm2ddl.auto">update</property>
 
         <!-- Entidades -->
-        <mapping class="com.sistema_financiero_personal.modelos.Recordatorio"/>
-        <mapping class="com.sistema_financiero_personal.modelos.ResumenFinanciero"/>
-        <mapping class="com.sistema_financiero_personal.modelos.DocumentoPDF"/>
+        <mapping class="com.sistema_financiero_personal.recordatorio.modelos.Recordatorio"/>
+        <mapping class="com.sistema_financiero_personal.resumen_financiero.modelos.ResumenFinanciero"/>
+        <mapping class="com.sistema_financiero_personal.resumen_financiero.modelos.DocumentoPDF"/>
         <!-- Nuevas entidades de movimientos y cartera -->
-        <mapping class="com.sistema_financiero_personal.modelos.Movimiento"/>
-        <mapping class="com.sistema_financiero_personal.modelos.Ingreso"/>
-        <mapping class="com.sistema_financiero_personal.modelos.Gasto"/>
-        <mapping class="com.sistema_financiero_personal.modelos.Cartera"/>
-    <mapping class="com.sistema_financiero_personal.modelos.DeudaPrestamo"/>
+        <mapping class="com.sistema_financiero_personal.movimiento.modelos.Movimiento"/>
+        <mapping class="com.sistema_financiero_personal.movimiento.modelos.Ingreso"/>
+        <mapping class="com.sistema_financiero_personal.movimiento.modelos.Gasto"/>
+        <mapping class="com.sistema_financiero_personal.movimiento.modelos.Cartera"/>
+
+        <mapping class="com.sistema_financiero_personal.obligaciones_financieras.modelos.ObligacionFinanciera"/>
+        <mapping class="com.sistema_financiero_personal.obligaciones_financieras.modelos.Deuda"/>
+        <mapping class="com.sistema_financiero_personal.obligaciones_financieras.modelos.Prestamo"/>
+        <mapping class="com.sistema_financiero_personal.usuario.modelos.Usuario"/>
+        <mapping class="com.sistema_financiero_personal.cuentas.modelos.Cuenta"/>
     </session-factory>
 </hibernate-configuration>
