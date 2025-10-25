@@ -1,146 +1,121 @@
+<%-- Vista de Movimientos --%>
+<%@ page contentType="text/html; charset=UTF-8" language="java" %>
+<%@ page isELIgnored="false" %>
 <%@ page import="com.sistema_financiero_personal.movimiento.modelos.CategoriaIngreso" %>
 <%@ page import="com.sistema_financiero_personal.movimiento.modelos.CategoriaGasto" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<html>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
 
-<head>
-    <title>Gestor de Movimientos</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css">
-    <style>
-        .movimientos-container {
-            position: relative;
-            max-width: 420px;
-            margin: 48px auto 0 auto;
-        }
-        .movimientos-wrapper {
-            background: var(--bg-med);
-            border-radius: 18px;
-            box-shadow: 0 2px 16px var(--shadow-color);
-            padding: 32px 24px;
-            width: 100%;
-            margin: 0;
-        }
-        .movimientos-title {
-            text-align: center;
-            font-size: 2rem;
-            font-weight: 600;
-            margin-bottom: 24px;
-            color: var(--text-primary);
-        }
-        .movimientos-form { display: flex; flex-direction: column; gap: 18px; }
-        .movimientos-form label { color: var(--text-secondary); font-weight: 500; }
-        .movimientos-form input,
-        .movimientos-form select {
-            background: var(--bg-light);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 1rem;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .movimientos-form button {
-            background: var(--accent-primary);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .movimientos-form button:hover { background: var(--accent-hover); }
-        .back-arrow { position: absolute; top: -16px; left: -84px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: var(--bg-light); border: 1px solid var(--border-color); color: var(--text-primary); text-decoration: none; box-shadow: 0 2px 6px var(--shadow-color); transition: background 0.2s ease; z-index: 10; }
-        .back-arrow:hover { background: #2f3a52; }
-        @media (max-width: 480px) {
-            .back-arrow { left: -16px; top: -12px; }
-        }
-    </style>
-</head>
-<body>
-<div class="movimientos-container">
-    <a class="back-arrow" href="${pageContext.request.contextPath}/inicio" title="Volver al inicio" aria-label="Volver al inicio">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-    </a>
-    <div class="movimientos-wrapper">
-        <div class="movimientos-title">Gestor de Movimientos</div>
-        <c:if test="${not empty mensajeExito}">
-            <div style="background:#2563eb;color:#fff;padding:10px 0;border-radius:8px;text-align:center;margin-bottom:18px;font-weight:600;">
-                    ${mensajeExito}
-            </div>
-        </c:if>
-        <c:if test="${not empty mensajeError}">
-            <div style="background:#ef4444;color:#fff;padding:10px 0;border-radius:8px;text-align:center;margin-bottom:18px;font-weight:600;">
-                    ${mensajeError}
-            </div>
-        </c:if>
-        <form class="movimientos-form" method="post" action="${pageContext.request.contextPath}/movimientos">
-            <label for="tipoSelect">Tipo:</label>
-            <select name="tipo" id="tipoSelect">
-                <option value="INGRESO">Ingreso</option>
-                <option value="GASTO">Gasto</option>
-            </select>
+<jsp:include page="/comun/VistaHeader.jsp">
+    <jsp:param name="pageTitle" value="Gestor de Movimientos" />
+</jsp:include>
 
-            <label for="monto">Monto:</label>
-            <input type="number" id="monto" step="0.01" name="monto" required>
+<jsp:include page="/comun/Mensajes.jsp" />
 
-            <label for="descripcion">Descripción:</label>
-            <input type="text" id="descripcion" name="descripcion">
-
-            <label for="categoria">Categoría:</label>
-
-            <%-- Dropdown para Ingresos (visible por defecto) --%>
-            <select id="categoriaIngreso" name="categoria">
-                <c:forEach var="categoria" items="<%= CategoriaIngreso.values() %>">
-                    <option value="${categoria.name()}">${categoria.name()}</option>
-                </c:forEach>
-            </select>
-
-            <%-- Dropdown para Gastos (oculto por defecto) --%>
-            <select id="categoriaGasto" name="categoria" style="display: none;" disabled>
-                <c:forEach var="categoria" items="<%= CategoriaGasto.values() %>">
-                    <option value="${categoria.name()}">${categoria.name()}</option>
-                </c:forEach>
-            </select>
-
-            <button type="submit">Registrar</button>
-        </form>
-    </div>
+<div class="page-header">
+    <h1>Gestor de Movimientos</h1>
 </div>
+
+<form class="movimientos-form" method="post" action="${pageContext.request.contextPath}/movimientos" style="max-width: 520px; margin: 0 auto; display: grid; gap: 16px;">
+    <label for="tipoSelect">Tipo:</label>
+    <select name="tipo" id="tipoSelect" required>
+        <option value="INGRESO">Ingreso</option>
+        <option value="GASTO">Gasto</option>
+    </select>
+
+    <label for="monto">Monto:</label>
+    <!-- agregar min para que el navegador considere inválidos valores < 0.01 -->
+    <input type="number" id="monto" step="0.01" name="monto" min="0.01" required>
+
+    <label for="descripcion">Descripción:</label>
+    <input type="text" id="descripcion" name="descripcion" required>
+
+    <label for="categoria">Categoría:</label>
+    <%-- Dropdown para Ingresos (visible por defecto) --%>
+    <select id="categoriaIngreso" name="categoria" required>
+        <c:forEach var="categoria" items="<%= CategoriaIngreso.values() %>">
+            <option value="${categoria.name()}">${categoria.name()}</option>
+        </c:forEach>
+    </select>
+
+    <%-- Dropdown para Gastos (oculto por defecto). Importante: sin name al inicio --%>
+    <select id="categoriaGasto" style="display: none;" disabled required>
+        <c:forEach var="categoria" items="<%= CategoriaGasto.values() %>">
+            <option value="${categoria.name()}">${categoria.name()}</option>
+        </c:forEach>
+    </select>
+
+    <%-- Requerido por el servlet --%>
+    <input type="hidden" name="carteraId" value="1" />
+
+    <div>
+        <button type="submit" class="btn btn-primary">Registrar</button>
+    </div>
+</form>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form.movimientos-form');
         const tipoSelect = document.getElementById('tipoSelect');
         const categoriaIngresoSelect = document.getElementById('categoriaIngreso');
         const categoriaGastoSelect = document.getElementById('categoriaGasto');
+        const montoInput = document.getElementById('monto');
 
         function toggleCategorias() {
             if (tipoSelect.value === 'INGRESO') {
                 categoriaIngresoSelect.style.display = 'block';
                 categoriaIngresoSelect.disabled = false;
+                categoriaIngresoSelect.setAttribute('name', 'categoria');
 
                 categoriaGastoSelect.style.display = 'none';
                 categoriaGastoSelect.disabled = true;
+                categoriaGastoSelect.removeAttribute('name');
             } else { // GASTO
                 categoriaIngresoSelect.style.display = 'none';
                 categoriaIngresoSelect.disabled = true;
+                categoriaIngresoSelect.removeAttribute('name');
 
                 categoriaGastoSelect.style.display = 'block';
                 categoriaGastoSelect.disabled = false;
+                categoriaGastoSelect.setAttribute('name', 'categoria');
             }
         }
 
-        // Ejecutar al cargar la página por si hay valores preseleccionados
-        toggleCategorias();
+        // Mantener el mensaje nativo junto al input (igual que "Completa este campo")
+        montoInput.addEventListener('invalid', function () {
+            if (montoInput.validity.valueMissing) {
+                // dejar que el navegador muestre su mensaje nativo
+                montoInput.setCustomValidity('');
+            } else if (montoInput.validity.rangeUnderflow) {
+                // personalizar mensaje pero usando la UI nativa (globo junto al input)
+                montoInput.setCustomValidity('Monto inválido. Debe ser mayor a cero');
+            } else {
+                montoInput.setCustomValidity('');
+            }
+        });
+        montoInput.addEventListener('input', function () {
+            // limpiar cualquier mensaje personalizado al escribir
+            montoInput.setCustomValidity('');
+        });
 
-        // Añadir el listener para cambios
+        form.addEventListener('submit', function (e) {
+            // Asegurar que el name esté correcto según el tipo antes de validar/enviar
+            toggleCategorias();
+            // Si el monto está por debajo del mínimo, forzar el globo nativo y evitar el submit
+            const min = parseFloat(montoInput.min || '0.01');
+            const val = parseFloat(montoInput.value);
+            if (montoInput.value && (isNaN(val) || val < min)) {
+                montoInput.setCustomValidity('Monto inválido. Debe ser mayor a cero');
+                montoInput.reportValidity();
+                e.preventDefault();
+            } else {
+                montoInput.setCustomValidity('');
+            }
+        });
+
+        toggleCategorias();
         tipoSelect.addEventListener('change', toggleCategorias);
     });
 </script>
 
-</body>
-</html>
+<jsp:include page="/comun/VistaFooter.jsp" />

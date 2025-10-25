@@ -18,6 +18,7 @@
     const CONTEXT_PATH = "${pageContext.request.contextPath}";
 </script>
 <script src="${pageContext.request.contextPath}/resources/js/app.js"></script>
-
+<script src="${pageContext.request.contextPath}/resources/js/toast-manager.js"></script>
+<script src="${pageContext.request.contextPath}/resources/js/modal-confirm.js"></script>
 </body>
 </html>

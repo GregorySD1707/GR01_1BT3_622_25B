@@ -1,5 +1,6 @@
 package com.sistema_financiero_personal.resumen_financiero.controladores;
 
+import com.sistema_financiero_personal.comun.utilidades.mensajes.MensajeUtil;
 import com.sistema_financiero_personal.resumen_financiero.daos.DAODocumentoPDF;
 import com.sistema_financiero_personal.resumen_financiero.daos.DAOResumenFinanciero;
 import com.sistema_financiero_personal.resumen_financiero.modelos.ResumenFinanciero;
@@ -27,21 +28,22 @@ public class ServletConsultaResumenesFinancieros extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
         try {
-            HttpSession session = request.getSession(false);
             if (session == null || session.getAttribute("usuario") == null) {
-                response.sendRedirect(request.getContextPath() + "/login");
+                response.sendRedirect(request.getContextPath() + "ingreso");
                 return;
             }
 
             Usuario usuario = (Usuario) session.getAttribute("usuario");
+            MensajeUtil.obtenerYLimpiarMensajes(request);
             // Obtener todos los resumenes de la base de datos
             List<ResumenFinanciero> resumenes = DAOResumenFinanciero.listarConDocumentosPDF(usuario.getId());
 
             mostrarInformacionDeLosResumenesFinancieros(request, response, resumenes);
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("error", "Error al consultar resúmenes: " + e.getMessage());
+            MensajeUtil.agregarError(session, "Error al consultar resúmenes: " + e.getMessage());
             request.getRequestDispatcher(PATH).forward(request, response);
         }
     }

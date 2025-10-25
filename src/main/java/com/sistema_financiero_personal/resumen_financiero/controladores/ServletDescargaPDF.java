@@ -1,5 +1,6 @@
 package com.sistema_financiero_personal.resumen_financiero.controladores;
 
+import com.sistema_financiero_personal.comun.utilidades.mensajes.MensajeUtil;
 import com.sistema_financiero_personal.resumen_financiero.daos.DAOResumenFinanciero;
 import com.sistema_financiero_personal.resumen_financiero.modelos.DocumentoPDF;
 import com.sistema_financiero_personal.resumen_financiero.modelos.ResumenFinanciero;
@@ -28,11 +29,12 @@ public class ServletDescargaPDF extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // Validar que el usuario esté autenticado
+        HttpSession session = request.getSession(false);
         try {
-            // Validar que el usuario esté autenticado
-            HttpSession session = request.getSession(false);
+
             if (session == null || session.getAttribute("usuario") == null) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Usuario no autenticado");
+                response.sendRedirect(request.getContextPath() + "/ingreso");
                 return;
             }
 
@@ -40,19 +42,23 @@ public class ServletDescargaPDF extends HttpServlet {
 
             // Obtener ID del resumen financiero
             Long resumenId = obtenerIdDelResumen(request, response);
-            if (resumenId == null) return;
+            if (resumenId == null){
+                MensajeUtil.agregarError(session, "ID inválido");
+                return;
+            }
 
             // CRÍTICO: Verificar que el resumen pertenezca al usuario
             ResumenFinanciero resumen = daoResumenFinanciero.buscarPorIdYUsuario(resumenId, usuario.getId());
             if (resumen == null) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN,
-                        "No tiene permisos para acceder a este documento");
+                MensajeUtil.agregarError(session, "No tiene permisos para acceder a este documento");
+                response.sendRedirect(request.getContextPath() + "/resumen_financiero/consultarResumenes");
                 return;
             }
 
             DocumentoPDF documento = resumen.getDocumentoPDF();
             if (documento == null || documento.getArchivoPdf() == null) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "PDF no encontrado");
+                MensajeUtil.agregarError(session, "PDF no encontrado");
+                response.sendRedirect(request.getContextPath() + "/resumen_financiero/consultarResumenes");
                 return;
             }
 
@@ -63,12 +69,13 @@ public class ServletDescargaPDF extends HttpServlet {
             escribirContenidoDelArchivoEnLaRespuesta(response, documento);
 
         } catch (NumberFormatException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID inválido");
+            MensajeUtil.agregarError(session, "ID inválido");
+            response.sendRedirect(request.getContextPath() + "/resumen_financiero/consultarResumenes");
         } catch (Exception e) {
             System.err.println("Error al descargar el PDF: " + e.getMessage());
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Error al procesar la descarga del PDF");
+            MensajeUtil.agregarError(session, "Error al procesar la descarga del PDF");
+            response.sendRedirect(request.getContextPath() + "/resumen_financiero/consultarResumenes");
         }
     }
 
@@ -126,14 +133,12 @@ public class ServletDescargaPDF extends HttpServlet {
         String idParam = request.getParameter("resumenId");
 
         if (idParam == null || idParam.trim().isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID del resumen no proporcionado");
             return null;
         }
 
         try {
             return Long.parseLong(idParam);
         } catch (NumberFormatException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID del resumen inválido");
             return null;
         }
     }

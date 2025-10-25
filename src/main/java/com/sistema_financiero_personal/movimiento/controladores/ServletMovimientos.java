@@ -4,11 +4,13 @@ import com.sistema_financiero_personal.movimiento.modelos.CategoriaGasto;
 import com.sistema_financiero_personal.movimiento.modelos.CategoriaIngreso;
 import com.sistema_financiero_personal.movimiento.servicios.ServicioCartera;
 import com.sistema_financiero_personal.movimiento.servicios.ServicioMovimiento;
+import com.sistema_financiero_personal.comun.utilidades.mensajes.MensajeUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
@@ -33,6 +35,9 @@ public class ServletMovimientos extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // Cargar y limpiar mensajes para mostrarlos una sola vez (patrón de recordatorios)
+        MensajeUtil.obtenerYLimpiarMensajes(request);
+
         double ingresosTotales = servicioMovimiento.obtenerIngresosTotales();
         double gastosTotales = servicioMovimiento.obtenerGastosTotales();
 
@@ -49,53 +54,62 @@ public class ServletMovimientos extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        HttpSession session = request.getSession();
+
         String tipo = request.getParameter("tipo"); // INGRESO | GASTO
         String montoStr = request.getParameter("monto");
         String descripcion = request.getParameter("descripcion");
         String categoriaStr = request.getParameter("categoria");
         String carteraIdStr = request.getParameter("carteraId");
 
-        try {
-            // Validar parámetros
-            if (montoStr == null || montoStr.trim().isEmpty()) {
-                throw new IllegalArgumentException("El monto es obligatorio");
-            }
-            if (carteraIdStr == null || carteraIdStr.trim().isEmpty()) {
-                throw new IllegalArgumentException("El ID de cartera es obligatorio");
-            }
-            if (tipo == null || tipo.trim().isEmpty()) {
-                throw new IllegalArgumentException("El tipo de movimiento es obligatorio");
-            }
-            if (categoriaStr == null || categoriaStr.trim().isEmpty()) {
-                throw new IllegalArgumentException("La categoría es obligatoria");
-            }
+        // Validación de campos obligatorios (mensaje unificado)
+        if (isBlank(tipo) || isBlank(montoStr) || isBlank(descripcion) || isBlank(categoriaStr) || isBlank(carteraIdStr)) {
+            MensajeUtil.agregarError(session, "Todos los campos deben ser llenados");
+            response.sendRedirect(request.getContextPath() + "/movimientos");
+            return;
+        }
 
+        try {
             double monto = Double.parseDouble(montoStr);
             Long carteraId = Long.parseLong(carteraIdStr);
+
+            // Validación de monto positivo
+            if (monto <= 0) {
+                MensajeUtil.agregarError(session, "Monto inválido. Debe ser mayor a cero");
+                response.sendRedirect(request.getContextPath() + "/movimientos");
+                return;
+            }
 
             if ("INGRESO".equalsIgnoreCase(tipo)) {
                 CategoriaIngreso categoriaIngreso = CategoriaIngreso.valueOf(categoriaStr.toUpperCase());
                 servicioMovimiento.registrarIngreso(carteraId, monto, descripcion, categoriaIngreso);
-                request.setAttribute("mensajeExito", "¡Ingreso registrado exitosamente!");
-
             } else if ("GASTO".equalsIgnoreCase(tipo)) {
                 CategoriaGasto categoriaGasto = CategoriaGasto.valueOf(categoriaStr.toUpperCase());
                 servicioMovimiento.registrarGasto(carteraId, monto, descripcion, categoriaGasto);
-                request.setAttribute("mensajeExito", "¡Gasto registrado exitosamente!");
-
             } else {
-                throw new IllegalArgumentException("Tipo de movimiento no válido: " + tipo);
+                MensajeUtil.agregarError(session, "Tipo de movimiento no válido");
+                response.sendRedirect(request.getContextPath() + "/movimientos");
+                return;
             }
 
-        } catch (NumberFormatException e) {
-            request.setAttribute("mensajeError", "Error: El monto o ID de cartera no es un número válido");
-        } catch (IllegalArgumentException e) {
-            request.setAttribute("mensajeError", "Error: " + e.getMessage());
-        } catch (Exception e) {
-            request.setAttribute("mensajeError", "Error al registrar el movimiento: " + e.getMessage());
-        }
+            // Éxito
+            MensajeUtil.agregarExito(session, "Movimiento registrado exitosamente");
+            response.sendRedirect(request.getContextPath() + "/movimientos");
 
-        // Recargar la página con los datos actualizados
-        doGet(request, response);
+        } catch (NumberFormatException e) {
+            MensajeUtil.agregarError(session, "Error: El monto o ID de cartera no es un número válido");
+            response.sendRedirect(request.getContextPath() + "/movimientos");
+        } catch (IllegalArgumentException e) {
+            // Por ejemplo, categoría inválida
+            MensajeUtil.agregarError(session, "Error: " + e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/movimientos");
+        } catch (Exception e) {
+            MensajeUtil.agregarError(session, "Error al registrar el movimiento: " + e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/movimientos");
+        }
+    }
+
+    private boolean isBlank(String s) {
+        return s == null || s.trim().isEmpty();
     }
 }
