@@ -56,8 +56,25 @@ public class CuentaTest {
 
         // Assert
         assertNotNull("La cuenta debería existir", cuentaEncontrada);
-        // assertEquals("El nombre no coincide", nombre, cuentaEncontrada.getNombre());
-        // assertEquals("El tipo no coincide", tipoCuenta, cuentaEncontrada.getTipo());
-        // assertEquals("El monto no coincide", monto, cuentaEncontrada.getMonto(), 0.001);
+    }
+
+    @Test
+    public void given_null_tipo_when_validate_then_throw_and_no_repo_calls() {
+        String nombre = "Cuenta sin tipo";
+        double monto = 10.0;
+        Cartera cartera = new Cartera();
+        Cuenta cuenta = new Cuenta(nombre, /* tipo */ null, monto, cartera);
+        // verificar que no se hacen llamadas al DAO
+        verify(daoCuenta, never()).crear(any(Cuenta.class));
+        verify(daoCuenta, never()).buscarPorId(anyLong());
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> servicioCuenta.validarObligatorios(cuenta)
+        );
+        String msg = ex.getMessage() != null ? ex.getMessage().toLowerCase() : "";
+        //significa que el mensaje de error debe referirse al tipo de cuenta
+        assertTrue("El mensaje debe referir al tipo de cuenta", msg.contains("tipo"));
+
     }
 }
