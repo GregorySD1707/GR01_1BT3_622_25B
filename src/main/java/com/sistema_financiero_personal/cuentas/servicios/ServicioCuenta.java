@@ -39,17 +39,13 @@ public class ServicioCuenta {
     }
 
     public void validarObligatorios(Cuenta cuenta) {
-        if (cuenta == null) {
+        boolean cuentaNoCreada = cuenta == null;
+        boolean nombreVacio = cuenta.getNombre() == null || cuenta.getNombre().isBlank();
+        boolean tipoCuentaVacio = cuenta.getTipo() == null;
+        boolean carteraNoAsignada = cuenta.getCartera() == null;
+
+        if (cuentaNoCreada || nombreVacio || tipoCuentaVacio || carteraNoAsignada) {
             throw new IllegalArgumentException("Todos los campos deben ser llenados");
-        }
-        if (isBlank(cuenta.getNombre())) {
-            throw new IllegalArgumentException("El nombre de la cuenta es obligatorio");
-        }
-        if (cuenta.getTipo() == null) {
-            throw new IllegalArgumentException("Debe seleccionar el tipo de cuenta");
-        }
-        if (cuenta.getCartera() == null) {
-            throw new IllegalArgumentException("Debe seleccionar la cartera");
         }
     }
 
