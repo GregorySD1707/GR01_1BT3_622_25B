@@ -3,6 +3,8 @@ package com.sistema_financiero_personal.cuentas.servicios;
 import com.sistema_financiero_personal.cuentas.daos.DAOCuenta;
 import com.sistema_financiero_personal.cuentas.modelos.Cuenta;
 
+import java.util.List;
+
 public class ServicioCuenta {
     private DAOCuenta daoCuenta;
 
@@ -15,7 +17,16 @@ public class ServicioCuenta {
     }
 
     public void crearCuenta(Cuenta cuenta) {
-        validarSaldoInicial(cuenta.getMonto());
+        validarObligatorios(cuenta);
+
+        if (!validarSaldoInicial(cuenta.getMonto())) {
+            throw new IllegalArgumentException("El saldo inicial debe ser mayor que cero");
+        }
+
+        if (existeCuentaDuplicada(cuenta)) {
+            throw new IllegalStateException("Ya existe una cuenta con ese nombre y tipo en la cartera");
+        }
+
         daoCuenta.crear(cuenta);
     }
 
@@ -40,6 +51,20 @@ public class ServicioCuenta {
         if (cuenta.getCartera() == null) {
             throw new IllegalArgumentException("Debe seleccionar la cartera");
         }
+    }
+
+    public boolean existeCuentaDuplicada(Cuenta nuevaCuenta) {
+        List<Cuenta> cuentas = daoCuenta.listar();
+
+        for (Cuenta existente : cuentas) {
+            boolean mismoNombre = existente.getNombre().equalsIgnoreCase(nuevaCuenta.getNombre());
+            boolean mismoTipo = existente.getTipo() == nuevaCuenta.getTipo();
+            boolean mismaCartera = existente.getCartera().equals(nuevaCuenta.getCartera());
+            if (mismoNombre && mismoTipo && mismaCartera) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isBlank(String s) {
