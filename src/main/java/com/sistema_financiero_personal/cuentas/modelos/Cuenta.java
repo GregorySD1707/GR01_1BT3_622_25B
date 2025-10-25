@@ -51,4 +51,8 @@ public class Cuenta {
 
     public Cartera getCartera() { return cartera; }
     public void setCartera(Cartera cartera) { this.cartera = cartera; }
+
+    public void setId(long l) {
+        this.id = l;
+    }
 }
