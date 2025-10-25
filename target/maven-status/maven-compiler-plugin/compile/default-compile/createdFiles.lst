@@ -23,6 +23,8 @@ com\sistema_financiero_personal\usuario\servicios\ServicioRegistroUsuario.class
 com\sistema_financiero_personal\recordatorio\servicios\ServicioRecordatorio.class
 com\sistema_financiero_personal\usuario\modelos\GoogleAuth.class
 com\sistema_financiero_personal\comun\utilidades\ExtractorTexto.class
+com\sistema_financiero_personal\cuentas\modelos\Cuenta.class
+com\sistema_financiero_personal\cuentas\daos\DAOCuenta.class
 com\sistema_financiero_personal\recordatorio\controladores\ServletNotificacion.class
 com\sistema_financiero_personal\resumen_financiero\servicios\ServicioResumenFinanciero.class
 com\sistema_financiero_personal\movimiento\modelos\TipoMovimiento.class
@@ -44,6 +46,8 @@ com\sistema_financiero_personal\auth\ServletCerrarSesion.class
 com\sistema_financiero_personal\usuario\modelos\Usuario.class
 com\sistema_financiero_personal\usuario\servicios\ServicioAutorizacion.class
 com\sistema_financiero_personal\usuario\servicios\ServicioUsuario.class
+com\sistema_financiero_personal\cuentas\servicios\ServicioCuenta.class
+com\sistema_financiero_personal\cuentas\modelos\TipoCuenta.class
 com\sistema_financiero_personal\obligaciones_financieras\modelos\Prestamo.class
 com\sistema_financiero_personal\auth\ServletRegistroUsuario.class
 com\sistema_financiero_personal\obligaciones_financieras\modelos\Deuda.class
@@ -51,5 +55,6 @@ com\sistema_financiero_personal\usuario\daos\DAOUsuarioTest.class
 com\sistema_financiero_personal\resumen_financiero\modelos\DocumentoPDF.class
 com\sistema_financiero_personal\movimiento\daos\DAOCartera.class
 com\sistema_financiero_personal\movimiento\daos\DAOMovimiento.class
+com\sistema_financiero_personal\cuentas\controladores\ServletCuenta.class
 com\sistema_financiero_personal\usuario\servicios\ServicioUsuarioTest.class
 com\sistema_financiero_personal\resumen_financiero\controladores\ServletConsultaResumenesFinancieros.class

@@ -1,4 +1,4 @@
-package com.sistema_financiero_personal;
+package com.sistema_financiero_personal.usuarios;
 import com.sistema_financiero_personal.usuario.modelos.Usuario;
 import com.sistema_financiero_personal.usuario.servicios.ServicioUsuarioTest;
 import com.sistema_financiero_personal.usuario.servicios.ServicioUsuarioTest.UserAlreadyExistsException;

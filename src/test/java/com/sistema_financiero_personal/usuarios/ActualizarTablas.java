@@ -1,4 +1,4 @@
-package com.sistema_financiero_personal;
+package com.sistema_financiero_personal.usuarios;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
