@@ -17,6 +17,7 @@ public class ServicioCuenta {
 
     public ServicioCuenta() {
         daoCuenta = new DAOCuenta();
+        servicioCartera = new ServicioCartera();
     }
 
     public ServicioCuenta(DAOCuenta daoCuenta, ServicioCartera servicioCartera) {

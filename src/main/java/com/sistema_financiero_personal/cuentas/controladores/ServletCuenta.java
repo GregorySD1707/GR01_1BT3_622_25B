@@ -7,6 +7,8 @@ import java.util.List;
 import com.sistema_financiero_personal.cuentas.modelos.Cuenta;
 import com.sistema_financiero_personal.cuentas.modelos.TipoCuenta;
 import com.sistema_financiero_personal.cuentas.servicios.ServicioCuenta;
+import com.sistema_financiero_personal.movimiento.modelos.Movimiento;
+import com.sistema_financiero_personal.movimiento.servicios.ServicioMovimiento;
 import com.sistema_financiero_personal.usuario.modelos.Usuario;
 import com.sistema_financiero_personal.comun.utilidades.mensajes.MensajeUtil;
 

@@ -37,10 +37,22 @@ public class DAOCuenta extends DAOBase<Cuenta> {
     }
 
     public boolean existe(Long id) {
-        return true;
+        return executeQuery(session -> session.createQuery(
+                        "select count(cu) > 0 from Cuenta cu where cu.id = :id",
+                        Boolean.class
+                ).setParameter("id", id)
+                .getSingleResult());
     }
 
     public double obtenerMonto(Long cuentaId) {
-        return 0;
+        return executeQuery(session -> {
+            Double monto = session.createQuery(
+                            "select cu.monto from Cuenta cu where cu.id = :id",
+                            Double.class
+                    ).setParameter("id", cuentaId)
+                    .uniqueResult();
+            return monto != null ? monto : 0.0;
+        });
     }
+
 }
