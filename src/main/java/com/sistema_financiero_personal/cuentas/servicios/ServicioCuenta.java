@@ -2,6 +2,7 @@ package com.sistema_financiero_personal.cuentas.servicios;
 
 import com.sistema_financiero_personal.cuentas.daos.DAOCuenta;
 import com.sistema_financiero_personal.cuentas.modelos.Cuenta;
+import com.sistema_financiero_personal.cuentas.modelos.TipoCuenta;
 
 import java.util.List;
 
@@ -23,20 +24,32 @@ public class ServicioCuenta {
             throw new IllegalArgumentException("El saldo inicial debe ser mayor que cero");
         }
 
-        if (existeCuentaDuplicada(cuenta)) {
-            throw new IllegalStateException("Ya existe una cuenta con ese nombre y tipo en la cartera");
+        if (existeCuentaDuplicada(cuenta.getNombre(), cuenta.getTipo(), cuenta.getCartera().getId())) {
+            throw new IllegalStateException("Ya existe una cuenta con el mismo nombre y tipo en esta cartera");
         }
 
         daoCuenta.crear(cuenta);
     }
+
+    public boolean existeCuentaDuplicada(String nombre, TipoCuenta tipo, Long carteraId) {
+        return daoCuenta.existeCuentaPorNombreYTipo(nombre, tipo, carteraId);
+    }
+
 
     public Cuenta buscarCuenta(Long id) {
         return daoCuenta.buscarPorId(id);
     }
 
     public boolean validarSaldoInicial(double saldo) {
-        return saldo > 0;
+
+        if (saldo <= 0) {
+            return false;
+        }
+
+        double centavos = Math.round(saldo * 100.0) / 100.0;
+        return Double.compare(saldo, centavos) == 0;
     }
+
 
     public void validarObligatorios(Cuenta cuenta) {
         boolean cuentaNoCreada = cuenta == null;
@@ -47,20 +60,6 @@ public class ServicioCuenta {
         if (cuentaNoCreada || nombreVacio || tipoCuentaVacio || carteraNoAsignada) {
             throw new IllegalArgumentException("Todos los campos deben ser llenados");
         }
-    }
-
-    public boolean existeCuentaDuplicada(Cuenta nuevaCuenta) {
-        List<Cuenta> cuentas = daoCuenta.listar();
-
-        for (Cuenta existente : cuentas) {
-            boolean mismoNombre = existente.getNombre().equalsIgnoreCase(nuevaCuenta.getNombre());
-            boolean mismoTipo = existente.getTipo() == nuevaCuenta.getTipo();
-            boolean mismaCartera = existente.getCartera().equals(nuevaCuenta.getCartera());
-            if (mismoNombre && mismoTipo && mismaCartera) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private boolean isBlank(String s) {

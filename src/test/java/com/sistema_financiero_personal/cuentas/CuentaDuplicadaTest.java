@@ -1,10 +1,8 @@
 package com.sistema_financiero_personal.cuentas;
 
 import com.sistema_financiero_personal.cuentas.daos.DAOCuenta;
-import com.sistema_financiero_personal.cuentas.modelos.Cuenta;
 import com.sistema_financiero_personal.cuentas.modelos.TipoCuenta;
 import com.sistema_financiero_personal.cuentas.servicios.ServicioCuenta;
-import com.sistema_financiero_personal.movimiento.modelos.Cartera;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,11 +10,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -34,16 +29,41 @@ public class CuentaDuplicadaTest {
     }
 
     @Test
-    public void given_existing_account_when_create_then_fail() {
-        Cartera cartera = new Cartera();
-        Cuenta cuentaExistente = new Cuenta("Cuenta Ahorros", TipoCuenta.AHORROS, 200.0, cartera);
-        Cuenta cuentaNueva = new Cuenta("Cuenta Ahorros", TipoCuenta.AHORROS, 100.0, cartera);
+    public void given_no_existing_account_when_check_duplicate_then_returns_false() {
 
-        List<Cuenta> cuentasMock = Arrays.asList(cuentaExistente);
-        when(daoCuenta.listar()).thenReturn(cuentasMock);
+        when(daoCuenta.existeCuentaPorNombreYTipo("Ahorros", TipoCuenta.AHORROS, 1L))
+                .thenReturn(false);
 
-        assertThrows(IllegalStateException.class, () -> servicioCuenta.crearCuenta(cuentaNueva));
+        boolean resultado = servicioCuenta.existeCuentaDuplicada("Ahorros", TipoCuenta.AHORROS, 1L);
 
-        verify(daoCuenta, never()).crear(any(Cuenta.class));
+        assertFalse(resultado);
+        verify(daoCuenta, times(1))
+                .existeCuentaPorNombreYTipo("Ahorros", TipoCuenta.AHORROS, 1L);
+    }
+
+    @Test
+    public void given_existing_account_when_check_duplicate_then_returns_true() {
+
+        when(daoCuenta.existeCuentaPorNombreYTipo("Corriente", TipoCuenta.CORRIENTE, 1L))
+                .thenReturn(true);
+
+        boolean resultado = servicioCuenta.existeCuentaDuplicada("Corriente", TipoCuenta.CORRIENTE, 1L);
+
+        assertTrue(resultado);
+        verify(daoCuenta, times(1))
+                .existeCuentaPorNombreYTipo("Corriente", TipoCuenta.CORRIENTE, 1L);
+    }
+
+    @Test
+    public void given_different_wallet_when_check_duplicate_then_returns_false() {
+
+        when(daoCuenta.existeCuentaPorNombreYTipo("Ahorros", TipoCuenta.AHORROS, 2L))
+                .thenReturn(false);
+
+        boolean resultado = servicioCuenta.existeCuentaDuplicada("Ahorros", TipoCuenta.AHORROS, 2L);
+
+        assertFalse(resultado);
+        verify(daoCuenta, times(1))
+                .existeCuentaPorNombreYTipo("Ahorros", TipoCuenta.AHORROS, 2L);
     }
 }
