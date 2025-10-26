@@ -35,4 +35,12 @@ public class DAOCuenta extends DAOBase<Cuenta> {
             return count > 0;
         });
     }
+
+    public boolean existe(Long id) {
+        return true;
+    }
+
+    public double obtenerMonto(Long cuentaId) {
+        return 0;
+    }
 }

@@ -1,11 +1,9 @@
 package com.sistema_financiero_personal.movimiento.modelos;
 
-import com.sistema_financiero_personal.movimiento.modelos.Gasto;
-import com.sistema_financiero_personal.movimiento.modelos.Movimiento;
+import com.sistema_financiero_personal.cuentas.modelos.Cuenta;
 import com.sistema_financiero_personal.usuario.modelos.Usuario;
 import jakarta.persistence.*;
 
-import java.math.BigDecimal; // 1. Importar BigDecimal
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +23,7 @@ public class Cartera {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<Movimiento> movimientos = new ArrayList<>();
+    private List<Cuenta> cuentas = new ArrayList<>();
 
     @OneToOne
     @JoinColumn(name = "usuario_id", nullable = false, unique = true)
@@ -35,23 +33,26 @@ public class Cartera {
         this.saldo = 0.0;
     }
 
-    public void addMovimiento(Movimiento movimiento) {
-        this.movimientos.add(movimiento);
-        movimiento.setCartera(this);
+    public void addCuenta(Cuenta cuenta) {
+        this.cuentas.add(cuenta);
+        cuenta.setCartera(this);
+        recalcularSaldo();
     }
 
+    public void recalcularSaldo() {
+        this.saldo = cuentas.stream()
+                .mapToDouble(Cuenta::getMonto)
+                .sum();
+    }
+
+    // Getters
     public Long getId() { return id; }
     public double getSaldo() { return saldo; }
-    public List<Movimiento> getMovimientos() { return movimientos; }
+    public List<Cuenta> getCuentas() { return cuentas; }
+    public Usuario getUsuario() { return usuario; }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-    public void ajustarSaldo(double monto){
-        this.saldo += monto;
-    }
+    // Setters
+    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+    public void setSaldo(double saldo) { this.saldo = saldo; }
+    public void setId(Long id) { this.id = id; }
 }

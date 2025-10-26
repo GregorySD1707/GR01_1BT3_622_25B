@@ -3,11 +3,13 @@ package com.sistema_financiero_personal.cuentas.servicios;
 import com.sistema_financiero_personal.cuentas.daos.DAOCuenta;
 import com.sistema_financiero_personal.cuentas.modelos.Cuenta;
 import com.sistema_financiero_personal.cuentas.modelos.TipoCuenta;
+import com.sistema_financiero_personal.movimiento.servicios.ServicioCartera;
 
 import java.util.List;
 
 public class ServicioCuenta {
     private DAOCuenta daoCuenta;
+    private ServicioCartera servicioCartera;
 
     public ServicioCuenta(DAOCuenta daoCuenta) {
         this.daoCuenta = daoCuenta;
@@ -15,6 +17,11 @@ public class ServicioCuenta {
 
     public ServicioCuenta() {
         daoCuenta = new DAOCuenta();
+    }
+
+    public ServicioCuenta(DAOCuenta daoCuenta, ServicioCartera servicioCartera) {
+        this.daoCuenta = daoCuenta;
+        this.servicioCartera = servicioCartera;
     }
 
     public void crearCuenta(Cuenta cuenta) {
@@ -72,6 +79,35 @@ public class ServicioCuenta {
 
     public List<Cuenta> listarCuentasPorCartera(Long id) {
         return daoCuenta.listarPorCartera(id);
+    }
+
+    public boolean existe(Long cuentaId) {
+        return daoCuenta.existe(cuentaId);
+    }
+
+    public void ajustarMonto(Long cuentaId, double cambio) {
+        Cuenta cuenta = buscarCuenta(cuentaId);
+        if (cuenta == null) {
+            throw new IllegalArgumentException("La cuenta con ID " + cuentaId + " no existe");
+        }
+
+        double nuevoMonto = cuenta.getMonto() + cambio;
+        if (nuevoMonto < 0) {
+            throw new IllegalArgumentException(
+                    "Saldo insuficiente. Saldo actual: " + cuenta.getMonto() +
+                            ", cambio solicitado: " + cambio
+            );
+        }
+
+        cuenta.setMonto(nuevoMonto);
+        daoCuenta.actualizar(cuenta);
+
+        // Actualizar el saldo de la cartera padre
+        servicioCartera.recalcularSaldo(cuenta.getCartera().getId());
+    }
+
+    public double obtenerMonto(Long cuentaId) {
+        return daoCuenta.obtenerMonto(cuentaId);
     }
 
 }
