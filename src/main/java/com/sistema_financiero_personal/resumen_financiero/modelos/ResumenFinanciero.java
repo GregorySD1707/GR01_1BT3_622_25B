@@ -48,7 +48,7 @@ public class ResumenFinanciero {
         fechaPeriodoActual = null;
         documentoPDF = null;
         this.fechaCreacion = LocalDateTime.now();
-        System.out.println("prueba docker 4");
+        System.out.println("Prueba 1 nuevo repo");
     }
 
     public ResumenFinanciero(Double ingresosTotales, double gastosTotales, LocalDate fechaPeriodoAnterior, LocalDate fechaPeriodoActual, DocumentoPDF documentoPDF) {
