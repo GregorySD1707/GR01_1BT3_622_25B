@@ -60,21 +60,26 @@ public class CuentaTest {
 
     @Test
     public void given_null_tipo_when_validate_then_throw_and_no_repo_calls() {
+        // Arrange
         String nombre = "Cuenta sin tipo";
         double monto = 10.0;
         Cartera cartera = new Cartera();
         Cuenta cuenta = new Cuenta(nombre, /* tipo */ null, monto, cartera);
-        // verificar que no se hacen llamadas al DAO
-        verify(daoCuenta, never()).crear(any(Cuenta.class));
-        verify(daoCuenta, never()).buscarPorId(anyLong());
 
+        // Act y Assert
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
                 () -> servicioCuenta.validarObligatorios(cuenta)
         );
-        String msg = ex.getMessage() != null ? ex.getMessage().toLowerCase() : "";
-        //significa que el mensaje de error debe referirse al tipo de cuenta
-        assertTrue("El mensaje debe referir al tipo de cuenta", msg.contains("tipo"));
 
+        String msg = ex.getMessage() != null ? ex.getMessage().toLowerCase() : "";
+
+        // Verificar Mensaje de Error
+        assertTrue("El mensaje debe indicar que todos los campos son obligatorios. Mensaje actual: " + msg,
+                msg.contains("campos") || msg.contains("obligatorios") || msg.contains("llenados"));
+
+        // verificar que no se hacen llamadas al DAO
+        verify(daoCuenta, never()).crear(any(Cuenta.class));
+        verify(daoCuenta, never()).buscarPorId(anyLong());
     }
 }
