@@ -82,9 +82,18 @@ public class ServicioCuenta {
         cuenta.setMonto(nuevoMonto);
         daoCuenta.actualizar(cuenta);
 
-        // Actualizar el saldo de la cartera padre
         servicioCartera.recalcularSaldo(cuenta.getCartera().getId());
     }
+
+    public static boolean verificarSaldoCero(Cuenta cuenta, double gasto) {
+        if (cuenta == null) throw new IllegalArgumentException("La cuenta no puede ser nula");
+        if (gasto < 0) throw new IllegalArgumentException("El gasto debe ser positivo");
+        double resultante = cuenta.getMonto() - gasto;
+        if (resultante < 0) return false;
+        cuenta.setMonto(resultante);
+        return Double.compare(resultante, 0.0) == 0;
+    }
+
 
     public double obtenerMonto(Long cuentaId) {
         return daoCuenta.obtenerMonto(cuentaId);
