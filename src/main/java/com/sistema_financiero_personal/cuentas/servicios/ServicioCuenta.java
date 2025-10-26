@@ -74,4 +74,18 @@ public class ServicioCuenta {
         return daoCuenta.listarPorCartera(id);
     }
 
+    public void ajustarMonto(Cuenta cuenta, double gastoSuperior) {
+        double montoResultante = cuenta.getMonto() - gastoSuperior;
+        if(montoResultante < 0){
+            return;
+        }
+        cuenta.setMonto(montoResultante);
+    }
 }
+
+
+
+
+
+
+
