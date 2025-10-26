@@ -90,7 +90,7 @@
                         value="${not empty cuenta ? cuenta.monto : param.monto}"
                         placeholder="0.00"
                         step="0.01"
-                        min="0.01"
+                        min="0.00"
                         onblur="if(this.value) this.value = parseFloat(this.value).toFixed(2)"
                         required
                 />

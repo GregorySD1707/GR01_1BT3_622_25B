@@ -52,15 +52,23 @@ public class ServicioCuenta {
 
 
     public void validarObligatorios(Cuenta cuenta) {
-        boolean cuentaNoCreada = cuenta == null;
-        boolean nombreVacio = cuenta.getNombre() == null || cuenta.getNombre().isBlank();
-        boolean tipoCuentaVacio = cuenta.getTipo() == null;
-        boolean carteraNoAsignada = cuenta.getCartera() == null;
+        if (cuenta == null) {
+            throw new IllegalArgumentException("La cuenta no puede ser nula");
+        }
 
-        if (cuentaNoCreada || nombreVacio || tipoCuentaVacio || carteraNoAsignada) {
-            throw new IllegalArgumentException("Todos los campos deben ser llenados");
+        if (cuenta.getNombre() == null || cuenta.getNombre().isBlank()) {
+            throw new IllegalArgumentException("El nombre de la cuenta es obligatorio");
+        }
+
+        if (cuenta.getTipo() == null) {
+            throw new IllegalArgumentException("El tipo de cuenta es obligatorio");
+        }
+
+        if (cuenta.getCartera() == null) {
+            throw new IllegalArgumentException("Debe asignarse una cartera a la cuenta");
         }
     }
+
 
     public List<Cuenta> listarCuentasPorCartera(Long id) {
         return daoCuenta.listarPorCartera(id);
