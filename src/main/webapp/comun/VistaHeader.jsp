@@ -25,13 +25,14 @@
   <div class="sidebar-header">
     <h3>Menú</h3>
     <button id="close-sidebar-btn" class="icon-btn">&times;</button>
-    <a href="${pageContext.request.contextPath}/salir">Salir</a>
+<%--    <a href="${pageContext.request.contextPath}/salir">Salir</a>--%>
   </div>
   <nav class="sidebar-nav">
     <a href="${pageContext.request.contextPath}/movimientos">Ingresos y gastos</a>
     <a href="${pageContext.request.contextPath}/obligacion_financiera/deudas?accion=listar">Deudas y prestamos</a>
     <a href="${pageContext.request.contextPath}/resumen_financiero/componentes_resumen_financiero/FormularioSubirPDF.jsp">Resumen Financiero</a>
     <a href="${pageContext.request.contextPath}/recordatorios">Recordatorios</a>
+    <a href="${pageContext.request.contextPath}/cuentas">Cuentas</a>
   </nav>
 </aside>
 <div id="overlay"></div>
@@ -86,8 +87,8 @@
                           'usuario@email.com'}
                 </p>
               </div>
-              <a href="${pageContext.request.contextPath}/perfil" class="dropdown-item">Mi Perfil</a>
-              <a href="#" class="dropdown-item">Configuración</a>
+<%--              <a href="${pageContext.request.contextPath}/perfil" class="dropdown-item">Mi Perfil</a>--%>
+<%--              <a href="#" class="dropdown-item">Configuración</a>--%>
               <div class="dropdown-divider"></div>
               <a href="${pageContext.request.contextPath}/salir" class="dropdown-item logout">Cerrar Sesión</a>
             </div>
