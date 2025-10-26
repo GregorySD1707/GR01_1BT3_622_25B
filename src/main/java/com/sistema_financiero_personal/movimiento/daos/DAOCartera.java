@@ -49,20 +49,6 @@ public class DAOCartera extends DAOBase<Cartera> {
     }
 
     /**
-     * Busca una cartera con todos sus movimientos cargados
-     * (Evita problemas de lazy loading)
-     */
-    public Cartera buscarConMovimientos(Long id) {
-        return executeQuery(session -> session.createQuery(
-                        "select c from Cartera c " +
-                                "left join fetch c.movimientos " +
-                                "where c.id = :id",
-                        Cartera.class
-                ).setParameter("id", id)
-                .uniqueResult());
-    }
-
-    /**
      * Actualiza el saldo de una cartera
      */
     public void actualizarSaldo(Long carteraId, double nuevoSaldo) {
@@ -75,4 +61,27 @@ public class DAOCartera extends DAOBase<Cartera> {
         });
     }
 
+    public void recalcularSaldoDesdeDB(Long carteraId) {
+        executeInTransaction(session -> {
+            Double saldoCalculado = session.createQuery(
+                            "select coalesce(sum(cu.monto), 0) from Cuenta cu " +
+                                    "where cu.cartera.id = :carteraId",
+                            Double.class
+                    ).setParameter("carteraId", carteraId)
+                    .getSingleResult();
+
+            session.createQuery(
+                            "update Cartera c set c.saldo = :saldo where c.id = :id"
+                    ).setParameter("saldo", saldoCalculado)
+                    .setParameter("id", carteraId)
+                    .executeUpdate();
+        });
+    }
+    public Cartera buscarPorUsuario(Long usuarioId) {
+        return executeQuery(session -> session.createQuery(
+                        "select c from Cartera c where c.usuario.id = :usuarioId",
+                        Cartera.class
+                ).setParameter("usuarioId", usuarioId)
+                .uniqueResult());
+    }
 }

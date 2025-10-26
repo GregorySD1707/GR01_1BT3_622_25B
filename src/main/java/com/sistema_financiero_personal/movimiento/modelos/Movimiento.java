@@ -1,8 +1,7 @@
 package com.sistema_financiero_personal.movimiento.modelos;
 
+import com.sistema_financiero_personal.cuentas.modelos.Cuenta;
 import jakarta.persistence.*;
-
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -26,8 +25,8 @@ public abstract class Movimiento {
     private String descripcion;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cartera_id", nullable = false)
-    private Cartera cartera;
+    @JoinColumn(name = "cuenta_id", nullable = false)
+    private Cuenta cuenta;
 
     public Movimiento() { }
 
@@ -41,10 +40,11 @@ public abstract class Movimiento {
     public double getMonto() { return monto; }
     public LocalDateTime getFecha() { return fecha; }
     public String getDescripcion() { return descripcion; }
-    public Cartera getCartera() { return cartera; }
+    public Cuenta getCuenta() { return cuenta; }
+
     public void setMonto(double monto) { this.monto = monto; }
     public void setFecha(LocalDateTime fecha) { this.fecha = fecha; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
-    public void setCartera(Cartera cartera) { this.cartera = cartera; }
+    public void setCuenta(Cuenta cuenta) { this.cuenta = cuenta; }
 }
 

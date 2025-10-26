@@ -1,10 +1,13 @@
 package com.sistema_financiero_personal.movimiento.controladores;
 
+import com.sistema_financiero_personal.cuentas.modelos.Cuenta;
+import com.sistema_financiero_personal.cuentas.servicios.ServicioCuenta;
 import com.sistema_financiero_personal.movimiento.modelos.CategoriaGasto;
 import com.sistema_financiero_personal.movimiento.modelos.CategoriaIngreso;
-import com.sistema_financiero_personal.movimiento.servicios.ServicioCartera;
 import com.sistema_financiero_personal.movimiento.servicios.ServicioMovimiento;
+import com.sistema_financiero_personal.usuario.modelos.Usuario;
 import com.sistema_financiero_personal.comun.utilidades.mensajes.MensajeUtil;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -13,40 +16,54 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.util.List;
 
 @WebServlet("/movimientos")
 public class ServletMovimientos extends HttpServlet {
 
-    private final ServicioMovimiento servicioMovimiento;
-    private final ServicioCartera servicioCartera;
+    private ServicioMovimiento servicioMovimiento;
+    private ServicioCuenta servicioCuenta;
 
-    public ServletMovimientos() {
+    @Override
+    public void init() {
         this.servicioMovimiento = new ServicioMovimiento();
-        this.servicioCartera = new ServicioCartera();
+        this.servicioCuenta = new ServicioCuenta();
     }
 
     // Constructor para inyección en tests
-    public ServletMovimientos(ServicioMovimiento servicioMovimiento, ServicioCartera servicioCartera) {
+    public ServletMovimientos(ServicioMovimiento servicioMovimiento, ServicioCuenta servicioCuenta) {
         this.servicioMovimiento = servicioMovimiento;
-        this.servicioCartera = servicioCartera;
+        this.servicioCuenta = servicioCuenta;
+    }
+
+    public ServletMovimientos() {
+        // Constructor por defecto para el contenedor
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Cargar y limpiar mensajes para mostrarlos una sola vez (patrón de recordatorios)
+        // Verificar sesión
+        Usuario usuario = obtenerUsuarioSesion(request);
+        if (usuario == null) {
+            response.sendRedirect(request.getContextPath() + "/ingreso");
+            return;
+        }
+
+        // Cargar y limpiar mensajes para mostrarlos una sola vez
         MensajeUtil.obtenerYLimpiarMensajes(request);
 
-        double ingresosTotales = servicioMovimiento.obtenerIngresosTotales();
-        double gastosTotales = servicioMovimiento.obtenerGastosTotales();
+        // Obtener las cuentas del usuario desde su cartera
+        List<Cuenta> listaCuentas = servicioCuenta.listarCuentasPorCartera(usuario.getCartera().getId());
 
-        double saldoActual = servicioCartera.obtenerSaldo(1L);
+        // Verificar si el usuario tiene cuentas
+        if (listaCuentas == null || listaCuentas.isEmpty()) {
+            MensajeUtil.agregarAdvertencia(request.getSession(),
+                    "No tienes cuentas creadas. Debes crear al menos una cuenta antes de registrar movimientos.");
+        }
 
-        request.setAttribute("ingresosTotales", ingresosTotales);
-        request.setAttribute("gastosTotales", gastosTotales);
-        request.setAttribute("saldoActual", saldoActual);
-
+        request.setAttribute("cuentas", listaCuentas);
         request.getRequestDispatcher("/movimiento/VistaMovimientos.jsp").forward(request, response);
     }
 
@@ -54,16 +71,24 @@ public class ServletMovimientos extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // Verificar sesión
+        Usuario usuario = obtenerUsuarioSesion(request);
+        if (usuario == null) {
+            response.sendRedirect(request.getContextPath() + "/ingreso");
+            return;
+        }
+
         HttpSession session = request.getSession();
 
         String tipo = request.getParameter("tipo"); // INGRESO | GASTO
         String montoStr = request.getParameter("monto");
         String descripcion = request.getParameter("descripcion");
         String categoriaStr = request.getParameter("categoria");
-        String carteraIdStr = request.getParameter("carteraId");
+        String cuentaIdStr = request.getParameter("cuentaId");
 
-        // Validación de campos obligatorios (mensaje unificado)
-        if (isBlank(tipo) || isBlank(montoStr) || isBlank(descripcion) || isBlank(categoriaStr) || isBlank(carteraIdStr)) {
+        // Validación de campos obligatorios
+        if (isBlank(tipo) || isBlank(montoStr) || isBlank(descripcion) ||
+                isBlank(categoriaStr) || isBlank(cuentaIdStr)) {
             MensajeUtil.agregarError(session, "Todos los campos deben ser llenados");
             response.sendRedirect(request.getContextPath() + "/movimientos");
             return;
@@ -71,7 +96,7 @@ public class ServletMovimientos extends HttpServlet {
 
         try {
             double monto = Double.parseDouble(montoStr);
-            Long carteraId = Long.parseLong(carteraIdStr);
+            Long cuentaId = Long.parseLong(cuentaIdStr);
 
             // Validación de monto positivo
             if (monto <= 0) {
@@ -80,36 +105,70 @@ public class ServletMovimientos extends HttpServlet {
                 return;
             }
 
+            // Verificar que la cuenta existe y pertenece al usuario
+            Cuenta cuenta = servicioCuenta.buscarCuenta(cuentaId);
+            if (cuenta == null) {
+                MensajeUtil.agregarError(session, "La cuenta seleccionada no existe");
+                response.sendRedirect(request.getContextPath() + "/movimientos");
+                return;
+            }
+
+            // Verificar que la cuenta pertenece a la cartera del usuario
+            if (!cuenta.getCartera().getId().equals(usuario.getCartera().getId())) {
+                MensajeUtil.agregarError(session, "No tienes permiso para realizar movimientos en esta cuenta");
+                response.sendRedirect(request.getContextPath() + "/movimientos");
+                return;
+            }
+
+            // Registrar el movimiento según el tipo
             if ("INGRESO".equalsIgnoreCase(tipo)) {
                 CategoriaIngreso categoriaIngreso = CategoriaIngreso.valueOf(categoriaStr.toUpperCase());
-                servicioMovimiento.registrarIngreso(carteraId, monto, descripcion, categoriaIngreso);
+                servicioMovimiento.registrarIngreso(cuentaId, monto, descripcion, categoriaIngreso);
+                MensajeUtil.agregarExito(session, "Ingreso registrado exitosamente en la cuenta: " + cuenta.getNombre());
+
             } else if ("GASTO".equalsIgnoreCase(tipo)) {
                 CategoriaGasto categoriaGasto = CategoriaGasto.valueOf(categoriaStr.toUpperCase());
-                servicioMovimiento.registrarGasto(carteraId, monto, descripcion, categoriaGasto);
+                servicioMovimiento.registrarGasto(cuentaId, monto, descripcion, categoriaGasto);
+                MensajeUtil.agregarExito(session, "Gasto registrado exitosamente en la cuenta: " + cuenta.getNombre());
+
             } else {
                 MensajeUtil.agregarError(session, "Tipo de movimiento no válido");
                 response.sendRedirect(request.getContextPath() + "/movimientos");
                 return;
             }
 
-            // Éxito
-            MensajeUtil.agregarExito(session, "Movimiento registrado exitosamente");
             response.sendRedirect(request.getContextPath() + "/movimientos");
 
         } catch (NumberFormatException e) {
-            MensajeUtil.agregarError(session, "Error: El monto o ID de cartera no es un número válido");
+            MensajeUtil.agregarError(session, "Error: El monto o ID de cuenta no es un número válido");
             response.sendRedirect(request.getContextPath() + "/movimientos");
+
         } catch (IllegalArgumentException e) {
-            // Por ejemplo, categoría inválida
+            // Captura errores como: saldo insuficiente, categoría inválida, etc.
             MensajeUtil.agregarError(session, "Error: " + e.getMessage());
             response.sendRedirect(request.getContextPath() + "/movimientos");
+
         } catch (Exception e) {
             MensajeUtil.agregarError(session, "Error al registrar el movimiento: " + e.getMessage());
             response.sendRedirect(request.getContextPath() + "/movimientos");
         }
     }
 
+    /**
+     * Verifica si una cadena está vacía o es nula
+     */
     private boolean isBlank(String s) {
         return s == null || s.trim().isEmpty();
+    }
+
+    /**
+     * Obtiene el usuario de la sesión actual
+     */
+    private Usuario obtenerUsuarioSesion(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            return (Usuario) session.getAttribute("usuario");
+        }
+        return null;
     }
 }
