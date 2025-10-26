@@ -1,4 +1,3 @@
-<%-- RUTA: /recordatorios.jsp --%>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ page isELIgnored="false" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
@@ -18,41 +17,7 @@
     </a>
 </div>
 
-<%-- Mensajes de notificación --%>
-<c:if test="${param.exito == 'creado'}">
-    <div class="alert alert-success">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20,6 9,17 4,12"></polyline>
-        </svg>
-        Recordatorio creado exitosamente
-    </div>
-</c:if>
-<c:if test="${param.exito == 'actualizado'}">
-    <div class="alert alert-success">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20,6 9,17 4,12"></polyline>
-        </svg>
-        Recordatorio actualizado exitosamente
-    </div>
-</c:if>
-<c:if test="${param.exito == 'eliminado'}">
-    <div class="alert alert-success">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20,6 9,17 4,12"></polyline>
-        </svg>
-        Recordatorio eliminado exitosamente
-    </div>
-</c:if>
-<c:if test="${param.error == 'idInvalido'}">
-    <div class="alert alert-danger">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="15" y1="9" x2="9" y2="15"></line>
-            <line x1="9" y1="9" x2="15" y2="15"></line>
-        </svg>
-        Error: ID de recordatorio inválido
-    </div>
-</c:if>
+<jsp:include page="/comun/Mensajes.jsp" />
 
 <section class="controls">
     <div class="search-wrapper">
@@ -94,13 +59,44 @@
             </div>
             <div class="card-footer">
                 <a href="${pageContext.request.contextPath}/recordatorios/editar?id=${r.id}" class="btn btn-secondary">Editar</a>
-                <form action="${pageContext.request.contextPath}/recordatorios/borrar?id=${r.id}" method="POST" style="display: inline;" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este recordatorio?');">
-                    <button type="submit" class="btn btn-danger">Eliminar</button>
+
+                    <%-- ✅ FORMULARIO CON MODAL PERSONALIZADO --%>
+                <form class="delete-form"
+                      action="${pageContext.request.contextPath}/recordatorios/borrar?id=${r.id}"
+                      method="POST"
+                      style="display: inline;"
+                      data-descripcion="<c:out value='${r.descripcion}'/>"
+                      data-monto="<fmt:formatNumber value='${r.monto}' type='currency' currencySymbol='$' />">
+                    <button type="button" class="btn btn-danger delete-btn">Eliminar</button>
                 </form>
             </div>
         </article>
     </c:forEach>
 </section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteForms = document.querySelectorAll('.delete-form');
+
+        deleteForms.forEach(form => {
+            const deleteBtn = form.querySelector('.delete-btn');
+
+            deleteBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                ModalConfirm.show({
+                    title: '¿Estás seguro?',
+                    message: '¿Deseas eliminar este recordatorio? Esta acción no se puede deshacer.',
+                    confirmText: 'Eliminar',
+                    cancelText: 'Cancelar',
+                    detailTitle: 'Recordatorio:',
+                    detailText: `${form.dataset.descripcion} - ${form.dataset.monto}`,
+                    form: form
+                });
+            });
+        });
+    });
+</script>
 
 <%-- 3. Finalmente, incluimos el footer que cierra <main>, <body> y <html> --%>
 <jsp:include page="/comun/VistaFooter.jsp" />
