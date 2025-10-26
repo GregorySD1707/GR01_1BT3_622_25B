@@ -33,4 +33,11 @@ public class ServicioCompendio {
                 .mapToDouble(Movimiento::getMonto)
                 .sum();
     }
+
+    public List<Movimiento> obtenerUltimosMovimientos(List<Movimiento> movimientos) {
+        return movimientos.stream()
+                .sorted((m1, m2) -> m2.getFecha().compareTo(m1.getFecha()))
+                .limit(5)
+                .collect(Collectors.toList());
+    }
 }

@@ -59,4 +59,16 @@ public class ServicioCompendioTest {
         assertEquals(50, gastos, 0.001);
     }
 
+    @Test
+    public void given_more_than_five_movements_when_get_last_movements_then_returns_only_five_sorted() {
+        List<Movimiento> movimientos = new ArrayList<>();
+        for (int i = 1; i <= 10; i++) {
+            movimientos.add(new Ingreso(i, LocalDateTime.now().minusDays(10 - i), "Ingreso " + i, CategoriaIngreso.OTROS));
+        }
+        List<Movimiento> ultimos = servicioDashboard.obtenerUltimosMovimientos(movimientos);
+        assertEquals(5, ultimos.size());
+        assertEquals(10, ultimos.get(0).getMonto(), 0.001);
+        assertEquals(6, ultimos.get(4).getMonto(), 0.001);
+    }
+
 }

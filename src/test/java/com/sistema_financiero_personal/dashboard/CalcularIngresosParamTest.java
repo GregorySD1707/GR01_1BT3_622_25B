@@ -1,6 +1,5 @@
-package com.sistema_financiero_personal.cuentas;
+package com.sistema_financiero_personal.dashboard;
 
-import com.sistema_financiero_personal.comun.dashboard.ServicioCompendio;
 import com.sistema_financiero_personal.comun.dashboard.ServicioCompendio;
 import com.sistema_financiero_personal.movimiento.modelos.*;
 import org.junit.Test;
