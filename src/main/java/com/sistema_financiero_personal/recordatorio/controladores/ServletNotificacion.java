@@ -35,7 +35,6 @@ public class ServletNotificacion extends HttpServlet {
             throws ServletException, IOException {
         try {
             Usuario usuario = obtenerUsuarioSesion(request);
-            System.out.println("Usuario en sesión: " + usuario.getId());
             if (usuario == null) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Usuario no autenticado");
                 return;

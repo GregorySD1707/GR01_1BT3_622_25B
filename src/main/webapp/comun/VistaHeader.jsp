@@ -13,6 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css">
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/toasts.css">
   <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/resources/images/Logo.png">
 </head>
 <body>
@@ -29,7 +30,7 @@
   <nav class="sidebar-nav">
     <a href="${pageContext.request.contextPath}/movimientos">Ingresos y gastos</a>
     <a href="${pageContext.request.contextPath}/obligacion_financiera/deudas?accion=listar">Deudas y prestamos</a>
-    <a href="${pageContext.request.contextPath}/resumen_financiero/VistaResumenFinanciero.jsp">Resumen Financiero</a>
+    <a href="${pageContext.request.contextPath}/resumen_financiero/componentes_resumen_financiero/FormularioSubirPDF.jsp">Resumen Financiero</a>
     <a href="${pageContext.request.contextPath}/recordatorios">Recordatorios</a>
   </nav>
 </aside>
