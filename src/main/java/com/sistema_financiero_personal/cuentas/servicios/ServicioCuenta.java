@@ -62,7 +62,8 @@ public class ServicioCuenta {
         }
     }
 
-    private boolean isBlank(String s) {
-        return s == null || s.trim().isEmpty();
+    public List<Cuenta> listarCuentasPorCartera(Long id) {
+        return daoCuenta.listarPorCartera(id);
     }
+
 }
