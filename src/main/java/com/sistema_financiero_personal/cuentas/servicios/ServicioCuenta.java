@@ -57,26 +57,16 @@ public class ServicioCuenta {
         return Double.compare(saldo, centavos) == 0;
     }
 
-
     public void validarObligatorios(Cuenta cuenta) {
-        if (cuenta == null) {
-            throw new IllegalArgumentException("La cuenta no puede ser nula");
-        }
-
-        if (cuenta.getNombre() == null || cuenta.getNombre().isBlank()) {
-            throw new IllegalArgumentException("El nombre de la cuenta es obligatorio");
-        }
-
-        if (cuenta.getTipo() == null) {
-            throw new IllegalArgumentException("El tipo de cuenta es obligatorio");
-        }
-
-        if (cuenta.getCartera() == null) {
-            throw new IllegalArgumentException("Debe asignarse una cartera a la cuenta");
+        if (cuenta == null ||
+                cuenta.getNombre() == null ||
+                cuenta.getNombre().isBlank() ||
+                cuenta.getTipo() == null ||
+                cuenta.getCartera() == null) {
+            throw new IllegalArgumentException("Todos los campos deben ser llenados");
         }
     }
-
-
+    
     public List<Cuenta> listarCuentasPorCartera(Long id) {
         return daoCuenta.listarPorCartera(id);
     }
@@ -110,4 +100,11 @@ public class ServicioCuenta {
         return daoCuenta.obtenerMonto(cuentaId);
     }
 
+    public void ajustarMonto(Cuenta cuenta, double gastoSuperior) {
+        double montoResultante = cuenta.getMonto() - gastoSuperior;
+        if(montoResultante < 0){
+            return;
+        }
+        cuenta.setMonto(montoResultante);
+    }
 }
