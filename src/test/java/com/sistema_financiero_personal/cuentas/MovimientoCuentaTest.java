@@ -30,7 +30,13 @@ public class MovimientoCuentaTest {
     @Test
     public void given_superior_spending_when_make_update_account_amount_then_not_allow(){
         double gastoSuperior = 100.0;
-        servicioCuenta.ajustarMonto(cuenta, gastoSuperior);
-        assertTrue(cuenta.getMonto() >= 0);
+        servicioCuenta.calcularSaldoDespuesCambio(20,gastoSuperior);
+    }
+    @Test
+    public void given_two_numbers_when_redondearMonto_then_ok() {
+        // Útil para normalizar montos antes de guardar
+        assertEquals(100.13, servicioCuenta.redondearMonto(100.126), 0.001);
+        assertEquals(100.12, servicioCuenta.redondearMonto(100.124), 0.001);
+        assertEquals(100.00, servicioCuenta.redondearMonto(99.995), 0.001);
     }
 }

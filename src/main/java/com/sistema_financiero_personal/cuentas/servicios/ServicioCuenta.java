@@ -48,12 +48,10 @@ public class ServicioCuenta {
     }
 
     public boolean validarSaldoInicial(double saldo) {
-
         if (saldo <= 0) {
             return false;
         }
-
-        double centavos = Math.round(saldo * 100.0) / 100.0;
+        double centavos = redondearMonto(saldo);
         return Double.compare(saldo, centavos) == 0;
     }
 
@@ -80,15 +78,7 @@ public class ServicioCuenta {
         if (cuenta == null) {
             throw new IllegalArgumentException("La cuenta con ID " + cuentaId + " no existe");
         }
-
-        double nuevoMonto = cuenta.getMonto() + cambio;
-        if (nuevoMonto < 0) {
-            throw new IllegalArgumentException(
-                    "Saldo insuficiente. Saldo actual: " + cuenta.getMonto() +
-                            ", cambio solicitado: " + cambio
-            );
-        }
-
+        double nuevoMonto = calcularSaldoDespuesCambio(cuenta.getMonto(), cambio);
         cuenta.setMonto(nuevoMonto);
         daoCuenta.actualizar(cuenta);
 
@@ -100,11 +90,19 @@ public class ServicioCuenta {
         return daoCuenta.obtenerMonto(cuentaId);
     }
 
-    public void ajustarMonto(Cuenta cuenta, double gastoSuperior) {
-        double montoResultante = cuenta.getMonto() - gastoSuperior;
-        if(montoResultante < 0){
-            return;
+    public double calcularSaldoDespuesCambio(double saldoActual, double cambio) {
+        double nuevoSaldo = saldoActual + cambio;
+        if (nuevoSaldo < 0) {
+            throw new IllegalArgumentException(
+                    String.format("Saldo insuficiente. Saldo actual: %.2f, cambio solicitado: %.2f",
+                            saldoActual, cambio)
+            );
         }
-        cuenta.setMonto(montoResultante);
+        return nuevoSaldo;
     }
+
+    public double redondearMonto(double monto) {
+        return Math.round(monto * 100.0) / 100.0;
+    }
+
 }

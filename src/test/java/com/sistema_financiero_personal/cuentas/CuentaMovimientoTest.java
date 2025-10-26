@@ -6,14 +6,10 @@ import com.sistema_financiero_personal.cuentas.modelos.TipoCuenta;
 import com.sistema_financiero_personal.cuentas.servicios.ServicioCuenta;
 import com.sistema_financiero_personal.movimiento.daos.DAOCartera;
 import com.sistema_financiero_personal.movimiento.daos.DAOMovimiento;
-import com.sistema_financiero_personal.movimiento.modelos.Cartera;
-import com.sistema_financiero_personal.movimiento.modelos.CategoriaIngreso;
-import com.sistema_financiero_personal.movimiento.modelos.Ingreso;
-import com.sistema_financiero_personal.movimiento.modelos.Movimiento;
+import com.sistema_financiero_personal.movimiento.modelos.*;
 import com.sistema_financiero_personal.movimiento.servicios.ServicioCartera;
-import static org.junit.Assert.*;
-
 import com.sistema_financiero_personal.movimiento.servicios.ServicioMovimiento;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,105 +17,109 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CuentaMovimientoTest {
-    @Mock
-    private DAOCuenta daoCuenta;
-    @Mock
-    private DAOMovimiento daoMovimiento;
-    @Mock
-    private ServicioCartera servicioCartera;
-    @Mock
-    private DAOCartera daoCartera;
+
+    @Mock private DAOCuenta daoCuenta;
+    @Mock private DAOMovimiento daoMovimiento;
+    @Mock private DAOCartera daoCartera;
+
     private ServicioMovimiento servicioMovimiento;
     private ServicioCuenta servicioCuenta;
+    private ServicioCartera servicioCartera;
+
     private Cartera cartera;
     private Cuenta cuentaAhorro;
-    private Cuenta cuentaCorriente;
 
     @Before
     public void setUp() {
-        // Configurar servicios con mocks
         servicioCartera = new ServicioCartera(daoCartera);
         servicioCuenta = new ServicioCuenta(daoCuenta, servicioCartera);
         servicioMovimiento = new ServicioMovimiento(daoMovimiento, servicioCuenta);
 
-        // Preparar datos de prueba
-        cartera = new Cartera();
-        cartera.setId(1L);
-        cartera.setSaldo(5000.0);
-
-        cuentaAhorro = new Cuenta();
-        cuentaAhorro.setId(1L);
-        cuentaAhorro.setNombre("Ahorro Principal");
-        cuentaAhorro.setTipo(TipoCuenta.AHORROS);
-        cuentaAhorro.setMonto(1000.0);
-        cuentaAhorro.setCartera(cartera);
-
-        cuentaCorriente = new Cuenta();
-        cuentaCorriente.setId(2L);
-        cuentaCorriente.setNombre("Cuenta Corriente");
-        cuentaCorriente.setTipo(TipoCuenta.CORRIENTE);
-        cuentaCorriente.setMonto(500.0);
-        cuentaCorriente.setCartera(cartera);
+        cartera = crearCartera(1L, 10000.0);
+        cuentaAhorro = crearCuenta(2L, "Cuenta de Ahorro", TipoCuenta.AHORROS, 1500.0, cartera);
     }
 
     @Test
     public void givenCuentaConSaldoInicial_whenRegistrarIngreso_thenActualizaSaldoYCreaMovimiento() {
+        // Arrange
         double montoIngreso = 500.0;
-        String descripcion = "Salario quincenal";
+        String descripcion = "Depósito mensual";
         CategoriaIngreso categoria = CategoriaIngreso.SALARIO;
-
-        when(daoCuenta.existe(cuentaAhorro.getId())).thenReturn(true);
-        when(daoCuenta.buscarPorId(cuentaAhorro.getId())).thenReturn(cuentaAhorro);
-        when(daoCartera.existe(cartera.getId())).thenReturn(true);
+        configurarMocksCuenta(cuentaAhorro);
+        double montoInicial = cuentaAhorro.getMonto();
 
         servicioMovimiento.registrarIngreso(
-                cuentaAhorro.getId(),
-                montoIngreso,
-                descripcion,
-                categoria
+                cuentaAhorro.getId(), montoIngreso, descripcion, categoria
         );
+
+        Movimiento movimientoCreado = verificarMovimientoCreado(Ingreso.class, montoIngreso, descripcion, categoria,
+                cuentaAhorro
+        );
+
+        verificarCuentaActualizada(cuentaAhorro, montoInicial + montoIngreso);
+        verificarRecalculoCartera(cartera);
+    }
+
+    // ======================================================
+    // MÉTODOS AUXILIARES
+    // ======================================================
+
+    private Cartera crearCartera(Long id, double saldo) {
+        Cartera c = new Cartera();
+        c.setId(id);
+        c.setSaldo(saldo);
+        return c;
+    }
+
+    private Cuenta crearCuenta(Long id, String nombre, TipoCuenta tipo, double monto, Cartera cartera) {
+        Cuenta cuenta = new Cuenta();
+        cuenta.setId(id);
+        cuenta.setNombre(nombre);
+        cuenta.setTipo(tipo);
+        cuenta.setMonto(monto);
+        cuenta.setCartera(cartera);
+        return cuenta;
+    }
+
+    private void configurarMocksCuenta(Cuenta cuenta) {
+        when(daoCuenta.existe(cuenta.getId())).thenReturn(true);
+        when(daoCuenta.buscarPorId(cuenta.getId())).thenReturn(cuenta);
+        when(daoCartera.existe(cuenta.getCartera().getId())).thenReturn(true);
+    }
+
+    private Movimiento verificarMovimientoCreado(
+            Class<? extends Movimiento> tipoMovimiento,
+            double monto, String descripcion, Enum<?> categoria, Cuenta cuenta) {
 
         ArgumentCaptor<Movimiento> movimientoCaptor = ArgumentCaptor.forClass(Movimiento.class);
         verify(daoMovimiento).crear(movimientoCaptor.capture());
+        Movimiento movimiento = movimientoCaptor.getValue();
 
-        Movimiento movimientoCreado = movimientoCaptor.getValue();
+        assertTrue("Tipo de movimiento incorrecto", tipoMovimiento.isInstance(movimiento));
+        assertEquals("Monto incorrecto", monto, movimiento.getMonto(), 0.01);
+        assertEquals("Descripción incorrecta", descripcion, movimiento.getDescripcion());
+        assertEquals("Cuenta incorrecta", cuenta, movimiento.getCuenta());
 
-        assertTrue("Debe ser un Ingreso", movimientoCreado instanceof Ingreso);
+        if (movimiento instanceof Ingreso)
+            assertEquals("Categoría incorrecta", categoria, ((Ingreso) movimiento).getCategoria());
 
-        assertEquals("El monto debe coincidir",
-                montoIngreso,
-                movimientoCreado.getMonto(),
-                0.01);
+        return movimiento;
+    }
 
-        assertEquals("La descripción debe coincidir",
-                descripcion,
-                movimientoCreado.getDescripcion());
-
-        assertEquals("La categoría debe coincidir",
-                categoria,
-                ((Ingreso) movimientoCreado).getCategoria());
-
-        assertEquals("La cuenta debe coincidir",
-                cuentaAhorro,
-                movimientoCreado.getCuenta());
-
-        // Verificar que se actualizó el saldo de la cuenta
+    private void verificarCuentaActualizada(Cuenta cuentaOriginal, double saldoEsperado) {
         ArgumentCaptor<Cuenta> cuentaCaptor = ArgumentCaptor.forClass(Cuenta.class);
         verify(daoCuenta).actualizar(cuentaCaptor.capture());
-
         Cuenta cuentaActualizada = cuentaCaptor.getValue();
-        double saldoEsperado = 1000.0 + 500.0;
 
-        assertEquals("El saldo debe incrementarse en el monto del ingreso",
-                saldoEsperado,
-                cuentaActualizada.getMonto(),
-                0.01);
+        assertEquals("Saldo de la cuenta incorrecto", saldoEsperado, cuentaActualizada.getMonto(), 0.01);
+    }
 
-        // Verificar que se recalculó el saldo de la cartera
+    private void verificarRecalculoCartera(Cartera cartera) {
         verify(daoCartera).recalcularSaldoDesdeDB(cartera.getId());
     }
 }
