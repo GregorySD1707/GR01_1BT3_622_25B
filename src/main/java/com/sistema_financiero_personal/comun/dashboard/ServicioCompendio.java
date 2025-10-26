@@ -8,7 +8,7 @@ import com.sistema_financiero_personal.movimiento.modelos.Movimiento;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ServicioDashboard {
+public class ServicioCompendio {
 
     public double calcularSaldoTotal(List<Cuenta> cuentas) {
         return cuentas.stream().mapToDouble(Cuenta::getMonto).sum();
@@ -17,5 +17,20 @@ public class ServicioDashboard {
     public Map<String, Double> obtenerSaldosIndividuales(List<Cuenta> cuentas) {
         return cuentas.stream()
                 .collect(Collectors.toMap(Cuenta::getNombre, Cuenta::getMonto));
+    }
+
+    public double calcularIngresos(List<Movimiento> movimientos) {
+        return movimientos.stream()
+                .filter(m -> m instanceof Ingreso)
+                .mapToDouble(Movimiento::getMonto)
+                .sum();
+
+    }
+
+    public double calcularGastos(List<Movimiento> movimientos) {
+        return movimientos.stream()
+                .filter(m -> m instanceof Gasto)
+                .mapToDouble(Movimiento::getMonto)
+                .sum();
     }
 }
