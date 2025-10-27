@@ -22,24 +22,6 @@ public class ServicioMovimiento {
         this.servicioCuenta = servicioCuenta;
     }
 
-    /**
-     * Obtiene la suma total de todos los ingresos del sistema
-     */
-    public double obtenerIngresosTotales() {
-        return movimientoDAO.sumIngresos();
-    }
-
-    /**
-     * Obtiene la suma total de todos los gastos del sistema
-     */
-    public double obtenerGastosTotales() {
-        return movimientoDAO.sumGastos();
-    }
-
-
-    /**
-     * Registra un nuevo ingreso
-     */
     public void registrarIngreso(Long cuentaId, double monto, String descripcion, CategoriaIngreso categoria) {
         // Validaciones
         if (monto <= 0) {
@@ -90,5 +72,24 @@ public class ServicioMovimiento {
         // Actualizar monto de la cuenta (resta porque es gasto)
         servicioCuenta.ajustarMonto(cuentaId, -monto);
     }
+    public long contarMovimientos(Long cuentaId) {
+        return movimientoDAO.contarMovimientos(cuentaId);
+    }
+    public double sumarGastosPorCuenta(Long cuentaId) {
+        return movimientoDAO.sumGastosPorCuenta(cuentaId);
+    }
+    public double sumarIngresosPorCuenta(Long cuentaId) {
+        return movimientoDAO.sumIngresosPorCuenta(cuentaId);
+    }
+    public List<Ingreso> obtenerIngresosPorCuenta(Long cuentaId) {
+        return movimientoDAO.buscarIngresosPorCuenta(cuentaId);
+    }
+    public List<Gasto> obtenerGastosPorCuenta(Long cuentaId) {
+        return movimientoDAO.buscarGastosPorCuenta(cuentaId);
+    }
+    public List<Movimiento> obtenerMovimientosPorCuenta(Long cuentaId) {
+        return movimientoDAO.buscarPorCuenta(cuentaId);
+    }
+
 
 }

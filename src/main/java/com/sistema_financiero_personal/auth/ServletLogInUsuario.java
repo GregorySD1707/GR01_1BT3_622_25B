@@ -22,7 +22,7 @@ public class ServletLogInUsuario extends HttpServlet {
     protected void doGet(jakarta.servlet.http.HttpServletRequest request, jakarta.servlet.http.HttpServletResponse response) throws jakarta.servlet.ServletException, java.io.IOException {
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("usuario") != null) {
-            response.sendRedirect(request.getContextPath() + "/inicio");
+            response.sendRedirect(request.getContextPath() + "/dashboard");
             return;
         }
 
@@ -46,7 +46,7 @@ public class ServletLogInUsuario extends HttpServlet {
             if(usuario!=null){
                 HttpSession session = request.getSession();
                 session.setAttribute("usuario", usuario);
-                response.sendRedirect(request.getContextPath() + "/inicio");
+                response.sendRedirect(request.getContextPath() + "/dashboard");
             } else {
                 request.setAttribute("error", "Identificador de usuario o contraseña incorrectos.");
                 request.getRequestDispatcher(PATH).forward(request, response);

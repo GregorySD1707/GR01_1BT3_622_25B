@@ -3,6 +3,7 @@ package com.sistema_financiero_personal.movimiento.modelos;
 import com.sistema_financiero_personal.cuentas.modelos.Cuenta;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Table(name = "movimiento")
@@ -46,5 +47,17 @@ public abstract class Movimiento {
     public void setFecha(LocalDateTime fecha) { this.fecha = fecha; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
     public void setCuenta(Cuenta cuenta) { this.cuenta = cuenta; }
+    public String getFechaFormateada() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return this.fecha.format(formatter);
+    }
+    public String getTipo() {
+        if (this instanceof Ingreso) {
+            return "INGRESO";
+        } else if (this instanceof Gasto) {
+            return "GASTO";
+        }
+        return "DESCONOCIDO";
+    }
 }
 

@@ -52,11 +52,82 @@ public class ServletCuenta extends HttpServlet {
             // case "/editar":
             //     mostrarFormularioEditar(request, response, usuario);
             //     break;
+            case "/detalle":
+                mostrarDetalleCuenta(request, response, usuario);
+                break;
             default:
                 listarCuentas(request, response, usuario);
                 break;
         }
     }
+
+    private void mostrarDetalleCuenta(HttpServletRequest request, HttpServletResponse response, Usuario usuario)
+            throws ServletException, IOException {
+
+        String cuentaIdStr = request.getParameter("id");
+
+        if (cuentaIdStr == null || cuentaIdStr.trim().isEmpty()) {
+            HttpSession session = request.getSession();
+            MensajeUtil.agregarError(session, "ID de cuenta no válido");
+            response.sendRedirect(request.getContextPath() + "/cuentas");
+            return;
+        }
+
+        try {
+            Long cuentaId = Long.parseLong(cuentaIdStr);
+
+            // Buscar la cuenta
+            Cuenta cuenta = servicioCuenta.buscarCuenta(cuentaId);
+
+            if (cuenta == null) {
+                HttpSession session = request.getSession();
+                MensajeUtil.agregarError(session, "La cuenta no existe");
+                response.sendRedirect(request.getContextPath() + "/cuentas");
+                return;
+            }
+
+            // Verificar que la cuenta pertenece al usuario
+            if (!cuenta.getCartera().getId().equals(usuario.getCartera().getId())) {
+                HttpSession session = request.getSession();
+                MensajeUtil.agregarError(session, "No tienes permiso para ver esta cuenta");
+                response.sendRedirect(request.getContextPath() + "/cuentas");
+                return;
+            }
+
+            // Necesitamos instanciar ServicioMovimiento
+            ServicioMovimiento servicioMovimiento = new ServicioMovimiento();
+
+            // Obtener los movimientos de la cuenta
+            List<Movimiento> movimientos = servicioMovimiento.obtenerMovimientosPorCuenta(cuentaId);
+
+            // Calcular estadísticas
+            double totalIngresos = servicioMovimiento.sumarIngresosPorCuenta(cuentaId);
+            double totalGastos = servicioMovimiento.sumarGastosPorCuenta(cuentaId);
+            long cantidadMovimientos = servicioMovimiento.contarMovimientos(cuentaId);
+
+            // Limpiar mensajes
+            MensajeUtil.obtenerYLimpiarMensajes(request);
+
+            // Pasar datos a la vista
+            request.setAttribute("cuenta", cuenta);
+            request.setAttribute("movimientos", movimientos);
+            request.setAttribute("totalIngresos", totalIngresos);
+            request.setAttribute("totalGastos", totalGastos);
+            request.setAttribute("cantidadMovimientos", cantidadMovimientos);
+
+            request.getRequestDispatcher("/cuenta/VistaDetalleCuenta.jsp").forward(request, response);
+
+        } catch (NumberFormatException e) {
+            HttpSession session = request.getSession();
+            MensajeUtil.agregarError(session, "ID de cuenta no válido");
+            response.sendRedirect(request.getContextPath() + "/cuentas");
+        } catch (Exception e) {
+            HttpSession session = request.getSession();
+            MensajeUtil.agregarError(session, "Error al cargar los detalles de la cuenta: " + e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/cuentas");
+        }
+    }
+
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
