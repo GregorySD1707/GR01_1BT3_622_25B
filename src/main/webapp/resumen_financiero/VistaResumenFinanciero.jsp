@@ -52,7 +52,7 @@
                     <jsp:param name="valor" value="${resumen.ahorroNeto}"/>
                 </jsp:include>
 
-                
+
             </section>
         </div>
         <br>
