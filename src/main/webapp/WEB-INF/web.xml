@@ -28,13 +28,10 @@
   
   <!-- Página de inicio por defecto -->
   <welcome-file-list>
-    <welcome-file>comun/VistaInicio.jsp</welcome-file>
-    <welcome-file>index.jsp</welcome-file>
-    <welcome-file>index.html</welcome-file>
+    <welcome-file>redirect.jsp</welcome-file>
   </welcome-file-list>
 
-  <welcome-file-list>
-    <welcome-file>resumen_financiero.jsp</welcome-file>
-  </welcome-file-list>
+
+
 
 </web-app>

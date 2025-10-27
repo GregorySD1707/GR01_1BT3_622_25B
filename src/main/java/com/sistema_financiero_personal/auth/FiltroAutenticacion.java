@@ -13,7 +13,7 @@ import java.io.IOException;
  * Si el usuario no está logueado, lo redirige al login
  */
 @WebFilter(urlPatterns = {
-        "/inicio/*",
+        "/dashboard/*",
         "/recordatorios/*",
         "/resumen_financiero/*",
         "/movimientos/*",

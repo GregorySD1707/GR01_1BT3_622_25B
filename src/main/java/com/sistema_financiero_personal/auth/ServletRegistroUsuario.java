@@ -58,7 +58,7 @@ public class ServletRegistroUsuario extends HttpServlet {
             request.setAttribute("success", "¡Cuenta creada exitosamente! Ya puedes iniciar sesión.");
             HttpSession session = request.getSession();
             session.setAttribute("usuario", usuarioRegistrado);
-            response.sendRedirect(request.getContextPath() + "/inicio");
+            response.sendRedirect(request.getContextPath() + "/dashboard");
 
         } catch (DateTimeParseException e) {
             request.setAttribute("error", "La fecha de nacimiento no es válida");

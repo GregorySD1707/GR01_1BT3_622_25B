@@ -39,21 +39,12 @@
 
 <%-- Grid de cuentas: se mostrará cuando haya cuentas --%>
 <c:if test="${not empty cuentas}">
-    <%--
-    <section class="controls">
-        <div class="search-wrapper">
-            <input id="search-input" class="search" type="text" placeholder="Buscar por nombre..." />
-            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-        </div>
-    </section>
-    --%>
-
     <section id="accounts-grid" class="grid">
         <c:forEach var="cuenta" items="${cuentas}">
-            <article class="card" data-nombre="<c:out value='${cuenta.nombre}'/>">
+            <article class="card card-clickable"
+                     data-nombre="<c:out value='${cuenta.nombre}'/>"
+                     onclick="window.location.href='${pageContext.request.contextPath}/cuentas/detalle?id=${cuenta.id}'"
+                     style="cursor: pointer;">
                 <div class="card-header">
                     <div class="card-icon">
                         <c:choose>
@@ -106,30 +97,16 @@
     </section>
 </c:if>
 
-<%--
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Funcionalidad de búsqueda
-        const searchInput = document.getElementById('search-input');
-        const cards = document.querySelectorAll('#accounts-grid .card');
+<style>
+    .card-clickable {
+        transition: all 0.3s ease;
+    }
 
-        if (searchInput && cards.length > 0) {
-            searchInput.addEventListener('input', function(e) {
-                const searchTerm = e.target.value.toLowerCase();
-
-                cards.forEach(card => {
-                    const nombre = card.dataset.nombre.toLowerCase();
-                    if (nombre.includes(searchTerm)) {
-                        card.style.display = '';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            });
-        }
-    });
-</script>
---%>
+    .card-clickable:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+    }
+</style>
 
 <%-- 3. Finalmente, incluimos el footer que cierra <main>, <body> y <html> --%>
 <jsp:include page="/comun/VistaFooter.jsp" />
