@@ -40,4 +40,14 @@ public class ServicioCompendio {
                 .limit(5)
                 .collect(Collectors.toList());
     }
+    public EstatusDashboard determinarEstatus(List<Cuenta> cuentas, List<Movimiento> movimientos) {
+        if (cuentas.isEmpty()) return EstatusDashboard.SIN_CUENTAS;
+        if (movimientos.isEmpty()) return EstatusDashboard.SIN_MOVIMIENTOS;
+        return EstatusDashboard.OK;
+    }
+
+
+
+
+
 }

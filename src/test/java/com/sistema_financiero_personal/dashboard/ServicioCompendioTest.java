@@ -1,5 +1,6 @@
 package com.sistema_financiero_personal.dashboard;
 
+import com.sistema_financiero_personal.comun.dashboard.EstatusDashboard;
 import com.sistema_financiero_personal.comun.dashboard.ServicioCompendio;
 import com.sistema_financiero_personal.cuentas.modelos.Cuenta;
 import com.sistema_financiero_personal.cuentas.modelos.TipoCuenta;
@@ -70,5 +71,39 @@ public class ServicioCompendioTest {
         assertEquals(10, ultimos.get(0).getMonto(), 0.001);
         assertEquals(6, ultimos.get(4).getMonto(), 0.001);
     }
+    // ----- Tests de últimos movimientos -----
+    @Test
+    public void obtenerUltimosMovimientos_masDeCinco_retornaSoloCincoOrdenados() {
+        List<Movimiento> movimientos = new ArrayList<>();
+        for (int i = 1; i <= 10; i++) {
+            movimientos.add(new Ingreso(i, LocalDateTime.now().minusDays(10 - i), "Ingreso " + i, CategoriaIngreso.OTROS));
+        }
+        List<Movimiento> ultimos = servicioDashboard.obtenerUltimosMovimientos(movimientos);
+        assertEquals(5, ultimos.size());
+        assertEquals(10, ultimos.get(0).getMonto(), 0.001);
+        assertEquals(6, ultimos.get(4).getMonto(), 0.001);
+    }
+
+    @Test
+    public void given_determineStatus_when_noAccounts_then_returnsNoAccounts() {
+        EstatusDashboard estatus = servicioDashboard.determinarEstatus(Collections.emptyList(), Collections.emptyList());
+        assertEquals(EstatusDashboard.SIN_CUENTAS, estatus);
+    }
+
+    @Test
+    public void given_determineStatus_when_noMovements_then_returnsNoMovements() {
+        List<Cuenta> cuentas = Arrays.asList(new Cuenta("Ahorros", TipoCuenta.AHORROS, 100, null));
+        EstatusDashboard estatus = servicioDashboard.determinarEstatus(cuentas, Collections.emptyList());
+        assertEquals(EstatusDashboard.SIN_MOVIMIENTOS, estatus);
+    }
+    @Test
+    public void given_determineStatus_when_withAccountsAndMovements_then_returnsOk() {
+        List<Cuenta> cuentas = Arrays.asList(new Cuenta("Ahorros", TipoCuenta.AHORROS, 100, null));
+        List<Movimiento> movimientos = Arrays.asList(new Ingreso(50, LocalDateTime.now(), "Ingreso", CategoriaIngreso.SALARIO));
+        EstatusDashboard estatus = servicioDashboard.determinarEstatus(cuentas, movimientos);
+        assertEquals(EstatusDashboard.OK, estatus);
+    }
+
+
 
 }
