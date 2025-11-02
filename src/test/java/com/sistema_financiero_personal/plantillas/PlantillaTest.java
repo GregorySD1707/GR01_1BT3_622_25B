@@ -24,6 +24,12 @@ public class PlantillaTest {
     private static final String NOMBRE_INVALIDO = "   ";
     private static final String TIPO_INVALIDO = "Ingreso";
 
+    private static final String TIPO_GASTO = "GASTO";
+    private static final String TIPO_INGRESO = "INGRESO";
+    private static final String CATEGORIA_VALIDA_GASTO = "TRANSPORTE";
+    private static final String CATEGORIA_VALIDA_INGRESO = "SUELDO";
+    private static final String CATEGORIA_INVALIDA = "CATEGORIA_QUE_NO_EXISTE";
+
 
     @Before
     public void setUp() {
@@ -72,6 +78,17 @@ public class PlantillaTest {
         );
         assertTrue("El mensaje debe ser: 'Monto no válido'",
                 ex.getMessage().contains("Monto no válido"));
+    }
+
+    @Test
+    public void given_invalid_category_when_validate_then_throw_exception() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> servicioPlantilla.validarCategoria(TIPO_INGRESO, CATEGORIA_INVALIDA)
+        );
+
+        assertTrue("El mensaje debe contener 'Categoría inválida'",
+                exception.getMessage().contains("Categoría inválida"));
     }
 
 }

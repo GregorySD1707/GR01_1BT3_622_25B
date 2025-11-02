@@ -29,6 +29,25 @@ public class ServicioPlantilla {
         }
         if(!tipo.equals("GASTO") && !tipo.equals("INGRESO")){
             throw new IllegalArgumentException("Tipo inválido");
+        }
     }
+
+    public void validarCategoria(String tipo, String categoria) {
+        if (categoria == null || categoria.isBlank()) {
+            throw new IllegalArgumentException("La categoría no puede estar vacía o en blanco");
+        }
+
+        try {
+            if ("GASTO".equalsIgnoreCase(tipo)) {
+                CategoriaGasto.valueOf(categoria.toUpperCase());
+            } else if ("INGRESO".equalsIgnoreCase(tipo)) {
+                CategoriaIngreso.valueOf(categoria.toUpperCase());
+            } else {
+                throw new IllegalArgumentException("Tipo inválido para validación de categoría");
+            }
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Categoría inválida");
+        }
     }
+
 }
