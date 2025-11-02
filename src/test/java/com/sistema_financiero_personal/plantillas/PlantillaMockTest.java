@@ -11,7 +11,7 @@ import org.mockito.Mockito;
 import static org.mockito.Mockito.*;
 
 
-public class CreacionCuentaMockTest {
+public class PlantillaMockTest {
 
     private DAOPlantilla daoPlantillaMock;
     private ServicioPlantilla servicioPlantillas;
@@ -40,4 +40,17 @@ public class CreacionCuentaMockTest {
 
         verify(daoPlantillaMock, times(1)).crearPlantilla(plantilla, usuarioId);
     }
+
+    @Test
+    public void given_data_when_delete_template_then_delegates_to_dao() {
+        Long plantilla_Id = 1L;
+
+        when(daoPlantillaMock.eliminarPlantilla(plantilla_Id)).thenReturn(true);
+
+        servicioPlantillas.eliminarPlantilla(plantilla_Id);
+
+        verify(daoPlantillaMock, times(1)).eliminarPlantilla(plantilla_Id);
+    }
+
+
 }

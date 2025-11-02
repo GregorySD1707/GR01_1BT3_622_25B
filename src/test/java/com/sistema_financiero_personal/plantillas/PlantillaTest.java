@@ -2,14 +2,16 @@ package com.sistema_financiero_personal.plantillas;
 
 import com.sistema_financiero_personal.cuentas.modelos.Cuenta;
 import com.sistema_financiero_personal.movimiento.modelos.CategoriaIngreso;
+import com.sistema_financiero_personal.plantillas.daos.DAOPlantilla;
 import com.sistema_financiero_personal.plantillas.modelos.Plantilla;
 import com.sistema_financiero_personal.plantillas.servicios.ServicioPlantilla;
 import com.sistema_financiero_personal.usuario.modelos.Usuario;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class PlantillaTest {
     private ServicioPlantilla servicioPlantilla;

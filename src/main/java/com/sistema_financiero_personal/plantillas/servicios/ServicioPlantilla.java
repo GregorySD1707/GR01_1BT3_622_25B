@@ -3,6 +3,7 @@ package com.sistema_financiero_personal.plantillas.servicios;
 import com.sistema_financiero_personal.cuentas.modelos.Cuenta;
 import com.sistema_financiero_personal.movimiento.modelos.CategoriaGasto;
 import com.sistema_financiero_personal.movimiento.modelos.CategoriaIngreso;
+import com.sistema_financiero_personal.plantillas.daos.DAOPlantilla;
 import com.sistema_financiero_personal.plantillas.modelos.Plantilla;
 import com.sistema_financiero_personal.usuario.modelos.Usuario;
 import com.sistema_financiero_personal.plantillas.daos.DAOPlantilla;
@@ -75,6 +76,10 @@ public class ServicioPlantilla {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Categoría inválida");
         }
+    }
+
+    public boolean eliminarPlantilla(Long plantilla_Id) {
+        return dao.eliminarPlantilla(plantilla_Id);
     }
 
 }
