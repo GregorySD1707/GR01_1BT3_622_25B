@@ -1,28 +1,41 @@
 package com.sistema_financiero_personal.plantillas;
 
 import com.sistema_financiero_personal.cuentas.modelos.Cuenta;
-import com.sistema_financiero_personal.cuentas.servicios.ServicioCuenta;
 import com.sistema_financiero_personal.movimiento.modelos.CategoriaIngreso;
-import com.sistema_financiero_personal.movimiento.modelos.Ingreso;
 import com.sistema_financiero_personal.plantillas.modelos.Plantilla;
 import com.sistema_financiero_personal.plantillas.servicios.ServicioPlantilla;
 import com.sistema_financiero_personal.usuario.modelos.Usuario;
+import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 public class PlantillaTest {
+    private ServicioPlantilla servicioPlantilla;
+    private Usuario usuario;
+    private Cuenta cuenta;
+    private CategoriaIngreso categoriaIngreso;
+
+    // validos
+    private static final String NOMBRE_VALIDO = "Pago de Servicios";
+    private static final double MONTO_VALIDO = 100.0;
+    // invalidos
+    private static final String NOMBRE_INVALIDO = "   ";
+    private static final String TIPO_INVALIDO = "Ingreso";
+
+
+    @Before
+    public void setUp() {
+        servicioPlantilla = new ServicioPlantilla();
+        cuenta = new Cuenta();
+        usuario = new Usuario();
+        categoriaIngreso = CategoriaIngreso.SALARIO;
+    }
 
     @Test
     public void given_name_using_spaces_when_save_template_then_fail(){
-        Usuario usuario = new Usuario();
-        Cuenta cuenta = new Cuenta();
-
-        String nombre = "";
-        double monto = 1.0;
-
-        CategoriaIngreso categoriaIngreso = CategoriaIngreso.SALARIO;
-
-        Plantilla plantilla = new Plantilla(nombre, monto);
+        Plantilla plantilla = new Plantilla(NOMBRE_INVALIDO, MONTO_VALIDO);
         plantilla.setCategoriaIngreso(categoriaIngreso);
         plantilla.setCuenta(cuenta);
 
@@ -40,4 +53,8 @@ public class PlantillaTest {
                 msg.contains("nombre") || msg.contains("no") || msg.contains("vacío"));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void given_invalid_type_when_create_template_then_throw_exception() {
+        servicioPlantilla.validarTipo(TIPO_INVALIDO);
+    }
 }
