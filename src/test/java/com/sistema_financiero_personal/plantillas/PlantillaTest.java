@@ -1,7 +1,10 @@
 package com.sistema_financiero_personal.plantillas;
 
 import com.sistema_financiero_personal.cuentas.modelos.Cuenta;
+import com.sistema_financiero_personal.movimiento.modelos.CategoriaGasto;
 import com.sistema_financiero_personal.movimiento.modelos.CategoriaIngreso;
+import com.sistema_financiero_personal.movimiento.modelos.Gasto;
+import com.sistema_financiero_personal.movimiento.modelos.Movimiento;
 import com.sistema_financiero_personal.plantillas.daos.DAOPlantilla;
 import com.sistema_financiero_personal.plantillas.modelos.Plantilla;
 import com.sistema_financiero_personal.plantillas.servicios.ServicioPlantilla;
@@ -91,6 +94,25 @@ public class PlantillaTest {
 
         assertTrue("El mensaje debe contener 'Categoría inválida'",
                 exception.getMessage().contains("Categoría inválida"));
+    }
+
+    @Test
+    public void given_expense_template_when_apply_then_creates_gasto_for_form_autofill() {
+        Plantilla plantilla = new Plantilla("Netflix Mensual", 15.99);
+        plantilla.setCategoriaGasto(CategoriaGasto.ENTRETENIMIENTO);
+        plantilla.setCuenta(cuenta);
+        plantilla.setActivo(true);
+
+        Movimiento movimiento = servicioPlantilla.aplicarPlantilla(plantilla);
+
+        assertNotNull(movimiento);
+        assertTrue("Debe ser un Gasto", movimiento instanceof Gasto);
+        assertEquals(15.99, movimiento.getMonto(), 0.01);
+        assertEquals(cuenta.getId(), movimiento.getCuenta().getId());
+        assertEquals("Netflix Mensual", movimiento.getDescripcion());
+
+        Gasto gasto = (Gasto) movimiento;
+        assertEquals(CategoriaGasto.ENTRETENIMIENTO, gasto.getCategoria());
     }
 
 }

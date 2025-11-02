@@ -1,12 +1,13 @@
 package com.sistema_financiero_personal.plantillas.servicios;
 
 import com.sistema_financiero_personal.cuentas.modelos.Cuenta;
-import com.sistema_financiero_personal.movimiento.modelos.CategoriaGasto;
-import com.sistema_financiero_personal.movimiento.modelos.CategoriaIngreso;
+import com.sistema_financiero_personal.movimiento.modelos.*;
 import com.sistema_financiero_personal.plantillas.daos.DAOPlantilla;
 import com.sistema_financiero_personal.plantillas.modelos.Plantilla;
 import com.sistema_financiero_personal.usuario.modelos.Usuario;
 import com.sistema_financiero_personal.plantillas.daos.DAOPlantilla;
+
+import java.time.LocalDateTime;
 
 public class ServicioPlantilla {
 
@@ -80,6 +81,40 @@ public class ServicioPlantilla {
 
     public boolean eliminarPlantilla(Long plantilla_Id) {
         return dao.eliminarPlantilla(plantilla_Id);
+    }
+    public Movimiento aplicarPlantilla(Plantilla plantilla) {
+        if (plantilla == null) {
+            throw new IllegalArgumentException("La plantilla no puede ser nula");
+        }
+
+        if (!plantilla.isActivo()) {
+            throw new IllegalStateException("La plantilla debe estar activa");
+        }
+
+        String descripcion = plantilla.getNombre();
+
+        Movimiento movimiento;
+
+        if ("INGRESO".equals(plantilla.getTipo())) {
+            movimiento = new Ingreso(
+                    plantilla.getMonto(),
+                    LocalDateTime.now(),
+                    descripcion,
+                    (CategoriaIngreso) plantilla.getCategoria()
+            );
+        } else if ("GASTO".equals(plantilla.getTipo())) {
+            movimiento = new Gasto(
+                    plantilla.getMonto(),
+                    LocalDateTime.now(),
+                    descripcion,
+                    (CategoriaGasto) plantilla.getCategoria()
+            );
+        } else {
+            throw new IllegalArgumentException("Tipo de plantilla inválido: " + plantilla.getTipo());
+        }
+
+        movimiento.setCuenta(plantilla.getCuenta());
+        return movimiento;
     }
 
 }
