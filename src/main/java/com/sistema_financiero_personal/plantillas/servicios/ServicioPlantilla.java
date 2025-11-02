@@ -16,6 +16,11 @@ public class ServicioPlantilla {
         }
     }
 
+    public void validarMonto(double monto) {
+        if (Double.isNaN(monto) || monto <= 0.0 || monto > 999_999.99) {
+            throw new IllegalArgumentException("Monto no válido");
+        }
+    }
 
 
     public void validarTipo(String tipo) {

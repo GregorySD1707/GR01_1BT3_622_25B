@@ -48,7 +48,6 @@ public class PlantillaTest {
 
         String msg = ex.getMessage() != null ? ex.getMessage().toLowerCase() : "";
 
-        // Verificar Mensaje de Error
         assertTrue("El mensaje debe indicar que el nombre no puede estar vacío. Mensaje actual: " + msg,
                 msg.contains("nombre") || msg.contains("no") || msg.contains("vacío"));
     }
@@ -57,4 +56,23 @@ public class PlantillaTest {
     public void given_invalid_type_when_create_template_then_throw_exception() {
         servicioPlantilla.validarTipo(TIPO_INVALIDO);
     }
+
+    @Test
+    public void given_invalid_amount_when_create_template_then_throw_exception() {
+        assertMontoInvalido(Double.NaN);
+        assertMontoInvalido(0.0);
+        assertMontoInvalido(-10.0);
+        assertMontoInvalido(1_000_000.00);
+    }
+
+    private void assertMontoInvalido(double monto) {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> servicioPlantilla.validarMonto(monto)
+        );
+        assertTrue("El mensaje debe ser: 'Monto no válido'",
+                ex.getMessage().contains("Monto no válido"));
+    }
+
 }
+
