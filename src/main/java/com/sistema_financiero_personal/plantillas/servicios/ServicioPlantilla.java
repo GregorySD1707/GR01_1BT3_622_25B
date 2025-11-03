@@ -1,14 +1,13 @@
 package com.sistema_financiero_personal.plantillas.servicios;
 
-import com.sistema_financiero_personal.cuentas.modelos.Cuenta;
 import com.sistema_financiero_personal.movimiento.modelos.*;
 import com.sistema_financiero_personal.plantillas.daos.DAOPlantilla;
 import com.sistema_financiero_personal.plantillas.modelos.Plantilla;
 import com.sistema_financiero_personal.usuario.daos.DAOUsuario;
 import com.sistema_financiero_personal.usuario.modelos.Usuario;
-import com.sistema_financiero_personal.plantillas.daos.DAOPlantilla;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ServicioPlantilla {
 
@@ -43,12 +42,13 @@ public class ServicioPlantilla {
         String tipo = plantilla.getTipo(); // en la entidad Plantilla es String "GASTO"/"INGRESO"
         validarTipo(tipo);
 
-        Object categoriaEnum = plantilla.getCategoria();
+        Object categoriaEnum = plantilla.getCategoriaEnum();
         String categoriaStr = (categoriaEnum != null) ? categoriaEnum.toString() : null;
         validarCategoria(tipo, categoriaStr);
 
         Usuario usuario = daoUsuario.buscarPorId(usuario_id);
         plantilla.setUsuario(usuario);
+        plantilla.setFechaCreacion(LocalDateTime.now());
         dao.crear(plantilla);
     }
 
@@ -109,14 +109,14 @@ public class ServicioPlantilla {
                     plantilla.getMonto(),
                     LocalDateTime.now(),
                     descripcion,
-                    (CategoriaIngreso) plantilla.getCategoria()
+                    (CategoriaIngreso) plantilla.getCategoriaEnum()
             );
         } else if ("GASTO".equals(plantilla.getTipo())) {
             movimiento = new Gasto(
                     plantilla.getMonto(),
                     LocalDateTime.now(),
                     descripcion,
-                    (CategoriaGasto) plantilla.getCategoria()
+                    (CategoriaGasto) plantilla.getCategoriaEnum()
             );
         } else {
             throw new IllegalArgumentException("Tipo de plantilla inválido: " + plantilla.getTipo());
@@ -128,5 +128,16 @@ public class ServicioPlantilla {
 
     public double redondearMonto(double monto) {
         return Math.round(monto * 100.0) / 100.0;
+    }
+    public void actualizarPlantilla(Plantilla plantilla){
+        dao.actualizar(plantilla);
+    }
+
+    public Plantilla buscarPorId(Long id) {
+        return dao.buscarPorId(id);
+    }
+
+    public List<Plantilla> listarPlantillasPorUsuario(Long usuarioId) {
+        return dao.buscarPorCampo("usuario.id", usuarioId);
     }
 }

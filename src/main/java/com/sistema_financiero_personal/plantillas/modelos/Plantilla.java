@@ -53,14 +53,6 @@ public class Plantilla {
         this.monto = monto;
     }
 
-    public Object getCategoria() {
-        if ("GASTO".equals(this.tipo)) {
-            return CategoriaGasto.valueOf(this.categoria);
-        } else {
-            return CategoriaIngreso.valueOf(this.categoria);
-        }
-    }
-
     public void setCategoriaGasto(CategoriaGasto categoria) {
         this.tipo = "GASTO";
         this.categoria = categoria.name();
@@ -89,7 +81,6 @@ public class Plantilla {
     public Cuenta getCuenta() { return cuenta; }
     public void setCuenta(Cuenta cuenta) { this.cuenta = cuenta; }
 
-    //public String getCategoria() { return categoria; }
     public void setCategoria(String categoria) { this.categoria = categoria; }
 
     public boolean isActivo() { return activo; }
@@ -98,4 +89,15 @@ public class Plantilla {
     public LocalDateTime getFechaCreacion() { return fechaCreacion; }
     public void setFechaCreacion(LocalDateTime fechaCreacion) {this.fechaCreacion = fechaCreacion;}
 
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public Object getCategoriaEnum() {
+        if ("GASTO".equals(this.tipo)) {
+            return CategoriaGasto.valueOf(this.categoria);
+        } else {
+            return CategoriaIngreso.valueOf(this.categoria);
+        }
+    }
 }
