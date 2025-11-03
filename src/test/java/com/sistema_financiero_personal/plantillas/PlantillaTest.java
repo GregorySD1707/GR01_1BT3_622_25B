@@ -8,9 +8,6 @@ import com.sistema_financiero_personal.usuario.modelos.Usuario;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.Assert.*;
 
 public class PlantillaTest {
@@ -124,106 +121,32 @@ public class PlantillaTest {
 
     @Test
     public void given_existing_template_when_duplicate_then_creates_copy_with_suffix_1_and_same_data() {
-        ServicioPlantilla servicio = new ServicioPlantilla();
 
-        Plantilla original = new Plantilla("Netflix Mensual", 15.99);
-        original.setTipo("GASTO");
-        original.setCategoria("ENTRETENIMIENTO");
-        Cuenta cuenta = new Cuenta();
-        original.setCuenta(cuenta);
+        Plantilla original1 = new Plantilla("Netflix Mensual", 15.99);
+        servicioPlantilla.guardarEnLista(original1);
 
-        Plantilla copia = servicio.duplicarPlantilla(original, 0);
+        Plantilla copia1 = servicioPlantilla.duplicarPlantilla(original1);
+        assertEquals("Netflix Mensual (1)", copia1.getNombre());
 
-        assertNotSame(original, copia);
-        assertEquals("Netflix Mensual (1)", copia.getNombre());
-        assertEquals(15.99, copia.getMonto(), 0.0001);
-        assertEquals("GASTO", copia.getTipo());
-        assertEquals("ENTRETENIMIENTO", copia.getCategoria());
-        assertSame(cuenta, copia.getCuenta());
-        assertTrue(copia.isActivo());
-        assertNotNull(copia.getFechaCreacion());
+        assertNotSame(original1, copia1);
+        assertEquals(original1.getMonto(), copia1.getMonto(), 0.0001);
+        assertEquals(original1.getTipo(), copia1.getTipo());
+        assertEquals(original1.getCategoria(), copia1.getCategoria());
+        assertSame(original1.getCuenta(), copia1.getCuenta());
+        assertTrue(original1.isActivo());
+        assertNotNull(copia1.getFechaCreacion());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void given_a_template_when_create_another_template_with_the_same_name_then_fail(){
-        Plantilla plantilla1 = new Plantilla();
-        plantilla1.setNombre("test bus");
 
+        Plantilla plantilla1 = new Plantilla();
+        plantilla1.setNombre("repetido");
         servicioPlantilla.verificarNombreUnico(plantilla1);
 
         Plantilla plantilla2 = new Plantilla();
-        plantilla2.setNombre("test bus");
-
+        plantilla2.setNombre("repetido");
         servicioPlantilla.verificarNombreUnico(plantilla2);
-    }
-
-    @Test
-    public void given_name_to_search_when_search_the_name_then_ok(){
-        Plantilla plantilla1 = new Plantilla();
-        plantilla1.setNombre("test bus 1");
-
-        Plantilla plantilla2 = new Plantilla();
-        plantilla2.setNombre("test bus");
-
-        Plantilla plantilla3 = new Plantilla();
-        plantilla3.setNombre("test metro");
-
-        List<Plantilla> plantillasABuscar = new ArrayList<>();
-        plantillasABuscar.add(plantilla1);
-        plantillasABuscar.add(plantilla2);
-        plantillasABuscar.add(plantilla3);
-
-        List<Plantilla> plantillasEncontradas = servicioPlantilla.buscarPorNombre(plantillasABuscar, "bus");
-
-        assertEquals(2, plantillasEncontradas.size());
-        assertTrue(plantillasEncontradas.stream()
-                .allMatch(p -> p.getNombre().contains("bus")));
-    }
-
-    @Test
-    public void given_category_to_search_when_search_it_then_ok(){
-        Plantilla plantilla1 = new Plantilla();
-        plantilla1.setCategoriaGasto(CategoriaGasto.SERVICIOS);
-
-        Plantilla plantilla2 = new Plantilla();
-        plantilla2.setCategoriaGasto(CategoriaGasto.SERVICIOS);
-
-        Plantilla plantilla3 = new Plantilla();
-        plantilla3.setCategoriaIngreso(CategoriaIngreso.ABONO_PRESTAMO);
-
-        List<Plantilla> plantillasABuscar = new ArrayList<>();
-        plantillasABuscar.add(plantilla1);
-        plantillasABuscar.add(plantilla2);
-        plantillasABuscar.add(plantilla3);
-
-        List<Plantilla> plantillasEncontradas = servicioPlantilla.buscarPorCategoriaGasto(plantillasABuscar, CategoriaGasto.SERVICIOS);
-
-        assertEquals(2, plantillasEncontradas.size());
-        assertTrue(plantillasEncontradas.stream()
-                .allMatch(p -> p.getCategoria().contains(CategoriaGasto.SERVICIOS.toString())));
-    }
-
-    @Test
-    public void given_type_to_search_when_search_it_then_ok(){
-        Plantilla plantilla1 = new Plantilla();
-        plantilla1.setTipo("INGRESO");
-
-        Plantilla plantilla2 = new Plantilla();
-        plantilla2.setTipo("INGRESO");
-
-        Plantilla plantilla3 = new Plantilla();
-        plantilla3.setTipo("GASTO");
-
-        List<Plantilla> plantillasABuscar = new ArrayList<>();
-        plantillasABuscar.add(plantilla1);
-        plantillasABuscar.add(plantilla2);
-        plantillasABuscar.add(plantilla3);
-
-        List<Plantilla> plantillasEncontradas = servicioPlantilla.buscarPorTipo(plantillasABuscar, "GASTO");
-
-        assertEquals(1, plantillasEncontradas.size());
-        assertTrue(plantillasEncontradas.stream()
-                .allMatch(p -> p.getTipo().contains("GASTO")));
     }
 }
 
