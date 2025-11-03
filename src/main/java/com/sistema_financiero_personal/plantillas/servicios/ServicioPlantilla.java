@@ -7,6 +7,7 @@ import com.sistema_financiero_personal.usuario.daos.DAOUsuario;
 import com.sistema_financiero_personal.usuario.modelos.Usuario;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ServicioPlantilla {
@@ -139,5 +140,15 @@ public class ServicioPlantilla {
 
     public List<Plantilla> listarPlantillasPorUsuario(Long usuarioId) {
         return dao.buscarPorCampo("usuario.id", usuarioId);
+    }
+
+    private List<Plantilla> plantillas = new ArrayList<>();
+    public void verificarNombreUnico(Plantilla plantilla1) {
+        plantillas.forEach(plantilla -> {
+            if(plantilla.getNombre().equals(plantilla1.getNombre())){
+                throw new IllegalArgumentException("Los nombres de las plantillas deben ser unicos");
+            }
+        });
+        plantillas.add(plantilla1);
     }
 }

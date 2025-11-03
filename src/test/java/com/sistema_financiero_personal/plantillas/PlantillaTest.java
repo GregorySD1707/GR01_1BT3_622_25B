@@ -2,16 +2,16 @@ package com.sistema_financiero_personal.plantillas;
 
 import com.sistema_financiero_personal.cuentas.modelos.Cuenta;
 import com.sistema_financiero_personal.movimiento.modelos.*;
-import com.sistema_financiero_personal.plantillas.daos.DAOPlantilla;
 import com.sistema_financiero_personal.plantillas.modelos.Plantilla;
 import com.sistema_financiero_personal.plantillas.servicios.ServicioPlantilla;
 import com.sistema_financiero_personal.usuario.modelos.Usuario;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 public class PlantillaTest {
     private ServicioPlantilla servicioPlantilla;
@@ -122,4 +122,16 @@ public class PlantillaTest {
         assertEquals(115.56, servicioPlantilla.redondearMonto(115.555), 0.001);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void given_a_template_when_create_another_template_with_the_same_name_then_fail(){
+        Plantilla plantilla1 = new Plantilla();
+        plantilla1.setNombre("test bus");
+
+        servicioPlantilla.verificarNombreUnico(plantilla1);
+
+        Plantilla plantilla2 = new Plantilla();
+        plantilla2.setNombre("test bus");
+
+        servicioPlantilla.verificarNombreUnico(plantilla2);
+    }
 }
