@@ -39,7 +39,7 @@ public class ServicioPlantilla {
 
         validarMonto(plantilla.getMonto());
 
-        String tipo = plantilla.getTipo(); // en la entidad Plantilla es String "GASTO"/"INGRESO"
+        String tipo = plantilla.getTipo();
         validarTipo(tipo);
 
         Object categoriaEnum = plantilla.getCategoriaEnum();
@@ -124,6 +124,24 @@ public class ServicioPlantilla {
 
         movimiento.setCuenta(plantilla.getCuenta());
         return movimiento;
+    }
+    public Plantilla duplicarPlantilla(Plantilla original, int duplicadosExistentes) {
+        if (original == null) {
+            throw new IllegalArgumentException("Plantilla original requerida");
+        }
+
+        String base = original.getNombre() == null ? "" : original.getNombre().trim();
+        int n = Math.max(0, duplicadosExistentes) + 1;
+        String nuevoNombre = base + " (" + n + ")";
+
+        Plantilla copia = new Plantilla(nuevoNombre, original.getMonto());
+        copia.setTipo(original.getTipo());
+        copia.setCategoria(original.getCategoria());
+        copia.setCuenta(original.getCuenta());
+        copia.setActivo(true);
+        copia.setFechaCreacion(LocalDateTime.now());
+
+        return copia;
     }
 
     public double redondearMonto(double monto) {
