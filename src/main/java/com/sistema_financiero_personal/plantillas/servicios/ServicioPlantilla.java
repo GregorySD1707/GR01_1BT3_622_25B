@@ -7,13 +7,17 @@ import com.sistema_financiero_personal.usuario.daos.DAOUsuario;
 import com.sistema_financiero_personal.usuario.modelos.Usuario;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.Set;
 
 public class ServicioPlantilla {
 
     private final DAOPlantilla dao;
     private DAOUsuario daoUsuario;
+    private List<Plantilla> plantillas = new ArrayList<>();
     private static final Set<String> TIPOS_VALIDOS = Set.of("GASTO", "INGRESO");
 
 
@@ -155,16 +159,18 @@ Después :
         movimiento.setCuenta(plantilla.getCuenta());
         return movimiento;
     }
-    public Plantilla duplicarPlantilla(Plantilla original, int duplicadosExistentes) {
+
+    public Plantilla duplicarPlantilla(Plantilla original) {
+
         if (original == null) {
             throw new IllegalArgumentException("Plantilla original requerida");
         }
 
-        String base = original.getNombre() == null ? "" : original.getNombre().trim();
-        int n = Math.max(0, duplicadosExistentes) + 1;
-        String nuevoNombre = base + " (" + n + ")";
+        Plantilla copia = new Plantilla();
 
-        Plantilla copia = new Plantilla(nuevoNombre, original.getMonto());
+        copia.setNombre(generarNombreUnico(original));
+
+        copia.setMonto(original.getMonto());
         copia.setTipo(original.getTipo());
         copia.setCategoria(original.getCategoria());
         copia.setCuenta(original.getCuenta());
@@ -172,6 +178,37 @@ Después :
         copia.setFechaCreacion(LocalDateTime.now());
 
         return copia;
+    }
+
+    private String generarNombreUnico(Plantilla original) {
+        String nombreBase = extraerNombreBase(original.getNombre());
+
+        int maxNumero = 0;
+
+        for (Plantilla p : plantillas) {
+            String nombreActual = p.getNombre();
+
+            if (nombreActual.equals(nombreBase)) { // Caso: nombre exacto sin número
+                maxNumero = Math.max(maxNumero, 1);
+            } else if (nombreActual.startsWith(nombreBase + " (")) {
+                // Extraer el número de "nombreBase (n)"
+                String numeroStr = nombreActual.substring(nombreBase.length() + 2, nombreActual.length() - 1);
+                int numero = Integer.parseInt(numeroStr);
+                maxNumero = Math.max(maxNumero, numero + 1);
+            }
+        }
+
+        // Si maxNumero es 0, significa que no hay copias, usar nombre base
+        // Si maxNumero es 1 o más, usar el número correspondiente
+        return maxNumero == 0 ? nombreBase : nombreBase + " (" + maxNumero + ")";
+    }
+
+    private String extraerNombreBase(String nombreCompleto) {
+        // Si el nombre ya tiene formato "nombre (n)", extraer solo la parte base
+        if (nombreCompleto.matches(".+ \\(\\d+\\)")) {
+            return nombreCompleto.substring(0, nombreCompleto.lastIndexOf(" ("));
+        }
+        return nombreCompleto;
     }
 
     public double redondearMonto(double monto) {
@@ -187,5 +224,49 @@ Después :
 
     public List<Plantilla> listarPlantillasPorUsuario(Long usuarioId) {
         return dao.buscarPorCampo("usuario.id", usuarioId);
+    }
+
+    public void verificarNombreUnico(Plantilla plantilla1) {
+        plantillas.forEach(plantilla -> {
+            if(plantilla.getNombre().equals(plantilla1.getNombre())){
+                throw new IllegalArgumentException("Los nombres de las plantillas deben ser unicos");
+            }
+        });
+        plantillas.add(plantilla1);
+    }
+
+
+    public List<Plantilla> buscarPorNombre(String nombreABuscar) {
+        List<Plantilla> plantillasEncontradas = new ArrayList<>();
+        plantillas.forEach(plantilla -> {
+            if(plantilla.getNombre().contains(nombreABuscar)){
+                plantillasEncontradas.add(plantilla);
+            }
+        });
+        return plantillasEncontradas;
+    }
+
+    public List<Plantilla> buscarPorCategoriaGasto(CategoriaGasto categoriaGasto) {
+        List<Plantilla> plantillasEncontradas = new ArrayList<>();
+        plantillas.forEach(plantilla -> {
+            if(plantilla.getCategoria().contains(categoriaGasto.toString())){
+                plantillasEncontradas.add(plantilla);
+            }
+        });
+        return plantillasEncontradas;
+    }
+
+    public List<Plantilla> buscarPorTipo(String tipo) {
+        List<Plantilla> plantillasEncontradas = new ArrayList<>();
+        plantillas.forEach(plantilla -> {
+            if(plantilla.getTipo().contains(tipo)){
+                plantillasEncontradas.add(plantilla);
+            }
+        });
+        return plantillasEncontradas;
+    }
+
+    public void guardarEnLista(Plantilla plantilla) {
+        plantillas.add(plantilla);
     }
 }
