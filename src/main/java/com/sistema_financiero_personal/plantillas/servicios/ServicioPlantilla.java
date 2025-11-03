@@ -8,11 +8,13 @@ import com.sistema_financiero_personal.usuario.modelos.Usuario;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public class ServicioPlantilla {
 
     private final DAOPlantilla dao;
     private DAOUsuario daoUsuario;
+    private static final Set<String> TIPOS_VALIDOS = Set.of("GASTO", "INGRESO");
 
 
     public ServicioPlantilla() {
@@ -89,10 +91,10 @@ Después :
 
 
     public void validarTipo(String tipo) {
-        if(tipo == null || tipo.isBlank()){
+        if (tipo == null || tipo.isBlank()) {
             throw new IllegalArgumentException("El tipo no puede estar vacío o en blanco");
         }
-        if(!tipo.equals("GASTO") && !tipo.equals("INGRESO")){
+        if (!TIPOS_VALIDOS.contains(tipo)) {
             throw new IllegalArgumentException("Tipo inválido");
         }
     }
