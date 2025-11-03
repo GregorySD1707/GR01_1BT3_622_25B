@@ -1,10 +1,7 @@
 package com.sistema_financiero_personal.plantillas;
 
 import com.sistema_financiero_personal.cuentas.modelos.Cuenta;
-import com.sistema_financiero_personal.movimiento.modelos.CategoriaGasto;
-import com.sistema_financiero_personal.movimiento.modelos.CategoriaIngreso;
-import com.sistema_financiero_personal.movimiento.modelos.Gasto;
-import com.sistema_financiero_personal.movimiento.modelos.Movimiento;
+import com.sistema_financiero_personal.movimiento.modelos.*;
 import com.sistema_financiero_personal.plantillas.daos.DAOPlantilla;
 import com.sistema_financiero_personal.plantillas.modelos.Plantilla;
 import com.sistema_financiero_personal.plantillas.servicios.ServicioPlantilla;
@@ -35,6 +32,7 @@ public class PlantillaTest {
     private static final String CATEGORIA_VALIDA_INGRESO = "SUELDO";
     private static final String CATEGORIA_INVALIDA = "CATEGORIA_QUE_NO_EXISTE";
 
+    private static Plantilla plantilla;
 
     @Before
     public void setUp() {
@@ -42,6 +40,12 @@ public class PlantillaTest {
         cuenta = new Cuenta();
         usuario = new Usuario();
         categoriaIngreso = CategoriaIngreso.SALARIO;
+
+        plantilla = new Plantilla("Netflix Mensual", 15.99);
+        plantilla.setCategoriaGasto(CategoriaGasto.ENTRETENIMIENTO);
+        plantilla.setCuenta(cuenta);
+        plantilla.setActivo(true);
+
     }
 
     @Test
@@ -98,13 +102,8 @@ public class PlantillaTest {
 
     @Test
     public void given_expense_template_when_apply_then_creates_gasto_for_form_autofill() {
-        Plantilla plantilla = new Plantilla("Netflix Mensual", 15.99);
-        plantilla.setCategoriaGasto(CategoriaGasto.ENTRETENIMIENTO);
-        plantilla.setCuenta(cuenta);
-        plantilla.setActivo(true);
 
         Movimiento movimiento = servicioPlantilla.aplicarPlantilla(plantilla);
-
         assertNotNull(movimiento);
         assertTrue("Debe ser un Gasto", movimiento instanceof Gasto);
         assertEquals(15.99, movimiento.getMonto(), 0.01);
@@ -115,5 +114,12 @@ public class PlantillaTest {
         assertEquals(CategoriaGasto.ENTRETENIMIENTO, gasto.getCategoria());
     }
 
-}
+    @Test
+    public void given_three_decimal_numbers_when_redondearMonto_then_ok() {
 
+        assertEquals(23.12, servicioPlantilla.redondearMonto(23.117), 0.001);
+        assertEquals(17.00, servicioPlantilla.redondearMonto(17.002), 0.001);
+        assertEquals(115.56, servicioPlantilla.redondearMonto(115.555), 0.001);
+    }
+
+}

@@ -49,6 +49,7 @@ public class ServicioPlantilla {
         if (Double.isNaN(monto) || monto <= 0.0 || monto > 999_999.99) {
             throw new IllegalArgumentException("Monto no válido");
         }
+        redondearMonto(monto);
     }
 
 
@@ -82,6 +83,7 @@ public class ServicioPlantilla {
     public boolean eliminarPlantilla(Long plantilla_Id) {
         return dao.eliminarPlantilla(plantilla_Id);
     }
+
     public Movimiento aplicarPlantilla(Plantilla plantilla) {
         if (plantilla == null) {
             throw new IllegalArgumentException("La plantilla no puede ser nula");
@@ -117,4 +119,7 @@ public class ServicioPlantilla {
         return movimiento;
     }
 
+    public double redondearMonto(double monto) {
+        return Math.round(monto * 100.0) / 100.0;
+    }
 }
