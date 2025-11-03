@@ -4,6 +4,7 @@ import com.sistema_financiero_personal.cuentas.modelos.Cuenta;
 import com.sistema_financiero_personal.movimiento.modelos.*;
 import com.sistema_financiero_personal.plantillas.daos.DAOPlantilla;
 import com.sistema_financiero_personal.plantillas.modelos.Plantilla;
+import com.sistema_financiero_personal.usuario.daos.DAOUsuario;
 import com.sistema_financiero_personal.usuario.modelos.Usuario;
 import com.sistema_financiero_personal.plantillas.daos.DAOPlantilla;
 
@@ -12,16 +13,20 @@ import java.time.LocalDateTime;
 public class ServicioPlantilla {
 
     private final DAOPlantilla dao;
+    private DAOUsuario daoUsuario;
+
 
     public ServicioPlantilla() {
         this.dao = new DAOPlantilla();
+        this.daoUsuario = new DAOUsuario();
     }
 
-    public ServicioPlantilla(DAOPlantilla dao) {
+    public ServicioPlantilla(DAOPlantilla dao, DAOUsuario daoUsuario) {
         this.dao = dao;
+        this.daoUsuario = daoUsuario;
     }
 
-    public boolean crearPlantilla(Plantilla plantilla, Long usuario_id) {
+    public void crearPlantilla(Plantilla plantilla, Long usuario_id) {
 
         if (plantilla == null) {
             throw new IllegalArgumentException("Plantilla no puede ser nula");
@@ -42,7 +47,9 @@ public class ServicioPlantilla {
         String categoriaStr = (categoriaEnum != null) ? categoriaEnum.toString() : null;
         validarCategoria(tipo, categoriaStr);
 
-        return dao.crearPlantilla(plantilla, usuario_id);
+        Usuario usuario = daoUsuario.buscarPorId(usuario_id);
+        plantilla.setUsuario(usuario);
+        dao.crear(plantilla);
     }
 
     public void validarMonto(double monto) {
@@ -80,8 +87,8 @@ public class ServicioPlantilla {
         }
     }
 
-    public boolean eliminarPlantilla(Long plantilla_Id) {
-        return dao.eliminarPlantilla(plantilla_Id);
+    public void eliminarPlantilla(Long plantilla_Id) {
+        dao.borrar(plantilla_Id);
     }
 
     public Movimiento aplicarPlantilla(Plantilla plantilla) {
