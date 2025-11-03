@@ -134,4 +134,73 @@ public class PlantillaTest {
 
         servicioPlantilla.verificarNombreUnico(plantilla2);
     }
+
+    @Test
+    public void given_name_to_search_when_search_the_name_then_ok(){
+        Plantilla plantilla1 = new Plantilla();
+        plantilla1.setNombre("test bus 1");
+
+        Plantilla plantilla2 = new Plantilla();
+        plantilla2.setNombre("test bus");
+
+        Plantilla plantilla3 = new Plantilla();
+        plantilla3.setNombre("test metro");
+
+        List<Plantilla> plantillasABuscar = new ArrayList<>();
+        plantillasABuscar.add(plantilla1);
+        plantillasABuscar.add(plantilla2);
+        plantillasABuscar.add(plantilla3);
+
+        List<Plantilla> plantillasEncontradas = servicioPlantilla.buscarPorNombre(plantillasABuscar, "bus");
+
+        assertEquals(2, plantillasEncontradas.size());
+        assertTrue(plantillasEncontradas.stream()
+                .allMatch(p -> p.getNombre().contains("bus")));
+    }
+
+    @Test
+    public void given_category_to_search_when_search_it_then_ok(){
+        Plantilla plantilla1 = new Plantilla();
+        plantilla1.setCategoriaGasto(CategoriaGasto.SERVICIOS);
+
+        Plantilla plantilla2 = new Plantilla();
+        plantilla2.setCategoriaGasto(CategoriaGasto.SERVICIOS);
+
+        Plantilla plantilla3 = new Plantilla();
+        plantilla3.setCategoriaIngreso(CategoriaIngreso.ABONO_PRESTAMO);
+
+        List<Plantilla> plantillasABuscar = new ArrayList<>();
+        plantillasABuscar.add(plantilla1);
+        plantillasABuscar.add(plantilla2);
+        plantillasABuscar.add(plantilla3);
+
+        List<Plantilla> plantillasEncontradas = servicioPlantilla.buscarPorCategoriaGasto(plantillasABuscar, CategoriaGasto.SERVICIOS);
+
+        assertEquals(2, plantillasEncontradas.size());
+        assertTrue(plantillasEncontradas.stream()
+                .allMatch(p -> p.getCategoria().contains(CategoriaGasto.SERVICIOS.toString())));
+    }
+
+    @Test
+    public void given_type_to_search_when_search_it_then_ok(){
+        Plantilla plantilla1 = new Plantilla();
+        plantilla1.setTipo("INGRESO");
+
+        Plantilla plantilla2 = new Plantilla();
+        plantilla2.setTipo("INGRESO");
+
+        Plantilla plantilla3 = new Plantilla();
+        plantilla3.setTipo("GASTO");
+
+        List<Plantilla> plantillasABuscar = new ArrayList<>();
+        plantillasABuscar.add(plantilla1);
+        plantillasABuscar.add(plantilla2);
+        plantillasABuscar.add(plantilla3);
+
+        List<Plantilla> plantillasEncontradas = servicioPlantilla.buscarPorTipo(plantillasABuscar, "GASTO");
+
+        assertEquals(1, plantillasEncontradas.size());
+        assertTrue(plantillasEncontradas.stream()
+                .allMatch(p -> p.getTipo().contains("GASTO")));
+    }
 }

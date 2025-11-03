@@ -151,4 +151,36 @@ public class ServicioPlantilla {
         });
         plantillas.add(plantilla1);
     }
+
+
+    public List<Plantilla> buscarPorNombre(List<Plantilla> plantillasABuscar, String nombreABuscar) {
+        List<Plantilla> plantillas = new ArrayList<>();
+        plantillasABuscar.forEach(plantilla -> {
+            if(plantilla.getNombre().contains(nombreABuscar)){
+                plantillas.add(plantilla);
+            }
+        });
+        return plantillas;
+    }
+
+    public List<Plantilla> buscarPorCategoriaGasto(List<Plantilla> plantillasABuscar, CategoriaGasto categoriaGasto) {
+        List<Plantilla> plantillas = new ArrayList<>();
+        plantillasABuscar.forEach(plantilla -> {
+            if(plantilla.getCategoria().contains(categoriaGasto.toString())){
+                plantillas.add(plantilla);
+            }
+        });
+        return plantillas;
+    }
+
+    public List<Plantilla> buscarPorTipo(List<Plantilla> plantillasABuscar, String tipo) {
+        List<Plantilla> plantillas = new ArrayList<>();
+        plantillasABuscar.forEach(plantilla -> {
+            if(plantilla.getTipo().contains(tipo)){
+                plantillas.add(plantilla);
+            }
+        });
+        return plantillas;
+    }
+
 }
