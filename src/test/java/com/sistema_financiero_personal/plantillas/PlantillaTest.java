@@ -122,6 +122,28 @@ public class PlantillaTest {
         assertEquals(115.56, servicioPlantilla.redondearMonto(115.555), 0.001);
     }
 
+    @Test
+    public void given_existing_template_when_duplicate_then_creates_copy_with_suffix_1_and_same_data() {
+        ServicioPlantilla servicio = new ServicioPlantilla();
+
+        Plantilla original = new Plantilla("Netflix Mensual", 15.99);
+        original.setTipo("GASTO");
+        original.setCategoria("ENTRETENIMIENTO");
+        Cuenta cuenta = new Cuenta();
+        original.setCuenta(cuenta);
+
+        Plantilla copia = servicio.duplicarPlantilla(original, 0);
+
+        assertNotSame(original, copia);
+        assertEquals("Netflix Mensual (1)", copia.getNombre());
+        assertEquals(15.99, copia.getMonto(), 0.0001);
+        assertEquals("GASTO", copia.getTipo());
+        assertEquals("ENTRETENIMIENTO", copia.getCategoria());
+        assertSame(cuenta, copia.getCuenta());
+        assertTrue(copia.isActivo());
+        assertNotNull(copia.getFechaCreacion());
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void given_a_template_when_create_another_template_with_the_same_name_then_fail(){
         Plantilla plantilla1 = new Plantilla();
@@ -204,3 +226,5 @@ public class PlantillaTest {
                 .allMatch(p -> p.getTipo().contains("GASTO")));
     }
 }
+
+
