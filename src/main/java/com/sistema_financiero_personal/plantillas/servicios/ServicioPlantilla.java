@@ -24,34 +24,62 @@ public class ServicioPlantilla {
         this.dao = dao;
         this.daoUsuario = daoUsuario;
     }
+/*
+utilice Extract Method para mover las validaciones de crearPlantilla a un nuevo método llamado validarPlantilla.
+*   Antes :
+* public void crearPlantilla(Plantilla plantilla, Long usuario_id) {
+    if (plantilla == null) {
+        throw new IllegalArgumentException("Plantilla no puede ser nula");
+    }
 
-    public void crearPlantilla(Plantilla plantilla, Long usuario_id) {
+    boolean estaVacio = plantilla.getNombre() == null || plantilla.getNombre().isEmpty();
+    boolean estaEnBlanco = plantilla.getNombre() != null && plantilla.getNombre().isBlank();
+    if(estaVacio || estaEnBlanco){
+        throw new IllegalArgumentException("El nombre no puede estar vacío");
+    }
 
-        if (plantilla == null) {
-            throw new IllegalArgumentException("Plantilla no puede ser nula");
-        }
+    validarMonto(plantilla.getMonto());
+    String tipo = plantilla.getTipo();
+    validarTipo(tipo);
+    Object categoriaEnum = plantilla.getCategoriaEnum();
+    String categoriaStr = (categoriaEnum != null) ? categoriaEnum.toString() : null;
+    validarCategoria(tipo, categoriaStr);
 
-        boolean estaVacio = plantilla.getNombre() == null || plantilla.getNombre().isEmpty();
-        boolean estaEnBlanco = plantilla.getNombre() != null && plantilla.getNombre().isBlank();
-        if(estaVacio || estaEnBlanco){
-            throw new IllegalArgumentException("El nombre no puede estar vacío");
-        }
+    Usuario usuario = daoUsuario.buscarPorId(usuario_id);
+    plantilla.setUsuario(usuario);
+    plantilla.setFechaCreacion(LocalDateTime.now());
+    dao.crear(plantilla);
+}
+Después :
+* */
+    public void crearPlantilla(Plantilla plantilla, Long usuarioId) {
+        validarPlantilla(plantilla);
 
-        validarMonto(plantilla.getMonto());
-
-        String tipo = plantilla.getTipo();
-        validarTipo(tipo);
-
-        Object categoriaEnum = plantilla.getCategoriaEnum();
-        String categoriaStr = (categoriaEnum != null) ? categoriaEnum.toString() : null;
-        validarCategoria(tipo, categoriaStr);
-
-        Usuario usuario = daoUsuario.buscarPorId(usuario_id);
+        Usuario usuario = daoUsuario.buscarPorId(usuarioId);
         plantilla.setUsuario(usuario);
         plantilla.setFechaCreacion(LocalDateTime.now());
         dao.crear(plantilla);
     }
 
+    private void validarPlantilla(Plantilla plantilla) {
+        if (plantilla == null) {
+            throw new IllegalArgumentException("Plantilla no puede ser nula");
+        }
+
+        String nombre = plantilla.getNombre();
+        if (nombre == null || nombre.isBlank()) {
+            throw new IllegalArgumentException("El nombre no puede estar vacío");
+        }
+
+        validarMonto(plantilla.getMonto());
+        validarTipo(plantilla.getTipo());
+
+        Object categoriaEnum = plantilla.getCategoriaEnum();
+        String categoriaStr = (categoriaEnum != null) ? categoriaEnum.toString() : null;
+        validarCategoria(plantilla.getTipo(), categoriaStr);
+    }
+
+//
     public void validarMonto(double monto) {
         if (Double.isNaN(monto) || monto <= 0.0 || monto > 999_999.99) {
             throw new IllegalArgumentException("Monto no válido");
