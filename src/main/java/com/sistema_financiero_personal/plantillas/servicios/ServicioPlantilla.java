@@ -72,10 +72,7 @@ Después :
             throw new IllegalArgumentException("Plantilla no puede ser nula");
         }
 
-        String nombre = plantilla.getNombre();
-        if (nombre == null || nombre.isBlank()) {
-            throw new IllegalArgumentException("El nombre no puede estar vacío");
-        }
+        validarCampoNoVacio(plantilla.getNombre(), "El nombre");
 
         validarMonto(plantilla.getMonto());
         validarTipo(plantilla.getTipo());
@@ -95,18 +92,17 @@ Después :
 
 
     public void validarTipo(String tipo) {
-        if (tipo == null || tipo.isBlank()) {
-            throw new IllegalArgumentException("El tipo no puede estar vacío o en blanco");
-        }
+
+        validarCampoNoVacio(tipo, "El tipo");
+
         if (!TIPOS_VALIDOS.contains(tipo)) {
             throw new IllegalArgumentException("Tipo inválido");
         }
     }
 
     public void validarCategoria(String tipo, String categoria) {
-        if (categoria == null || categoria.isBlank()) {
-            throw new IllegalArgumentException("La categoría no puede estar vacía o en blanco");
-        }
+
+        validarCampoNoVacio(categoria, "La categoría");
 
         try {
             if ("GASTO".equalsIgnoreCase(tipo)) {
@@ -118,6 +114,12 @@ Después :
             }
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Categoría inválida");
+        }
+    }
+
+    private void validarCampoNoVacio(String valor, String mensajeCampo) {
+        if (valor == null || valor.isBlank()) {
+            throw new IllegalArgumentException(mensajeCampo + " no puede estar vacío o en blanco");
         }
     }
 
