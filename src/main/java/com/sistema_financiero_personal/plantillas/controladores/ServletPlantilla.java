@@ -33,7 +33,8 @@ import java.util.List;
         "/plantillas/nuevo",
         "/plantillas/editar",
         "/plantillas/eliminar",
-        "/plantillas/aplicar"
+        "/plantillas/aplicar",
+        "/plantillas/buscar"
 })
 public class ServletPlantilla extends HttpServlet {
 
@@ -68,10 +69,31 @@ public class ServletPlantilla extends HttpServlet {
             case "/plantillas/aplicar":
                 aplicarPlantilla(request, response, usuario);
                 break;
+            case "/plantillas/buscar":
+                buscarPlantillas(request, response, usuario);
+                break;
             default:
                 response.sendRedirect(request.getContextPath() + "/movimientos");
                 break;
         }
+    }
+
+    private void buscarPlantillas(HttpServletRequest request, HttpServletResponse response, Usuario usuario)
+    throws ServletException, IOException{
+        String nombre = request.getParameter("nombre");
+        String tipo = request.getParameter("tipo");
+        String categoria = request.getParameter("categoria");
+
+        List<Plantilla> plantillasFiltradas = servicioPlantilla.buscarPlantillasConFiltros(usuario.getId(), nombre, tipo, categoria);
+
+        // Guardar filtros para mantenerlos en el formulario
+        request.setAttribute("filtroNombre", nombre != null ? nombre : "");
+        request.setAttribute("filtroTipo", tipo != null ? tipo : "");
+        request.setAttribute("filtroCategoria", categoria != null ? categoria : "");
+        request.setAttribute("plantillas", plantillasFiltradas);
+
+        request.getRequestDispatcher("/movimiento/VistaMovimientos.jsp")
+                .forward(request, response);
     }
 
     @Override

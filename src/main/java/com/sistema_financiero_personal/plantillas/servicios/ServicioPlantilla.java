@@ -269,4 +269,8 @@ Después :
     public void guardarEnLista(Plantilla plantilla) {
         plantillas.add(plantilla);
     }
+
+    public List<Plantilla> buscarPlantillasConFiltros(Long id, String nombre, String tipo, String categoria) {
+        return dao.buscarPorFiltros(id, nombre, tipo, categoria);
+    }
 }

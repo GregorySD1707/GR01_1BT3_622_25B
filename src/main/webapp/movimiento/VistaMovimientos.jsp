@@ -15,6 +15,9 @@
 <%-- Enlace al CSS Específico de esta página (Sección Plantillas) --%>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/movimientos.css">
 
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/filters.css">
+
+
 <div class="page-header">
     <h1>Gestor de Movimientos</h1>
 </div>
@@ -194,17 +197,84 @@
         </svg>
     </div>
 
-    <div id="plantillasContent" style="display: none;">
-        <div class="content-header">
-            <p>Utiliza tus plantillas guardadas para registrar movimientos rápidamente</p>
-            <a href="${pageContext.request.contextPath}/plantillas/nuevo" class="btn btn-success" style="display: flex; align-items: center; gap: 8px;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                Nueva Plantilla
-            </a>
-        </div>
+      <div id="plantillasContent" style="display: none;">
+            <div class="content-header">
+                <div style="flex-grow: 1;">
+                    <p>Utiliza tus plantillas guardadas para registrar movimientos rápidamente</p>
+                </div>
+
+                <a href="${pageContext.request.contextPath}/plantillas/nuevo" class="btn btn-success" style="display: flex; align-items: center; gap: 8px; align-self: flex-start;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Nueva Plantilla
+                </a>
+            </div>
+            <div>
+            <!-- FILTROS DE PLANTILLAS -->
+            <div class="filters-container">
+                <form method="get" action="${pageContext.request.contextPath}/plantillas/buscar" class="filters-form">
+                    <!-- Filtro: Nombre -->
+                    <div class="filter-group">
+                        <label for="filtroNombre">Nombre</label>
+                        <input
+                            type="text"
+                            id="filtroNombre"
+                            name="nombre"
+                            placeholder="Buscar por nombre..."
+                            value="${filtroNombre}"
+                        />
+                    </div>
+
+                    <!-- Filtro: Tipo -->
+                    <div class="filter-group">
+                        <label for="filtroTipo">Tipo</label>
+                        <select id="filtroTipo" name="tipo">
+                            <option value="TODOS" ${filtroTipo == 'TODOS' || empty filtroTipo ? 'selected' : ''}>Todos</option>
+                            <option value="INGRESO" ${filtroTipo == 'INGRESO' ? 'selected' : ''}>Ingreso</option>
+                            <option value="GASTO" ${filtroTipo == 'GASTO' ? 'selected' : ''}>Gasto</option>
+                        </select>
+                    </div>
+
+                   <!-- Filtro: Categoría -->
+                   <div class="filter-group">
+                       <label for="filtroCategoria">Categoría</label>
+                       <select id="filtroCategoria" name="categoria">
+                           <option value="TODAS">Todas</option>
+
+                           <!-- Categorías de Ingresos -->
+                           <c:forEach var="cat" items="<%= CategoriaIngreso.values() %>">
+                               <option value="${cat.name()}" data-tipo="INGRESO"
+                                   ${filtroCategoria == cat.name() ? 'selected' : ''}>
+                                   ${cat.name()}
+                               </option>
+                           </c:forEach>
+
+                           <!-- Categorías de Gastos -->
+                           <c:forEach var="cat" items="<%= CategoriaGasto.values() %>">
+                               <option value="${cat.name()}" data-tipo="GASTO"
+                                   ${filtroCategoria == cat.name() ? 'selected' : ''}>
+                                   ${cat.name()}
+                               </option>
+                           </c:forEach>
+                       </select>
+                   </div>
+
+                    <!-- Botones -->
+                    <div class="filter-actions">
+                        <button class="btn btn-primary" type="submit">
+                            Aplicar
+                        </button>
+                        <a class="btn btn-secondary" href="${pageContext.request.contextPath}/movimientos">
+                            Limpiar
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            </div>
+
 
         <c:choose>
             <c:when test="${not empty plantillas}">
@@ -510,8 +580,35 @@
             form.submit();
         }
     }
-</script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const filtroTipo = document.getElementById('filtroTipo');
+        const filtroCategoria = document.getElementById('filtroCategoria');
+        const opciones = filtroCategoria.querySelectorAll('option');
 
-<%-- El bloque <style> se ha movido a movimientos.css --%>
+        function actualizarCategoriasFiltro() {
+            const tipo = filtroTipo.value;
+
+            opciones.forEach(opt => {
+                if (opt.value === 'TODAS') {
+                    opt.hidden = false;
+                    return;
+                }
+
+                // Si no hay tipo o es "TODOS", ocultar todo
+                if (tipo === 'TODOS' || tipo === '') {
+                    opt.hidden = true;
+                } else {
+                    opt.hidden = opt.dataset.tipo !== tipo;
+                }
+            });
+
+            filtroCategoria.selectedIndex = 0; // Reinicia la selección
+        }
+
+        // Ejecutar al cargar y al cambiar el tipo
+        actualizarCategoriasFiltro();
+        filtroTipo.addEventListener('change', actualizarCategoriasFiltro);
+    });
+</script>
 
 <jsp:include page="/comun/VistaFooter.jsp" />
