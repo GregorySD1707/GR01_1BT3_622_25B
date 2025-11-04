@@ -235,31 +235,7 @@
                             <option value="GASTO" ${filtroTipo == 'GASTO' ? 'selected' : ''}>Gasto</option>
                         </select>
                     </div>
-
-                    <!-- Filtro: Categoría -->
-                    <div class="filter-group">
-                        <label for="filtroCategoria">Categoría</label>
-                        <select id="filtroCategoria" name="categoria">
-                            <option value="TODAS">Todas</option>
-
-                            <!-- Categorías de Ingresos -->
-                            <c:forEach var="cat" items="<%= CategoriaIngreso.values() %>">
-                                <option value="${cat.name()}" data-tipo="INGRESO"
-                                    ${filtroCategoria == cat.name() ? 'selected' : ''}>
-                                        ${cat.name()}
-                                </option>
-                            </c:forEach>
-
-                            <!-- Categorías de Gastos -->
-                            <c:forEach var="cat" items="<%= CategoriaGasto.values() %>">
-                                <option value="${cat.name()}" data-tipo="GASTO"
-                                    ${filtroCategoria == cat.name() ? 'selected' : ''}>
-                                        ${cat.name()}
-                                </option>
-                            </c:forEach>
-                        </select>
-                    </div>
-
+                   
                     <!-- Botones -->
                     <div class="filter-actions">
                         <button class="btn btn-primary" type="submit">
