@@ -1,4 +1,3 @@
-
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ page isELIgnored="false" %>
 <%@ page import="com.sistema_financiero_personal.movimiento.modelos.CategoriaIngreso" %>
@@ -197,21 +196,21 @@
         </svg>
     </div>
 
-      <div id="plantillasContent" style="display: none;">
-            <div class="content-header">
-                <div style="flex-grow: 1;">
-                    <p>Utiliza tus plantillas guardadas para registrar movimientos rápidamente</p>
-                </div>
-
-                <a href="${pageContext.request.contextPath}/plantillas/nuevo" class="btn btn-success" style="display: flex; align-items: center; gap: 8px; align-self: flex-start;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                    Nueva Plantilla
-                </a>
+    <div id="plantillasContent" style="display: none;">
+        <div class="content-header">
+            <div style="flex-grow: 1;">
+                <p>Utiliza tus plantillas guardadas para registrar movimientos rápidamente</p>
             </div>
-            <div>
+
+            <a href="${pageContext.request.contextPath}/plantillas/nuevo" class="btn btn-success" style="display: flex; align-items: center; gap: 8px; align-self: flex-start;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Nueva Plantilla
+            </a>
+        </div>
+        <div>
             <!-- FILTROS DE PLANTILLAS -->
             <div class="filters-container">
                 <form method="get" action="${pageContext.request.contextPath}/plantillas/buscar" class="filters-form">
@@ -219,11 +218,11 @@
                     <div class="filter-group">
                         <label for="filtroNombre">Nombre</label>
                         <input
-                            type="text"
-                            id="filtroNombre"
-                            name="nombre"
-                            placeholder="Buscar por nombre..."
-                            value="${filtroNombre}"
+                                type="text"
+                                id="filtroNombre"
+                                name="nombre"
+                                placeholder="Buscar por nombre..."
+                                value="${filtroNombre}"
                         />
                     </div>
 
@@ -237,29 +236,29 @@
                         </select>
                     </div>
 
-                   <!-- Filtro: Categoría -->
-                   <div class="filter-group">
-                       <label for="filtroCategoria">Categoría</label>
-                       <select id="filtroCategoria" name="categoria">
-                           <option value="TODAS">Todas</option>
+                    <!-- Filtro: Categoría -->
+                    <div class="filter-group">
+                        <label for="filtroCategoria">Categoría</label>
+                        <select id="filtroCategoria" name="categoria">
+                            <option value="TODAS">Todas</option>
 
-                           <!-- Categorías de Ingresos -->
-                           <c:forEach var="cat" items="<%= CategoriaIngreso.values() %>">
-                               <option value="${cat.name()}" data-tipo="INGRESO"
-                                   ${filtroCategoria == cat.name() ? 'selected' : ''}>
-                                   ${cat.name()}
-                               </option>
-                           </c:forEach>
+                            <!-- Categorías de Ingresos -->
+                            <c:forEach var="cat" items="<%= CategoriaIngreso.values() %>">
+                                <option value="${cat.name()}" data-tipo="INGRESO"
+                                    ${filtroCategoria == cat.name() ? 'selected' : ''}>
+                                        ${cat.name()}
+                                </option>
+                            </c:forEach>
 
-                           <!-- Categorías de Gastos -->
-                           <c:forEach var="cat" items="<%= CategoriaGasto.values() %>">
-                               <option value="${cat.name()}" data-tipo="GASTO"
-                                   ${filtroCategoria == cat.name() ? 'selected' : ''}>
-                                   ${cat.name()}
-                               </option>
-                           </c:forEach>
-                       </select>
-                   </div>
+                            <!-- Categorías de Gastos -->
+                            <c:forEach var="cat" items="<%= CategoriaGasto.values() %>">
+                                <option value="${cat.name()}" data-tipo="GASTO"
+                                    ${filtroCategoria == cat.name() ? 'selected' : ''}>
+                                        ${cat.name()}
+                                </option>
+                            </c:forEach>
+                        </select>
+                    </div>
 
                     <!-- Botones -->
                     <div class="filter-actions">
@@ -273,7 +272,7 @@
                 </form>
             </div>
 
-            </div>
+        </div>
 
 
         <c:choose>
@@ -301,9 +300,6 @@
                             <div class="card-actions">
                                 <button type="button" class="btn btn-primary"
                                         onclick="aplicarPlantilla(${plantilla.id})">
-<%--                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">--%>
-<%--                                        <polyline points="20 6 9 17 4 12"></polyline>--%>
-<%--                                    </svg>--%>
                                     Usar
                                 </button>
                                 <a href="${pageContext.request.contextPath}/plantillas/editar?id=${plantilla.id}" class="btn btn-edit">
@@ -320,6 +316,12 @@
                                     </svg>
                                     Eliminar
                                 </button>
+                            </div>
+                            <div style="text-align: center; margin-top: 8px;">
+                                <a href="${pageContext.request.contextPath}/plantillas/duplicar?id=${plantilla.id}"
+                                   class="btn-link-minimal">
+                                    Duplicar
+                                </a>
                             </div>
                         </div>
                     </c:forEach>
@@ -339,13 +341,38 @@
     </div>
 </div>
 
+<style>
+    /* Botón de enlace minimalista para "Duplicar" */
+    .btn-link-minimal {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 8px;
+        font-size: 13px;
+        color: #3498db;
+        background: none;
+        border: none;
+        text-decoration: none;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+
+    .btn-link-minimal:hover {
+        color: #2980b9;
+        text-decoration: underline;
+    }
+
+    .btn-link-minimal:active {
+        color: #1f6fa8;
+    }
+</style>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.querySelector('form.movimientos-form');
         const tipoSelect = document.getElementById('tipo');
         const categoriaIngresoSelect = document.getElementById('categoriaIngreso');
         const categoriaGastoSelect = document.getElementById('categoriaGasto');
-        const categoriaPendiente = document.getElementById('categoriaPendiente'); // AÑADIDO
+        const categoriaPendiente = document.getElementById('categoriaPendiente');
         const montoInput = document.getElementById('monto');
         const cuentaSelect = document.getElementById('cuentaId');
         const saldoInsuficienteHint = document.getElementById('saldoInsuficiente');
@@ -356,9 +383,7 @@
             descripcion: '${movimientoPrecargado.descripcion}',
             monto: ${movimientoPrecargado.monto},
             tipo: '${movimientoPrecargado.tipo}',
-
             categoria: '${movimientoPrecargado.categoria}',
-
             cuentaId: ${movimientoPrecargado.cuenta != null ? movimientoPrecargado.cuenta.id : 'null'}
         };
 
@@ -379,15 +404,14 @@
             if (movimiento.tipo === 'INGRESO') {
                 document.getElementById('categoriaIngreso').value = movimiento.categoria;
             } else {
-                // CORRECCIÓN: El ID de tu select de gasto es 'categoriaGasto'
                 document.getElementById('categoriaGasto').value = movimiento.categoria;
             }
-        }, 100); // Un pequeño delay para asegurar que el select correcto esté visible
+        }, 100);
 
         // Feedback visual
         const descripcionInput = document.getElementById('descripcion');
-        descripcionInput.style.background = '#d4edda'; // Verde suave
-        descripcionInput.style.borderColor = '#28a745'; // Borde verde
+        descripcionInput.style.background = '#d4edda';
+        descripcionInput.style.borderColor = '#28a745';
         setTimeout(function() {
             descripcionInput.style.background = '';
             descripcionInput.style.borderColor = '';
@@ -395,7 +419,6 @@
 
         // Scroll al formulario
         document.querySelector('.movimientos-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
-
         </c:if>
 
         // Toggle entre categorías de ingreso y gasto
@@ -429,7 +452,6 @@
                 categoriaPendiente.style.display = 'none';
 
             } else {
-                // No hay tipo seleccionado
                 categoriaIngresoSelect.style.display = 'none';
                 categoriaIngresoSelect.disabled = true;
                 categoriaIngresoSelect.removeAttribute('name');
@@ -477,7 +499,7 @@
             } else if (montoInput.validity.rangeUnderflow) {
                 montoInput.setCustomValidity('Monto inválido. Debe ser mayor a cero');
             } else {
-                mMessage.setCustomValidity('');
+                montoInput.setCustomValidity('');
             }
         });
 
@@ -498,7 +520,6 @@
         form.addEventListener('submit', function(e) {
             toggleCategorias();
 
-            // Validar que se haya seleccionado un tipo
             if (!tipoSelect.value) {
                 e.preventDefault();
                 alert('Por favor selecciona el tipo de movimiento');
@@ -506,7 +527,6 @@
                 return false;
             }
 
-            // Validar monto mínimo
             const min = parseFloat(montoInput.min || '0.01');
             const val = parseFloat(montoInput.value);
             if (montoInput.value && (isNaN(val) || val < min)) {
@@ -518,7 +538,6 @@
                 montoInput.setCustomValidity('');
             }
 
-            // Validar categoría
             const categoriaSelect = tipoSelect.value === 'INGRESO' ? categoriaIngresoSelect : categoriaGastoSelect;
             if (!categoriaSelect.value) {
                 e.preventDefault();
@@ -527,7 +546,6 @@
                 return false;
             }
 
-            // Validar saldo suficiente
             if (!validarSaldo()) {
                 e.preventDefault();
                 alert('El monto del gasto excede el saldo disponible en la cuenta seleccionada');
@@ -536,7 +554,7 @@
         });
 
         // Event listeners
-        toggleCategorias(); // Llamada inicial para setear el estado
+        toggleCategorias();
         tipoSelect.addEventListener('change', function() {
             toggleCategorias();
             validarSaldo();
@@ -580,6 +598,7 @@
             form.submit();
         }
     }
+
     document.addEventListener('DOMContentLoaded', function() {
         const filtroTipo = document.getElementById('filtroTipo');
         const filtroCategoria = document.getElementById('filtroCategoria');
@@ -608,6 +627,23 @@
         // Ejecutar al cargar y al cambiar el tipo
         actualizarCategoriasFiltro();
         filtroTipo.addEventListener('change', actualizarCategoriasFiltro);
+
+        // Abrir sección SOLO si hay filtros aplicados
+        const filtroNombre = '${filtroNombre}';
+        const filtroTipoVal = '${filtroTipo}';
+        const filtroCategoriaVal = '${filtroCategoria}';
+
+        const hayFiltrosAplicados = filtroNombre ||
+            (filtroTipoVal && filtroTipoVal !== 'TODOS' && filtroTipoVal !== '') ||
+            (filtroCategoriaVal && filtroCategoriaVal !== 'TODAS' && filtroCategoriaVal !== '');
+
+        // Solo abrir si hay filtros aplicados
+        if (hayFiltrosAplicados) {
+            const content = document.getElementById('plantillasContent');
+            const chevron = document.getElementById('chevronIcon');
+            content.style.display = 'block';
+            chevron.style.transform = 'rotate(180deg)';
+        }
     });
 </script>
 

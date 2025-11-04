@@ -28,13 +28,15 @@ import java.util.List;
  * - POST /plantillas/editar -> Procesa edición
  * - POST /plantillas/eliminar -> Elimina plantilla
  * - GET  /plantillas/aplicar -> Aplica plantilla a formulario de movimientos
+ * - GET  /plantillas/duplicar -> Duplica plantilla existente
  */
 @WebServlet(urlPatterns = {
         "/plantillas/nuevo",
         "/plantillas/editar",
         "/plantillas/eliminar",
         "/plantillas/aplicar",
-        "/plantillas/buscar"
+        "/plantillas/buscar",
+        "/plantillas/duplicar"
 })
 public class ServletPlantilla extends HttpServlet {
 
@@ -72,6 +74,9 @@ public class ServletPlantilla extends HttpServlet {
             case "/plantillas/buscar":
                 buscarPlantillas(request, response, usuario);
                 break;
+            case "/plantillas/duplicar":
+                duplicarPlantilla(request, response, usuario);
+                break;
             default:
                 response.sendRedirect(request.getContextPath() + "/movimientos");
                 break;
@@ -79,21 +84,41 @@ public class ServletPlantilla extends HttpServlet {
     }
 
     private void buscarPlantillas(HttpServletRequest request, HttpServletResponse response, Usuario usuario)
-    throws ServletException, IOException{
+            throws ServletException, IOException {
+
         String nombre = request.getParameter("nombre");
         String tipo = request.getParameter("tipo");
         String categoria = request.getParameter("categoria");
 
-        List<Plantilla> plantillasFiltradas = servicioPlantilla.buscarPlantillasConFiltros(usuario.getId(), nombre, tipo, categoria);
+        try {
+            List<Cuenta> listaCuentas = servicioCuenta.listarCuentasPorCartera(usuario.getCartera().getId());
+            request.setAttribute("cuentas", listaCuentas);
 
-        // Guardar filtros para mantenerlos en el formulario
-        request.setAttribute("filtroNombre", nombre != null ? nombre : "");
-        request.setAttribute("filtroTipo", tipo != null ? tipo : "");
-        request.setAttribute("filtroCategoria", categoria != null ? categoria : "");
-        request.setAttribute("plantillas", plantillasFiltradas);
+            if (listaCuentas == null || listaCuentas.isEmpty()) {
+                HttpSession session = request.getSession();
+                MensajeUtil.agregarAdvertencia(session,
+                        "No tienes cuentas creadas. Debes crear al menos una cuenta antes de registrar movimientos.");
+            }
 
-        request.getRequestDispatcher("/movimiento/VistaMovimientos.jsp")
-                .forward(request, response);
+            List<Plantilla> plantillasFiltradas = servicioPlantilla.buscarPlantillasConFiltros(
+                    usuario.getId(), nombre, tipo, categoria
+            );
+
+            // Guardar filtros para mantenerlos en el formulario
+            request.setAttribute("filtroNombre", nombre != null ? nombre : "");
+            request.setAttribute("filtroTipo", tipo != null ? tipo : "");
+            request.setAttribute("filtroCategoria", categoria != null ? categoria : "");
+            request.setAttribute("plantillas", plantillasFiltradas);
+
+            // Forward a la vista
+            request.getRequestDispatcher("/movimiento/VistaMovimientos.jsp")
+                    .forward(request, response);
+
+        } catch (Exception e) {
+            HttpSession session = request.getSession();
+            MensajeUtil.agregarError(session, "Error al buscar plantillas: " + e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/movimientos");
+        }
     }
 
     @Override
@@ -131,10 +156,20 @@ public class ServletPlantilla extends HttpServlet {
                                    Usuario usuario, Plantilla plantilla)
             throws ServletException, IOException {
 
+        HttpSession session = request.getSession();
         MensajeUtil.obtenerYLimpiarMensajes(request);
 
         List<Cuenta> listaCuentas = servicioCuenta.listarCuentasPorCartera(usuario.getCartera().getId());
         request.setAttribute("cuentas", listaCuentas);
+
+        // Verificar si hay una plantilla duplicada en sesión
+        if (plantilla == null) {
+            Plantilla plantillaDuplicada = (Plantilla) session.getAttribute("plantillaDuplicada");
+            if (plantillaDuplicada != null) {
+                plantilla = plantillaDuplicada;
+                session.removeAttribute("plantillaDuplicada");
+            }
+        }
 
         if (plantilla != null) {
             request.setAttribute("plantilla", plantilla);
@@ -171,6 +206,53 @@ public class ServletPlantilla extends HttpServlet {
 
         } catch (NumberFormatException e) {
             MensajeUtil.agregarError(session, "ID de plantilla inválido");
+            response.sendRedirect(request.getContextPath() + "/movimientos");
+        }
+    }
+
+    /**
+     * Duplica una plantilla existente
+     */
+    private void duplicarPlantilla(HttpServletRequest request, HttpServletResponse response, Usuario usuario)
+            throws IOException, ServletException {
+
+        HttpSession session = request.getSession();
+        String idStr = request.getParameter("id");
+
+        if (isBlank(idStr)) {
+            MensajeUtil.agregarError(session, "ID de plantilla no proporcionado");
+            response.sendRedirect(request.getContextPath() + "/movimientos");
+            return;
+        }
+
+        try {
+            Long id = Long.parseLong(idStr);
+            Plantilla original = servicioPlantilla.buscarPorId(id);
+
+            if (!validarPlantilla(original, usuario, session, "duplicar")) {
+                response.sendRedirect(request.getContextPath() + "/movimientos");
+                return;
+            }
+
+            // Duplicar la plantilla
+            Plantilla copia = servicioPlantilla.duplicarPlantilla(original);
+            copia.setUsuario(usuario);
+
+            // Guardar la copia en la sesión para precargar el formulario
+            session.setAttribute("plantillaDuplicada", copia);
+
+            // Mensaje informativo
+            MensajeUtil.agregarInfo(session, "Duplicando plantilla " + original.getNombre() + ". Puedes modificar los datos antes de guardar.");
+
+            // Redirigir al formulario de creación
+            response.sendRedirect(request.getContextPath() + "/plantillas/nuevo");
+
+        } catch (NumberFormatException e) {
+            MensajeUtil.agregarError(session, "ID de plantilla inválido");
+            response.sendRedirect(request.getContextPath() + "/movimientos");
+
+        } catch (Exception e) {
+            MensajeUtil.agregarError(session, "Error al duplicar la plantilla: " + e.getMessage());
             response.sendRedirect(request.getContextPath() + "/movimientos");
         }
     }
@@ -245,6 +327,9 @@ public class ServletPlantilla extends HttpServlet {
             } else {
                 servicioPlantilla.crearPlantilla(plantilla, usuario.getId());
                 MensajeUtil.agregarExito(session, "Plantilla creada exitosamente");
+
+                // Limpiar plantilla duplicada de la sesión si existe
+                session.removeAttribute("plantillaDuplicada");
             }
 
             response.sendRedirect(request.getContextPath() + "/movimientos");
@@ -261,7 +346,7 @@ public class ServletPlantilla extends HttpServlet {
 
         } catch (Exception e) {
             String mensaje = idStr != null ? "actualizar" : "crear";
-            MensajeUtil.agregarError(session, "Error al " + mensaje + " la plantilla: " + e.getMessage());
+            MensajeUtil.agregarError(session,  e.getMessage());
             String redirectUrl = idStr != null ? "/plantillas/editar?id=" + idStr : "/plantillas/nuevo";
             response.sendRedirect(request.getContextPath() + redirectUrl);
         }

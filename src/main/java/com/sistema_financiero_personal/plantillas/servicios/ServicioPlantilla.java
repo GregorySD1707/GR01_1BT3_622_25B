@@ -64,6 +64,9 @@ Después :
         Usuario usuario = daoUsuario.buscarPorId(usuarioId);
         plantilla.setUsuario(usuario);
         plantilla.setFechaCreacion(LocalDateTime.now());
+        if (dao.existePlantillaPorNombre(plantilla.getNombre().trim(), usuarioId)) {
+            throw new IllegalStateException("Ya existe una plantilla con el mismo nombre");
+        }
         dao.crear(plantilla);
     }
 
@@ -163,14 +166,14 @@ Después :
     }
 
     public Plantilla duplicarPlantilla(Plantilla original) {
-
         if (original == null) {
             throw new IllegalArgumentException("Plantilla original requerida");
         }
 
         Plantilla copia = new Plantilla();
 
-        copia.setNombre(generarNombreUnico(original));
+        Long usuarioId = (original.getUsuario() != null) ? original.getUsuario().getId() : null;
+        copia.setNombre(generarNombreUnico(original.getNombre(), usuarioId));
 
         copia.setMonto(original.getMonto());
         copia.setTipo(original.getTipo());
@@ -182,31 +185,48 @@ Después :
         return copia;
     }
 
-    private String generarNombreUnico(Plantilla original) {
-        String nombreBase = extraerNombreBase(original.getNombre());
+    private String generarNombreUnico(String nombreOriginal, Long usuarioId) {
+        String nombreBase = extraerNombreBase(nombreOriginal);
 
-        int maxNumero = 0;
+        // Combinar lista en memoria (tests) con BD (producción)
+        List<Plantilla> plantillasExistentes = new ArrayList<>(plantillas);
 
-        for (Plantilla p : plantillas) {
-            String nombreActual = p.getNombre();
-
-            if (nombreActual.equals(nombreBase)) { // Caso: nombre exacto sin número
-                maxNumero = Math.max(maxNumero, 1);
-            } else if (nombreActual.startsWith(nombreBase + " (")) {
-                // Extraer el número de "nombreBase (n)"
-                String numeroStr = nombreActual.substring(nombreBase.length() + 2, nombreActual.length() - 1);
-                int numero = Integer.parseInt(numeroStr);
-                maxNumero = Math.max(maxNumero, numero + 1);
+        if (usuarioId != null) {
+            try {
+                List<Plantilla> plantillasBD = listarPlantillasPorUsuario(usuarioId);
+                if (plantillasBD != null) {
+                    plantillasExistentes.addAll(plantillasBD);
+                }
+            } catch (Exception e) {
+                // Continuar solo con la lista en memoria
             }
         }
 
-        // Si maxNumero es 0, significa que no hay copias, usar nombre base
-        // Si maxNumero es 1 o más, usar el número correspondiente
-        return maxNumero == 0 ? nombreBase : nombreBase + " (" + maxNumero + ")";
+        int maxNumero = 0;
+
+        for (Plantilla p : plantillasExistentes) {
+            String nombreActual = p.getNombre();
+
+            if (nombreActual.equals(nombreBase)) {
+                maxNumero = Math.max(maxNumero, 1);
+            } else if (nombreActual.startsWith(nombreBase + " (")) {
+                try {
+                    String numeroStr = nombreActual.substring(
+                            nombreBase.length() + 2,
+                            nombreActual.length() - 1
+                    );
+                    int numero = Integer.parseInt(numeroStr);
+                    maxNumero = Math.max(maxNumero, numero);
+                } catch (Exception e) {
+                    // Ignorar errores de parsing
+                }
+            }
+        }
+
+        return maxNumero == 0 ? nombreBase : nombreBase + " (" + (maxNumero) + ")";
     }
 
     private String extraerNombreBase(String nombreCompleto) {
-        // Si el nombre ya tiene formato "nombre (n)", extraer solo la parte base
         if (nombreCompleto.matches(".+ \\(\\d+\\)")) {
             return nombreCompleto.substring(0, nombreCompleto.lastIndexOf(" ("));
         }
@@ -230,7 +250,7 @@ Después :
 
     public void verificarNombreUnico(Plantilla plantilla1) {
         plantillas.forEach(plantilla -> {
-            if(plantilla.getNombre().equals(plantilla1.getNombre())){
+            if(plantilla.getNombre().trim().equals(plantilla1.getNombre().trim())){
                 throw new IllegalArgumentException("Los nombres de las plantillas deben ser unicos");
             }
         });
@@ -275,4 +295,6 @@ Después :
     public List<Plantilla> buscarPlantillasConFiltros(Long id, String nombre, String tipo, String categoria) {
         return dao.buscarPorFiltros(id, nombre, tipo, categoria);
     }
+
+
 }

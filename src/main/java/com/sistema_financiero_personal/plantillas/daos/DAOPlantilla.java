@@ -65,4 +65,18 @@ public class DAOPlantilla extends DAOBase<Plantilla> {
             return session.createQuery(cq).getResultList();
         });
     }
+    public boolean existePlantillaPorNombre(String nombre, Long usuarioId) {
+        return executeQuery(session -> {
+            String hql = "SELECT COUNT(p) FROM Plantilla p " +
+                    "WHERE LOWER(TRIM(p.nombre)) = LOWER(TRIM(:nombre)) " +
+                    "AND p.usuario.id = :usuarioId";
+
+            Long count = session.createQuery(hql, Long.class)
+                    .setParameter("nombre", nombre)
+                    .setParameter("usuarioId", usuarioId)
+                    .getSingleResult();
+
+            return count > 0;
+        });
+    }
 }

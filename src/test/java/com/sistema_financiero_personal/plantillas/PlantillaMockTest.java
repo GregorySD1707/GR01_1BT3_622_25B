@@ -47,6 +47,7 @@ public class PlantillaMockTest {
 
         when(daoUsuarioMock.buscarPorId(usuarioId)).thenReturn(usuarioEsperado);
         doNothing().when(daoPlantillaMock).crear(plantilla);
+        when(daoPlantillaMock.existePlantillaPorNombre(nombre, usuarioId)).thenReturn(false);
 
         servicioPlantillas.crearPlantilla(plantilla, usuarioId);
 
