@@ -60,7 +60,7 @@
                         type="text"
                         id="nombre"
                         name="nombre"
-                        value="${esEdicion ? plantilla.nombre : param.nombre}"
+                        value="${plantilla != null ? plantilla.nombre : param.nombre}"
                         placeholder="Ej: Pago de Alquiler, Salario Mensual, Compra de Supermercado"
                         required
                         maxlength="100"
@@ -81,8 +81,8 @@
                     <c:forEach var="cuenta" items="${cuentas}">
                         <option value="${cuenta.id}"
                                 <c:choose>
-                                    <c:when test="${esEdicion && plantilla.cuenta != null && cuenta.id == plantilla.cuenta.id}">selected</c:when>
-                                    <c:when test="${!esEdicion && cuenta.id == param.cuentaId}">selected</c:when>
+                                    <c:when test="${plantilla != null && plantilla.cuenta != null && cuenta.id == plantilla.cuenta.id}">selected</c:when>
+                                    <c:when test="${plantilla == null && cuenta.id == param.cuentaId}">selected</c:when>
                                 </c:choose>>
                                 ${cuenta.nombre} (${cuenta.tipo}) - $<fmt:formatNumber value="${cuenta.monto}" pattern="#,##0.00"/>
                         </option>
@@ -102,11 +102,11 @@
                 <select id="tipo" name="tipo" required>
                     <option value="">Seleccione un tipo</option>
                     <option value="INGRESO"
-                            <c:if test="${(esEdicion && plantilla.tipo == 'INGRESO') || (!esEdicion && param.tipo == 'INGRESO')}">selected</c:if>>
+                            <c:if test="${(plantilla != null && plantilla.tipo == 'INGRESO') || (plantilla == null && param.tipo == 'INGRESO')}">selected</c:if>>
                         Ingreso
                     </option>
                     <option value="GASTO"
-                            <c:if test="${(esEdicion && plantilla.tipo == 'GASTO') || (!esEdicion && param.tipo == 'GASTO')}">selected</c:if>>
+                            <c:if test="${(plantilla != null && plantilla.tipo == 'GASTO') || (plantilla == null && param.tipo == 'GASTO')}">selected</c:if>>
                         Gasto
                     </option>
                 </select>
@@ -125,7 +125,7 @@
                         type="number"
                         id="monto"
                         name="monto"
-                        value="${esEdicion ? plantilla.monto : param.monto}"
+                        value="${plantilla != null ? plantilla.monto : param.monto}"
                         placeholder="0.00"
                         step="0.01"
                         min="0.01"
@@ -153,8 +153,8 @@
                     <c:forEach var="categoria" items="<%= CategoriaIngreso.values() %>">
                         <option value="${categoria.name()}"
                                 <c:choose>
-                                    <c:when test="${esEdicion && plantilla.categoria == categoria.name()}">selected</c:when>
-                                    <c:when test="${!esEdicion && categoria.name() == param.categoria}">selected</c:when>
+                                    <c:when test="${plantilla != null && plantilla.categoria == categoria.name()}">selected</c:when>
+                                    <c:when test="${plantilla == null && categoria.name() == param.categoria}">selected</c:when>
                                 </c:choose>>
                                 ${categoria.name()}
                         </option>
@@ -167,8 +167,8 @@
                     <c:forEach var="categoria" items="<%= CategoriaGasto.values() %>">
                         <option value="${categoria.name()}"
                                 <c:choose>
-                                    <c:when test="${esEdicion && plantilla.categoria == categoria.name()}">selected</c:when>
-                                    <c:when test="${!esEdicion && categoria.name() == param.categoria}">selected</c:when>
+                                    <c:when test="${plantilla != null && plantilla.categoria == categoria.name()}">selected</c:when>
+                                    <c:when test="${plantilla == null && categoria.name() == param.categoria}">selected</c:when>
                                 </c:choose>>
                                 ${categoria.name()}
                         </option>
@@ -184,14 +184,9 @@
         <%-- Botones de Acción --%>
         <div class="form-actions" style="display: flex; gap: 12px; margin-top: 20px;">
             <button type="submit" class="btn btn-primary" id="btnGuardar">
-<%--                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">--%>
-<%--                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>--%>
-<%--                    <polyline points="17 21 17 13 7 13 7 21"></polyline>--%>
-<%--                    <polyline points="7 3 7 8 15 8"></polyline>--%>
-<%--                </svg>--%>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
                 <span>${textoBoton}</span>
             </button>
             <a href="${pageContext.request.contextPath}/movimientos" class="btn btn-secondary">
@@ -210,7 +205,23 @@
         const categoriaPendiente = document.getElementById('categoriaPendiente');
         const montoInput = document.getElementById('monto');
 
-        // Toggle entre categorías según el tipo
+        const btnGuardar = document.getElementById('btnGuardar');
+        const esModoEdicion = ${esEdicion};
+
+        if (btnGuardar) {
+            btnGuardar.addEventListener('click', function(e) {
+                if (esModoEdicion) {
+
+                    const confirmar = confirm('¿Estás seguro de que deseas guardar los cambios en esta plantilla?');
+
+                    if (!confirmar) {
+                        e.preventDefault(); // Esto detiene el clic y evita que el formulario se envíe
+                    }
+
+                }
+            });
+        }
+
         function toggleCategorias() {
             const tipoValue = tipoSelect.value;
 
@@ -256,7 +267,6 @@
             }
         }
 
-        // Formatear monto al perder el foco
         montoInput.addEventListener('blur', function() {
             const value = parseFloat(this.value);
             if (!isNaN(value)) {
@@ -264,7 +274,6 @@
             }
         });
 
-        // Validación de monto
         montoInput.addEventListener('input', function() {
             const value = parseFloat(this.value);
             if (!isNaN(value) && value > 999999.99) {
@@ -272,11 +281,9 @@
             }
         });
 
-        // Validación antes de enviar
         form.addEventListener('submit', function(e) {
             toggleCategorias();
 
-            // Validar que se haya seleccionado un tipo
             if (!tipoSelect.value) {
                 e.preventDefault();
                 alert('Por favor selecciona el tipo de movimiento');
@@ -284,7 +291,6 @@
                 return false;
             }
 
-            // Validar monto
             const monto = parseFloat(montoInput.value);
             if (isNaN(monto) || monto <= 0 || monto > 999999.99) {
                 e.preventDefault();
@@ -293,7 +299,6 @@
                 return false;
             }
 
-            // Validar categoría
             const categoriaSelect = tipoSelect.value === 'INGRESO' ? categoriaIngresoSelect : categoriaGastoSelect;
             if (!categoriaSelect.value) {
                 e.preventDefault();
@@ -303,17 +308,14 @@
             }
         });
 
-        // Event listener para cambio de tipo
         tipoSelect.addEventListener('change', toggleCategorias);
 
-        // Inicializar estado al cargar
         toggleCategorias();
     });
 
-    // Función para confirmar eliminación (solo en modo edición)
     <c:if test="${esEdicion}">
     function confirmarEliminar() {
-        if (confirm('¿Estás seguro de que deseas eliminar la plantilla "${plantilla.nombre}"?\n\nEsta acción no se puede deshacer.')) {
+        if (confirm('¿Estás seguro de que deseas eliminar la plantilla "${plantilla.nombre}"?\n\AEsta acción no se puede deshacer.')) {
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = '${pageContext.request.contextPath}/plantillas/eliminar';

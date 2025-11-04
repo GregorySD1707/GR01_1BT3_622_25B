@@ -2,16 +2,13 @@ package com.sistema_financiero_personal.plantillas;
 
 import com.sistema_financiero_personal.cuentas.modelos.Cuenta;
 import com.sistema_financiero_personal.movimiento.modelos.*;
-import com.sistema_financiero_personal.plantillas.daos.DAOPlantilla;
 import com.sistema_financiero_personal.plantillas.modelos.Plantilla;
 import com.sistema_financiero_personal.plantillas.servicios.ServicioPlantilla;
 import com.sistema_financiero_personal.usuario.modelos.Usuario;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 
 public class PlantillaTest {
     private ServicioPlantilla servicioPlantilla;
@@ -122,4 +119,35 @@ public class PlantillaTest {
         assertEquals(115.56, servicioPlantilla.redondearMonto(115.555), 0.001);
     }
 
+    @Test
+    public void given_existing_template_when_duplicate_then_creates_copy_with_suffix_1_and_same_data() {
+
+        Plantilla original1 = new Plantilla("Netflix Mensual", 15.99);
+        servicioPlantilla.guardarEnLista(original1);
+
+        Plantilla copia1 = servicioPlantilla.duplicarPlantilla(original1);
+        assertEquals("Netflix Mensual (1)", copia1.getNombre());
+
+        assertNotSame(original1, copia1);
+        assertEquals(original1.getMonto(), copia1.getMonto(), 0.0001);
+        assertEquals(original1.getTipo(), copia1.getTipo());
+        assertEquals(original1.getCategoria(), copia1.getCategoria());
+        assertSame(original1.getCuenta(), copia1.getCuenta());
+        assertTrue(original1.isActivo());
+        assertNotNull(copia1.getFechaCreacion());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void given_a_template_when_create_another_template_with_the_same_name_then_fail(){
+
+        Plantilla plantilla1 = new Plantilla();
+        plantilla1.setNombre("repetido");
+        servicioPlantilla.verificarNombreUnico(plantilla1);
+
+        Plantilla plantilla2 = new Plantilla();
+        plantilla2.setNombre("repetido");
+        servicioPlantilla.verificarNombreUnico(plantilla2);
+    }
 }
+
+
