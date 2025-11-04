@@ -304,14 +304,37 @@
                 </div>
             </c:when>
             <c:otherwise>
-                <div class="plantillas-empty-state">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                    </svg>
-                    <p>No tienes plantillas guardadas</p>
-                    <p class="subtext">Crea tu primera plantilla para agilizar el registro de movimientos recurrentes</p>
-                </div>
+                <%-- Verificar si hay filtros aplicados --%>
+                        <c:set var="hayFiltros" value="${not empty filtroNombre or (not empty filtroTipo and filtroTipo != 'TODOS')}" />
+
+                        <div class="plantillas-empty-state">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                                <c:choose>
+                                    <c:when test="${hayFiltros}">
+                                        <%-- Icono de búsqueda sin resultados --%>
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                        <line x1="8" y1="11" x2="14" y2="11"></line>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <%-- Icono de documento (actual) --%>
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                    </c:otherwise>
+                                </c:choose>
+                            </svg>
+
+                            <c:choose>
+                                <c:when test="${hayFiltros}">
+                                    <p>No se encontraron plantillas que coincidan con tu búsqueda</p>
+                                    <p class="subtext">Intenta ajustar los filtros o crear una nueva plantilla</p>
+                                </c:when>
+                                <c:otherwise>
+                                    <p>No tienes plantillas guardadas</p>
+                                    <p class="subtext">Crea tu primera plantilla para agilizar el registro de movimientos recurrentes</p>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
             </c:otherwise>
         </c:choose>
     </div>
