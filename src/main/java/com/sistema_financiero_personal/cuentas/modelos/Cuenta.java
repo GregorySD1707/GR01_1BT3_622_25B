@@ -25,7 +25,7 @@ public class Cuenta {
 
     // Muchas cuentas pertenecen a UNA cartera
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cartera_id", nullable = false)
+    @JoinColumn(name = "cartera_id", nullable = true)
     private Cartera cartera;
 
     public Cuenta(){}
