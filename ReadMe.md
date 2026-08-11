@@ -115,7 +115,7 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para
 
 ## 👥 Equipo de Desarrollo
 
-**Mateo Calvache**: <https://github.com/MSetoo>  
+**Mateo Calvache**: <https://github.com/Matian542>  
 
 **Julián Camacho**: <https://github.com/JuliaanCZ>  
 
